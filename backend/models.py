@@ -43,6 +43,18 @@ class PolicyRecord(BaseModel):
     index_error: str | None = None
     refresh_status: str | None = None
     previous_published_on: str | None = None
+    safeguard_count: int = 0
+
+
+class PolicySafeguard(BaseModel):
+    category: str
+    definition: str
+
+
+class PolicySafeguardsResponse(BaseModel):
+    slug: str
+    title: str
+    safeguards: list[PolicySafeguard] = Field(default_factory=list)
 
 
 class ScrapeCheck(BaseModel):

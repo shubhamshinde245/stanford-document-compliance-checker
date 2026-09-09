@@ -9,6 +9,7 @@ import type {
   OutputColumn,
   OutputSchemaPreview,
   PolicyCatalog,
+  PolicySafeguardsResponse,
   PolicySchedule,
 } from "./types";
 
@@ -42,6 +43,19 @@ export async function fetchPolicies(): Promise<PolicyCatalog> {
 
 export function policyPdfUrl(slug: string): string {
   return `/api/policies/${encodeURIComponent(slug)}/pdf`;
+}
+
+export async function fetchPolicySafeguards(
+  slug: string,
+): Promise<PolicySafeguardsResponse> {
+  const response = await fetch(
+    `/api/policies/${encodeURIComponent(slug)}/safeguards`,
+    { cache: "no-store" },
+  );
+  if (!response.ok) {
+    throw new Error(await readDetail(response, "Could not load safeguards."));
+  }
+  return response.json();
 }
 
 export async function fetchPolicySchedule(): Promise<PolicySchedule> {

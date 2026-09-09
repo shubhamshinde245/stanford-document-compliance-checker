@@ -69,6 +69,9 @@ class LLMRouter:
         model: str | None = None,
         reasoning_effort: str | None = None,
         provider_id: str | None = None,
+        json_schema: dict[str, Any] | None = None,
+        system: str | None = None,
+        max_tokens: int | None = None,
     ) -> dict[str, Any]:
         text = prompt.strip()
         if not text:
@@ -80,6 +83,9 @@ class LLMRouter:
             model=model or settings["chat_model"],
             prompt=text,
             reasoning_effort=effort,
+            json_schema=json_schema,
+            system=system,
+            max_tokens=max_tokens,
         )
         result["reasoning_effort"] = effort if effort != "none" else None
         return result

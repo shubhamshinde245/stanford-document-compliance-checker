@@ -32,6 +32,18 @@ export type PolicyRecord = {
   index_error: string | null;
   refresh_status: string | null;
   previous_published_on: string | null;
+  safeguard_count: number;
+};
+
+export type PolicySafeguard = {
+  category: string;
+  definition: string;
+};
+
+export type PolicySafeguardsResponse = {
+  slug: string;
+  title: string;
+  safeguards: PolicySafeguard[];
 };
 
 export type ScrapeCheck = {
