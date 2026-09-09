@@ -12,6 +12,11 @@ class PolicyMatch(BaseModel):
     snippet: str
     chunk_id: str
     source_url: str = ""
+    pdf_url: str = ""
+    pdf_path: str | None = None
+    pdf_bytes: int | None = None
+    published_on: str | None = None
+    summary: str = ""
 
 
 class CheckResponse(BaseModel):
@@ -34,6 +39,7 @@ class PolicyRecord(BaseModel):
     published_on: str | None = None
     source_url: str
     pdf_path: str | None = None
+    pdf_url: str | None = None
     pdf_bytes: int | None = None
     summary: str = ""
     purpose: str = ""

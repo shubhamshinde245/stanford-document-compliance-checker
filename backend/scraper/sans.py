@@ -264,6 +264,18 @@ def _save_pdf_bytes(dest, body: bytes) -> tuple[str, int] | None:
     return relative_pdf_path(dest.stem), dest.stat().st_size
 
 
+def _extract_pdf_url(page) -> str | None:
+    pdf_link = page.get_by_role("link", name=re.compile(r"Download PDF", re.I))
+    if pdf_link.count() == 0:
+        pdf_link = page.locator(
+            "a[href*='egnyte.com/dl/'], a[href*='egnyte.com/dd/'], a[href*='.pdf']"
+        )
+    if pdf_link.count() == 0:
+        return None
+    href = urljoin(page.url, pdf_link.first.get_attribute("href") or "")
+    return href or None
+
+
 def _download_from_egnyte(page, href: str, dest) -> tuple[str, int] | None:
     token = href.rstrip("/").rsplit("/", 1)[-1]
     if not token:
@@ -277,26 +289,29 @@ def _download_from_egnyte(page, href: str, dest) -> tuple[str, int] | None:
     return None
 
 
-def _download_pdf(page, slug: str) -> tuple[str | None, int | None, str | None]:
+def _download_pdf(
+    page, slug: str
+) -> tuple[str | None, int | None, str | None, str | None]:
     dest = pdf_path_for(slug)
+    pdf_url = _extract_pdf_url(page)
     pdf_link = page.get_by_role("link", name=re.compile(r"Download PDF", re.I))
     if pdf_link.count() == 0:
         pdf_link = page.locator("a[href*='egnyte.com/dl/'], a[href*='.pdf']")
     if pdf_link.count() == 0:
-        return None, None, "No PDF link found on the template page."
+        return None, None, "No PDF link found on the template page.", pdf_url
 
     href = urljoin(page.url, pdf_link.first.get_attribute("href") or "")
     if "egnyte.com/dl/" in href:
         saved = _download_from_egnyte(page, href, dest)
         if saved:
-            return saved[0], saved[1], None
+            return saved[0], saved[1], None, pdf_url or _extract_pdf_url(page)
 
     if href.lower().endswith(".pdf") or ".pdf?" in href.lower():
         response = page.request.get(href)
         if response.ok:
             saved = _save_pdf_bytes(dest, response.body())
             if saved:
-                return saved[0], saved[1], None
+                return saved[0], saved[1], None, pdf_url or href
 
     try:
         with page.expect_download(timeout=20000) as download_info:
@@ -304,12 +319,12 @@ def _download_pdf(page, slug: str) -> tuple[str | None, int | None, str | None]:
         download = download_info.value
         download.save_as(dest)
         if dest.is_file() and dest.read_bytes()[:4] == b"%PDF":
-            return relative_pdf_path(slug), dest.stat().st_size, None
-        return None, None, "Download was not a PDF."
+            return relative_pdf_path(slug), dest.stat().st_size, None, pdf_url
+        return None, None, "Download was not a PDF.", pdf_url
     except PlaywrightTimeout:
         if _looks_like_lead_form(page):
-            return None, None, "PDF download is behind a lead-generation form."
-        return None, None, "Timed out waiting for the PDF download."
+            return None, None, "PDF download is behind a lead-generation form.", pdf_url
+        return None, None, "Timed out waiting for the PDF download.", pdf_url
 
 
 def _needs_download(
@@ -427,7 +442,7 @@ def scrape(base_url: str | None = None, *, incremental: bool = True) -> dict:
                 f"[{index}/{len(cards)}] {card['title']} ({slug}) "
                 f"{card.get('published_on') or 'unknown date'} → {status}"
             )
-            if not download and prior:
+            if not download and prior and prior.get("pdf_url"):
                 policies.append(_keep_existing(card, prior, "unchanged"))
                 stats["unchanged"] += 1
                 continue
@@ -436,6 +451,7 @@ def scrape(base_url: str | None = None, *, incremental: bool = True) -> dict:
                 **card,
                 "pdf_path": prior.get("pdf_path") if prior else None,
                 "pdf_bytes": prior.get("pdf_bytes") if prior else None,
+                "pdf_url": prior.get("pdf_url") if prior else None,
                 "summary": prior.get("summary") if prior else "",
                 "purpose": prior.get("purpose") if prior else "",
                 "scope": prior.get("scope") if prior else "",
@@ -467,12 +483,14 @@ def scrape(base_url: str | None = None, *, incremental: bool = True) -> dict:
                 if still_same:
                     record = _keep_existing(card, prior, "unchanged")
                     record["summary"] = detail["summary"] or prior.get("summary") or ""
+                    record["pdf_url"] = _extract_pdf_url(page) or prior.get("pdf_url")
                     stats["unchanged"] += 1
                     print("  date unchanged after detail page; keeping PDF")
                 else:
-                    pdf_path, pdf_bytes, error = _download_pdf(page, slug)
+                    pdf_path, pdf_bytes, error, pdf_url = _download_pdf(page, slug)
                     record["pdf_path"] = pdf_path
                     record["pdf_bytes"] = pdf_bytes
+                    record["pdf_url"] = pdf_url or ((prior or {}).get("pdf_url"))
                     record["error"] = error
                     if error:
                         stats["failed"] += 1
@@ -513,6 +531,47 @@ def scrape(base_url: str | None = None, *, incremental: bool = True) -> dict:
         f"{stats['added']} added, {stats['updated']} updated, "
         f"{stats['unchanged']} unchanged, {stats['kept']} kept)."
     )
+    return catalog
+
+
+def fill_missing_pdf_urls() -> dict:
+    catalog = load_catalog()
+    policies = catalog.get("policies") or []
+    missing = [
+        item
+        for item in policies
+        if item.get("source_url") and not item.get("pdf_url")
+    ]
+    if not missing:
+        print("All policies already have a Download PDF URL.")
+        return catalog
+
+    with sync_playwright() as playwright:
+        browser = playwright.chromium.launch(headless=True)
+        context = browser.new_context(viewport={"width": 1400, "height": 900})
+        page = context.new_page()
+        page.set_default_timeout(30000)
+        for index, item in enumerate(missing, start=1):
+            title = item.get("title") or item.get("slug")
+            print(f"[{index}/{len(missing)}] {title}")
+            try:
+                page.goto(item["source_url"], wait_until="domcontentloaded")
+                page.wait_for_timeout(500)
+                _dismiss_cookies(page)
+                pdf_url = _extract_pdf_url(page)
+                if pdf_url:
+                    item["pdf_url"] = pdf_url
+                    print(f"  {pdf_url}")
+                else:
+                    print("  no Download PDF link")
+            except Exception as exc:  # noqa: BLE001 — keep filling the rest
+                print(f"  Error: {exc}")
+            time.sleep(0.4)
+            save_catalog(catalog)
+        browser.close()
+
+    filled = sum(1 for item in policies if item.get("pdf_url"))
+    print(f"pdf_url present on {filled}/{len(policies)} policies")
     return catalog
 
 

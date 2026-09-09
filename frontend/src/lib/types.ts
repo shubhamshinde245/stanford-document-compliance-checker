@@ -7,6 +7,11 @@ export type PolicyMatch = {
   snippet: string;
   chunk_id: string;
   source_url: string;
+  pdf_url: string;
+  pdf_path: string | null;
+  pdf_bytes: number | null;
+  published_on: string | null;
+  summary: string;
 };
 
 export type CheckResponse = {
@@ -23,6 +28,7 @@ export type PolicyRecord = {
   published_on: string | null;
   source_url: string;
   pdf_path: string | null;
+  pdf_url: string | null;
   pdf_bytes: number | null;
   summary: string;
   purpose: string;

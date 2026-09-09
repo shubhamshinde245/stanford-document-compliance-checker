@@ -5,37 +5,17 @@ import { toast } from "react-toastify/unstyled";
 
 import {
   fetchPolicies,
-  fetchPolicySafeguards,
   fetchPolicySchedule,
-  policyPdfUrl,
   runPolicyScrape,
   savePolicySchedule,
 } from "@/lib/api";
 import type {
   PolicyCatalog,
   PolicyRecord,
-  PolicySafeguard,
   PolicySchedule,
 } from "@/lib/types";
-
-function formatDate(iso: string | null): string {
-  if (!iso) return "Unknown date";
-  const parsed = new Date(`${iso}T00:00:00`);
-  if (Number.isNaN(parsed.getTime())) return iso;
-  return parsed.toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
-function formatBytes(bytes: number | null): string {
-  if (!bytes) return "";
-  if (bytes < 1024) return `${bytes} B`;
-  const kb = bytes / 1024;
-  if (kb < 1024) return `${kb.toFixed(0)} KB`;
-  return `${(kb / 1024).toFixed(2)} MB`;
-}
+import { PolicyCard } from "@/components/policy-card";
+import { SafeguardsDialog } from "@/components/safeguards-dialog";
 
 function formatPacific(iso: string | null): string {
   if (!iso) return "—";
@@ -69,9 +49,10 @@ export function PoliciesDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
-  const [safeguardsPolicy, setSafeguardsPolicy] = useState<PolicyRecord | null>(
-    null,
-  );
+  const [safeguardsPolicy, setSafeguardsPolicy] = useState<{
+    slug: string;
+    title: string;
+  } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -251,7 +232,9 @@ export function PoliciesDashboard() {
               <PolicyCard
                 key={policy.slug}
                 policy={policy}
-                onViewSafeguards={setSafeguardsPolicy}
+                onViewSafeguards={(item) =>
+                  setSafeguardsPolicy({ slug: item.slug, title: item.title })
+                }
               />
             ))}
           </ol>
@@ -260,7 +243,8 @@ export function PoliciesDashboard() {
 
       {safeguardsPolicy ? (
         <SafeguardsDialog
-          policy={safeguardsPolicy}
+          slug={safeguardsPolicy.slug}
+          title={safeguardsPolicy.title}
           onClose={() => setSafeguardsPolicy(null)}
         />
       ) : null}
@@ -491,212 +475,6 @@ function Stat({
       </p>
       <p className="mt-1 font-serif text-4xl font-semibold leading-none">{value}</p>
       <p className="mt-2 text-sm text-muted">{hint}</p>
-    </div>
-  );
-}
-
-function statusLabel(status: string | null): string | null {
-  if (status === "updated") return "Updated";
-  if (status === "added") return "New";
-  return null;
-}
-
-function PolicyCard({
-  policy,
-  onViewSafeguards,
-}: {
-  policy: PolicyRecord;
-  onViewSafeguards: (policy: PolicyRecord) => void;
-}) {
-  const badge = statusLabel(policy.refresh_status);
-  return (
-    <li className="grid gap-3 rounded-card border border-line/80 bg-paper p-5 shadow-card">
-      <div>
-        <p className="flex flex-wrap items-center gap-2 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-cardinal">
-          {policy.category || "Uncategorized"}
-          {badge ? (
-            <span className="rounded-pill bg-cardinal/10 px-2 py-0.5 text-[0.65rem] tracking-[0.08em] text-cardinal">
-              {badge}
-            </span>
-          ) : null}
-        </p>
-        <h3 className="mt-1 font-serif text-xl font-semibold leading-tight tracking-tight">
-          {policy.source_url ? (
-            <a
-              href={policy.source_url}
-              target="_blank"
-              rel="noreferrer"
-              className="text-ink underline decoration-line underline-offset-2 hover:text-cardinal"
-            >
-              {policy.title}
-            </a>
-          ) : (
-            policy.title
-          )}
-        </h3>
-        <p className="mt-1 text-sm text-muted">
-          Published {formatDate(policy.published_on)}
-          {policy.previous_published_on &&
-          policy.previous_published_on !== policy.published_on
-            ? ` (was ${formatDate(policy.previous_published_on)})`
-            : ""}
-          {policy.pdf_bytes ? ` · ${formatBytes(policy.pdf_bytes)}` : ""}
-        </p>
-      </div>
-      {policy.summary ? (
-        <p className="text-[0.95rem] leading-relaxed text-muted">{policy.summary}</p>
-      ) : null}
-      {policy.error ? (
-        <p className="text-sm text-fail">{policy.error}</p>
-      ) : null}
-      <div className="flex flex-wrap gap-3 text-sm font-semibold">
-        <a
-          href={policy.source_url}
-          target="_blank"
-          rel="noreferrer"
-          className="text-cardinal underline-offset-2 hover:underline"
-          onClick={() => toast.info(`Opening source for “${policy.title}”.`)}
-        >
-          Source URL
-        </a>
-        {policy.source_url || policy.pdf_path ? (
-          <a
-            href={policy.source_url || policyPdfUrl(policy.slug)}
-            target="_blank"
-            rel="noreferrer"
-            className="text-cardinal underline-offset-2 hover:underline"
-            onClick={() =>
-              toast.info(`Opening SANS page: ${policy.title}`)
-            }
-          >
-            Open PDF
-          </a>
-        ) : (
-          <span className="text-muted">PDF unavailable</span>
-        )}
-        <button
-          type="button"
-          onClick={() => onViewSafeguards(policy)}
-          className="cursor-pointer text-cardinal underline-offset-2 hover:underline"
-        >
-          View safeguards
-        </button>
-      </div>
-    </li>
-  );
-}
-
-function SafeguardsDialog({
-  policy,
-  onClose,
-}: {
-  policy: PolicyRecord;
-  onClose: () => void;
-}) {
-  const [rows, setRows] = useState<PolicySafeguard[] | null>(null);
-  const [fault, setFault] = useState<string | null>(null);
-
-  useEffect(() => {
-    let cancelled = false;
-    setRows(null);
-    setFault(null);
-    fetchPolicySafeguards(policy.slug)
-      .then((payload) => {
-        if (!cancelled) setRows(payload.safeguards);
-      })
-      .catch((caught: unknown) => {
-        if (cancelled) return;
-        setFault(
-          caught instanceof Error ? caught.message : "Could not load safeguards.",
-        );
-      });
-    return () => {
-      cancelled = true;
-    };
-  }, [policy.slug]);
-
-  useEffect(() => {
-    function onKey(event: KeyboardEvent) {
-      if (event.key === "Escape") onClose();
-    }
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
-
-  return (
-    <div
-      className="fixed inset-0 z-50 grid place-items-center bg-ink/40 p-4"
-      onClick={onClose}
-      role="presentation"
-    >
-      <div
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="safeguards-title"
-        className="flex max-h-[min(36rem,calc(100vh-2rem))] w-full max-w-3xl flex-col overflow-hidden rounded-card border border-line bg-paper shadow-card"
-        onClick={(event) => event.stopPropagation()}
-      >
-        <div className="flex items-start justify-between gap-4 border-b border-line px-5 py-4">
-          <div>
-            <p className="mb-1 text-[0.72rem] font-bold uppercase tracking-[0.16em] text-cardinal">
-              Safeguards
-            </p>
-            <h3
-              id="safeguards-title"
-              className="font-serif text-2xl font-semibold tracking-tight"
-            >
-              {policy.title}
-            </h3>
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="cursor-pointer rounded-control border border-line px-3 py-1.5 text-sm font-semibold hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-cardinal"
-          >
-            Close
-          </button>
-        </div>
-        <div className="min-h-0 overflow-y-auto px-5 py-4">
-          {fault ? (
-            <p className="rounded-control bg-fail/10 px-3.5 py-3 text-sm text-fail">
-              {fault}
-            </p>
-          ) : null}
-          {rows === null && !fault ? (
-            <p className="text-sm text-muted">Loading safeguards…</p>
-          ) : null}
-          {rows && rows.length === 0 ? (
-            <p className="text-sm text-muted">
-              No safeguards extracted for this policy yet. Run{" "}
-              <code className="font-mono text-[0.85em]">make index</code> after
-              a scrape.
-            </p>
-          ) : null}
-          {rows && rows.length > 0 ? (
-            <ul className="grid list-none gap-0 p-0">
-              <li className="grid grid-cols-1 gap-1 border-b border-line py-2 sm:grid-cols-[minmax(10rem,14rem)_minmax(0,1fr)] sm:gap-6">
-                <p className="text-[0.72rem] font-bold uppercase tracking-[0.14em] text-cardinal">
-                  Category
-                </p>
-                <p className="text-[0.72rem] font-bold uppercase tracking-[0.14em] text-cardinal">
-                  Definition
-                </p>
-              </li>
-              {rows.map((row) => (
-                <li
-                  key={`${row.category}-${row.definition.slice(0, 40)}`}
-                  className="grid grid-cols-1 gap-1 border-b border-line/80 py-3 sm:grid-cols-[minmax(10rem,14rem)_minmax(0,1fr)] sm:items-start sm:gap-6"
-                >
-                  <p className="font-semibold text-ink">{row.category}</p>
-                  <p className="text-[0.95rem] leading-relaxed text-muted">
-                    {row.definition}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </div>
-      </div>
     </div>
   );
 }

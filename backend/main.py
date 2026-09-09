@@ -29,6 +29,7 @@ from backend.models import (
 )
 from backend.retrieve import IndexNotReady, check_upload, describe_index
 from backend.retrieve.safeguards import load_safeguards
+from backend.retrieve.text import ExtractError, SUPPORTED_SUFFIXES
 from backend.llm.schema import (
     LOCKED_NAMES,
     VERDICTS,

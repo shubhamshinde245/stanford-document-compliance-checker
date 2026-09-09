@@ -4,7 +4,9 @@ import { useState, type DragEvent } from "react";
 import { toast } from "react-toastify/unstyled";
 
 import { checkDocument } from "@/lib/api";
-import type { CheckResponse, PolicyMatch } from "@/lib/types";
+import type { CheckResponse } from "@/lib/types";
+import { PolicyCard } from "@/components/policy-card";
+import { SafeguardsDialog } from "@/components/safeguards-dialog";
 
 const CHECK_TOAST_ID = "document-check";
 const ACCEPT = ".pdf,.txt,.md,.html,.htm,.docx";
@@ -93,7 +95,8 @@ export function ComplianceChecker() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+    <div className="grid gap-6">
+      <div className="grid gap-6 lg:grid-cols-2">
       <section className={CARD}>
         <div className="mb-4">
           <p className="mb-1 text-[0.72rem] font-bold uppercase tracking-[0.16em] text-cardinal">
@@ -172,53 +175,64 @@ export function ComplianceChecker() {
           </p>
         ) : null}
 
-        {result ? <Results report={result} /> : null}
+        {result ? <ScoreWell report={result} /> : null}
       </section>
+      </div>
+
+      {result ? <Results report={result} /> : null}
+    </div>
+  );
+}
+
+function ScoreWell({ report }: { report: CheckResponse }) {
+  const top = report.matches[0];
+  const tone = confidenceTone(top?.confidence ?? 0);
+  return (
+    <div className={`rounded-control px-4 py-4 ${tone.well}`}>
+      <p className="text-[0.72rem] font-bold uppercase tracking-[0.14em]">
+        Top match confidence
+      </p>
+      <p className="font-serif text-6xl leading-none text-ink">
+        {top ? top.confidence.toFixed(1) : "—"}
+      </p>
+      <p className="mt-2 text-sm text-muted">{report.filename}</p>
+      {top ? (
+        <p className="mt-1 text-sm text-muted">
+          {top.title}
+          {top.category ? ` · ${top.category}` : ""}
+        </p>
+      ) : (
+        <p className="mt-1 text-sm text-muted">No policy matches returned.</p>
+      )}
     </div>
   );
 }
 
 function Results({ report }: { report: CheckResponse }) {
   const [expanded, setExpanded] = useState(false);
-  const top = report.matches[0];
-  const tone = confidenceTone(top?.confidence ?? 0);
+  const [safeguards, setSafeguards] = useState<{
+    slug: string;
+    title: string;
+  } | null>(null);
   const visible = expanded ? report.matches : report.matches.slice(0, 5);
   const remaining = Math.max(report.matches.length - 5, 0);
 
+  if (report.matches.length === 0) {
+    return null;
+  }
+
   return (
     <div className="grid gap-4">
-      <div className={`rounded-control px-4 py-4 ${tone.well}`}>
-        <p className="text-[0.72rem] font-bold uppercase tracking-[0.14em]">
-          Top match confidence
-        </p>
-        <p className="font-serif text-6xl leading-none text-ink">
-          {top ? top.confidence.toFixed(1) : "—"}
-        </p>
-        <p className="mt-2 text-sm text-muted">{report.filename}</p>
-        {top ? (
-          <p className="mt-1 text-sm text-muted">
-            {top.source_url ? (
-              <a
-                href={top.source_url}
-                target="_blank"
-                rel="noreferrer"
-                className="font-semibold text-ink underline decoration-line underline-offset-2 hover:text-cardinal"
-              >
-                {top.title}
-              </a>
-            ) : (
-              top.title
-            )}
-            {top.category ? ` · ${top.category}` : ""}
-          </p>
-        ) : (
-          <p className="mt-1 text-sm text-muted">No policy matches returned.</p>
-        )}
-      </div>
-
-      <ol className="grid list-none gap-2.5 p-0">
+      <ol className="grid list-none gap-4 p-0 md:grid-cols-2">
         {visible.map((match) => (
-          <MatchRow key={match.slug} match={match} />
+          <PolicyCard
+            key={match.slug}
+            policy={match}
+            confidence={match.confidence}
+            onViewSafeguards={(item) =>
+              setSafeguards({ slug: item.slug, title: item.title })
+            }
+          />
         ))}
       </ol>
 
@@ -233,43 +247,15 @@ function Results({ report }: { report: CheckResponse }) {
             : `Show all ${report.matches.length} policies`}
         </button>
       ) : null}
-    </div>
-  );
-}
 
-function MatchRow({ match }: { match: PolicyMatch }) {
-  const tone = confidenceTone(match.confidence);
-  const href = match.source_url;
-  return (
-    <li className="grid grid-cols-1 gap-2 border-t border-line py-3 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-start sm:gap-3">
-      <span
-        className={`mt-0.5 self-start rounded-pill px-2.5 py-0.5 text-[0.68rem] font-extrabold uppercase tracking-[0.12em] ${tone.pill}`}
-      >
-        {match.confidence.toFixed(1)}%
-      </span>
-      <div>
-        {href ? (
-          <a
-            href={href}
-            target="_blank"
-            rel="noreferrer"
-            className="font-bold text-ink underline decoration-line underline-offset-2 hover:text-cardinal"
-          >
-            {match.title}
-          </a>
-        ) : (
-          <span className="font-bold text-ink">{match.title}</span>
-        )}
-        {match.category ? (
-          <p className="mt-0.5 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-cardinal">
-            {match.category}
-          </p>
-        ) : null}
-        <p className="mt-1 text-[0.95rem] leading-snug text-muted">
-          {match.snippet}
-        </p>
-      </div>
-    </li>
+      {safeguards ? (
+        <SafeguardsDialog
+          slug={safeguards.slug}
+          title={safeguards.title}
+          onClose={() => setSafeguards(null)}
+        />
+      ) : null}
+    </div>
   );
 }
 
@@ -311,21 +297,12 @@ function ConfidenceHint() {
 
 function confidenceTone(confidence: number) {
   if (confidence >= 70) {
-    return {
-      well: "bg-pass/10 text-pass",
-      pill: "bg-pass/12 text-pass",
-    };
+    return { well: "bg-pass/10 text-pass" };
   }
   if (confidence >= 40) {
-    return {
-      well: "bg-warn/10 text-warn",
-      pill: "bg-warn/15 text-warn",
-    };
+    return { well: "bg-warn/10 text-warn" };
   }
-  return {
-    well: "bg-fail/10 text-fail",
-    pill: "bg-fail/12 text-fail",
-  };
+  return { well: "bg-fail/10 text-fail" };
 }
 
 function checkCompleteMessage(report: CheckResponse): string {
