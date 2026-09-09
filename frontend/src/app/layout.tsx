@@ -1,0 +1,32 @@
+import type { Metadata } from "next";
+import { Source_Sans_3, Source_Serif_4 } from "next/font/google";
+
+import "./globals.css";
+
+const sans = Source_Sans_3({
+  variable: "--font-source-sans",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+const serif = Source_Serif_4({
+  variable: "--font-source-serif",
+  subsets: ["latin"],
+  display: "swap",
+});
+
+export const metadata: Metadata = {
+  title: "Stanford Document Compliance Checker",
+  description:
+    "Check HTML documents against Stanford accessibility, identity, and structure rules.",
+};
+
+export default function RootLayout({ children }: LayoutProps<"/">) {
+  return (
+    <html lang="en" className={`${sans.variable} ${serif.variable} h-full`}>
+      <body className="min-h-full bg-sand bg-[radial-gradient(1200px_500px_at_10%_-10%,rgba(140,21,21,0.08),transparent_50%)] font-sans text-ink antialiased">
+        {children}
+      </body>
+    </html>
+  );
+}
