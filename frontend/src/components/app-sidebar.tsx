@@ -28,9 +28,10 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
 
   return (
     <aside
-      className={`flex shrink-0 flex-col rounded-shell bg-cardinal pb-6 text-white transition-[width] duration-200 ${
+      className={`flex h-full shrink-0 flex-col overflow-hidden rounded-shell bg-[#8C1515] pb-6 text-white transition-[width] duration-200 ${
         collapsed ? "w-16" : "w-60"
       }`}
+      style={{ backgroundColor: "#8C1515" }}
     >
       <div
         className={`flex items-start ${

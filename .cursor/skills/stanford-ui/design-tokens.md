@@ -11,9 +11,9 @@ Canonical values live in `frontend/src/app/globals.css` `@theme`. Match these; d
 | `ink` | `#2e2d29` | Body text |
 | `muted` | `#5e574e` | Secondary text |
 | `line` | `#d9d1c3` | Borders |
-| `cardinal` | `#8c1515` | Pantone 201 C. Primary actions, labels, sidebar, counts |
-| `cardinal-dark` | `#771212` | Primary hover (same hue, slightly darker) |
-| `sidebar-from` / `sidebar-to` | `#8c1515` | Solid Cardinal sidebar — do not fade to near-black |
+| `cardinal` | `#8C1515` | Official Stanford Cardinal (PMS 201 C, RGB 140 21 21). Sidebar, actions, labels |
+| `cardinal-dark` | `#820000` | Official Cardinal Dark — primary hover |
+| `sidebar-from` / `sidebar-to` | `#8C1515` | Sidebar is solid `#8C1515`, not a fade |
 | `pass` | `#175e54` | Palo Alto — success |
 | `warn` | `#8c6a12` | Warning |
 | `fail` | `#8c1515` | Failure (same as Cardinal) |
@@ -38,11 +38,11 @@ Toastify CSS variables may keep hex that duplicate these tokens. Components must
 
 ## Layout
 
-- `body`: `bg-canvas`, no Cardinal radial wash
-- Shell: `flex min-h-full gap-3 p-3`
-- Sidebar: `rounded-shell bg-cardinal` (solid Pantone 201 C `#8c1515`), white text
+- `body`: `h-full overflow-hidden bg-canvas`, no Cardinal radial wash
+- Shell: `flex h-full gap-3 overflow-hidden p-3`
+- Sidebar: `h-full` fixed (does not scroll), solid official Cardinal `#8C1515` (`bg-[#8C1515]`), white text
 - Active nav: `bg-white/15`; hover: `bg-white/10`
-- Main: `rounded-shell bg-paper/55 overflow-auto`
+- Main: `min-h-0 flex-1 overflow-y-auto rounded-shell bg-paper/55`
 - No dummy search, command palette, or avatar chrome
 
 ## Component recipes
@@ -75,7 +75,7 @@ rounded-control border border-line bg-paper focus:outline-cardinal
 
 ## Forbidden
 
-- Navy, electric blue, purple, or a dark maroon fade on the sidebar (stay on `#8c1515`)
+- Navy, electric blue, purple, or a dark maroon fade on the sidebar (stay on `#8C1515`)
 - `rounded-sm` (or sharper) on cards, buttons, inputs, sidebar nav
 - Hardcoded `#fffdf8`, `#f8e8e8`, `#c4b8a4` in TSX
 - Inter, Roboto, system-ui-only stacks (Source Sans/Serif must remain)

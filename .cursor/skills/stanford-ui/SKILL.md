@@ -24,7 +24,8 @@ Do not restyle the FastAPI backend, PDFs, or docs.
 ## Audit checklist
 
 - [ ] Tokens live in `@theme` (`canvas`, `paper`/`elevated`, `cardinal`, `sidebar-from`/`sidebar-to`, radii, `shadow-card`)
-- [ ] Shell is a sandstone cradle: outer padding, solid Cardinal `#8c1515` sidebar, rounded main pane
+- [ ] Shell is a sandstone cradle: outer padding, solid Cardinal `#8C1515` sidebar, rounded main pane
+- [ ] Sidebar stays fixed; only the main pane scrolls (`h-full overflow-hidden` on body/shell, `overflow-y-auto min-h-0` on main)
 - [ ] Cards use `rounded-card` and `shadow-card`
 - [ ] Buttons, inputs, selects, textareas, file drop use `rounded-control`
 - [ ] Pass/warn/fail and “New”/“Updated” use `rounded-pill`

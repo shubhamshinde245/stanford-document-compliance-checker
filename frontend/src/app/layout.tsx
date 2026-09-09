@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable} h-full`}>
-      <body className="min-h-full bg-canvas font-sans text-ink antialiased">
+      <body className="h-full overflow-hidden bg-canvas font-sans text-ink antialiased">
         <AppShell>{children}</AppShell>
       </body>
     </html>
