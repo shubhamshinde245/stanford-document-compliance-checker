@@ -41,3 +41,26 @@ class HealthResponse(BaseModel):
     status: str
     service: str
     ai_gateway: str
+
+
+class PolicyRecord(BaseModel):
+    slug: str
+    title: str
+    category: str = ""
+    kind: str = "Policy template"
+    published_on: str | None = None
+    source_url: str
+    pdf_path: str | None = None
+    pdf_bytes: int | None = None
+    summary: str = ""
+    scraped_at: str = ""
+    error: str | None = None
+
+
+class PolicyCatalog(BaseModel):
+    source_url: str
+    showing_text: str = ""
+    listed: int = 0
+    total: int = 0
+    scraped_at: str = ""
+    policies: list[PolicyRecord] = Field(default_factory=list)

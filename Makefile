@@ -4,22 +4,36 @@ API_HOST ?= 127.0.0.1
 API_PORT ?= 8000
 WEB_PORT ?= 3000
 
-.PHONY: help install ensure-env start dev backend frontend
+.PHONY: help install ensure-env start dev backend frontend scrape
 
 help:
-	@echo "make install   Install Python and Node dependencies"
+	@echo "make install   Install Python and Node dependencies, Chromium for scrape"
 	@echo "make start     Create .env.local if needed, then start API and Next.js"
 	@echo "make backend   Start FastAPI only"
 	@echo "make frontend  Start Next.js only"
+	@echo "make scrape    Download SANS policy PDFs into data/sans-policies/"
 
 install:
 	uv sync
+	uv run playwright install chromium
 	cd frontend && npm install
 
 ensure-env:
-	@if [ ! -f .env.local ] || ! grep -q '^AI_GATEWAY_API_KEY=' .env.local; then \
+	@if [ ! -f .env.local ]; then \
 		cp .env.example .env.local; \
 		echo "Created .env.local — paste AI_GATEWAY_API_KEY there."; \
+	fi
+	@if [ -f .env.example ]; then \
+		while IFS= read -r line; do \
+			key=$${line%%=*}; \
+			case "$$key" in \
+				""|\#*) continue ;; \
+			esac; \
+			if ! grep -q "^$${key}=" .env.local; then \
+				printf '%s\n' "$$line" >> .env.local; \
+				echo "Added $$key to .env.local."; \
+			fi; \
+		done < .env.example; \
 	fi
 	@if [ ! -f frontend/.env.local ]; then \
 		cp frontend/.env.example frontend/.env.local; \
@@ -40,3 +54,6 @@ start: ensure-env
 		cd frontend && npm run dev -- --port $(WEB_PORT)
 
 dev: start
+
+scrape: ensure-env
+	uv run python -m backend.scraper

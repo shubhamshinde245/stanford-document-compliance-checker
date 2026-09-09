@@ -26,3 +26,26 @@ export type RuleInfo = {
   title: string;
   description: string;
 };
+
+export type PolicyRecord = {
+  slug: string;
+  title: string;
+  category: string;
+  kind: string;
+  published_on: string | null;
+  source_url: string;
+  pdf_path: string | null;
+  pdf_bytes: number | null;
+  summary: string;
+  scraped_at: string;
+  error: string | null;
+};
+
+export type PolicyCatalog = {
+  source_url: string;
+  showing_text: string;
+  listed: number;
+  total: number;
+  scraped_at: string;
+  policies: PolicyRecord[];
+};

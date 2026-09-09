@@ -1,4 +1,4 @@
-import type { CheckResponse, RuleInfo } from "./types";
+import type { CheckResponse, PolicyCatalog, RuleInfo } from "./types";
 
 export async function fetchRules(): Promise<RuleInfo[]> {
   const response = await fetch("/api/rules", { cache: "no-store" });
@@ -28,4 +28,16 @@ export async function checkDocument(
   }
 
   return response.json();
+}
+
+export async function fetchPolicies(): Promise<PolicyCatalog> {
+  const response = await fetch("/api/policies", { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error("Could not load the SANS policy catalog.");
+  }
+  return response.json();
+}
+
+export function policyPdfUrl(slug: string): string {
+  return `/api/policies/${encodeURIComponent(slug)}/pdf`;
 }

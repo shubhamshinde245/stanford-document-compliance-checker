@@ -12,3 +12,7 @@ AI_GATEWAY_BASE_URL = os.getenv(
     "AI_GATEWAY_BASE_URL",
     "https://aiapi-dev.stanford.edu/",
 ).strip()
+SANS_BASE_URL = os.getenv(
+    "SANS_BASE_URL",
+    "https://www.sans.org/information-security-policy",
+).strip()
