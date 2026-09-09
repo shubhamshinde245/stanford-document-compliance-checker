@@ -132,7 +132,9 @@ export function PoliciesDashboard() {
 
   if (error) {
     return (
-      <p className="bg-[#f8e8e8] px-3.5 py-3 leading-relaxed text-fail">{error}</p>
+      <p className="rounded-control bg-fail/10 px-3.5 py-3 leading-relaxed text-fail">
+        {error}
+      </p>
     );
   }
 
@@ -177,7 +179,7 @@ export function PoliciesDashboard() {
             />
           </section>
 
-          <section className="rounded-sm border border-line bg-paper p-5">
+          <section className="rounded-card border border-line/80 bg-paper p-5 shadow-card">
             <p className="mb-1 text-[0.72rem] font-bold uppercase tracking-[0.16em] text-cardinal">
               Library
             </p>
@@ -191,7 +193,7 @@ export function PoliciesDashboard() {
                   className="grid grid-cols-[minmax(0,11rem)_1fr_2rem] items-center gap-3"
                 >
                   <span className="truncate text-sm text-muted">{item.name}</span>
-                  <span className="h-2.5 overflow-hidden rounded-sm bg-sand">
+                  <span className="h-2.5 overflow-hidden rounded-pill bg-sand">
                     <span
                       className="block h-full bg-cardinal"
                       style={{ width: `${(item.count / maxCount) * 100}%` }}
@@ -211,7 +213,7 @@ export function PoliciesDashboard() {
                 value={query}
                 onChange={(event) => setQuery(event.target.value)}
                 placeholder="Title, category, or summary"
-                className="border border-line bg-[#fffdf8] px-3 py-2.5 font-normal text-ink focus:outline-2 focus:outline-offset-2 focus:outline-solid focus:outline-cardinal"
+                className="rounded-control border border-line bg-paper px-3 py-2.5 font-normal text-ink focus:outline-2 focus:outline-offset-2 focus:outline-solid focus:outline-cardinal"
               />
             </label>
             <label className="grid gap-1.5 text-sm font-semibold">
@@ -219,7 +221,7 @@ export function PoliciesDashboard() {
               <select
                 value={category}
                 onChange={(event) => setCategory(event.target.value)}
-                className="border border-line bg-[#fffdf8] px-3 py-2.5 font-normal text-ink focus:outline-2 focus:outline-offset-2 focus:outline-solid focus:outline-cardinal"
+                className="rounded-control border border-line bg-paper px-3 py-2.5 font-normal text-ink focus:outline-2 focus:outline-offset-2 focus:outline-solid focus:outline-cardinal"
               >
                 <option value="all">All categories</option>
                 {categories.map((item) => (
@@ -348,7 +350,7 @@ function RefreshSchedule({
   }
 
   return (
-    <section className="rounded-sm border border-line bg-paper p-5">
+    <section className="rounded-card border border-line/80 bg-paper p-5 shadow-card">
       <button
         type="button"
         aria-expanded={expanded}
@@ -386,7 +388,7 @@ function RefreshSchedule({
             type="time"
             value={time}
             onChange={(event) => setTime(event.target.value)}
-            className="border border-line bg-[#fffdf8] px-3 py-2.5 font-normal text-ink focus:outline-2 focus:outline-offset-2 focus:outline-solid focus:outline-cardinal"
+            className="rounded-control border border-line bg-paper px-3 py-2.5 font-normal text-ink focus:outline-2 focus:outline-offset-2 focus:outline-solid focus:outline-cardinal"
           />
         </label>
         <label className="flex items-center gap-2 pb-3 text-sm font-semibold">
@@ -394,6 +396,7 @@ function RefreshSchedule({
             type="checkbox"
             checked={enabled}
             onChange={(event) => setEnabled(event.target.checked)}
+            className="size-4 accent-cardinal"
           />
           Run daily
         </label>
@@ -401,7 +404,7 @@ function RefreshSchedule({
           <button
             type="submit"
             disabled={saving || checking}
-            className="cursor-pointer border border-line bg-transparent px-4 py-2.5 font-semibold hover:border-ink disabled:cursor-not-allowed disabled:opacity-55 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-cardinal"
+            className="cursor-pointer rounded-control border border-line bg-transparent px-4 py-2.5 font-semibold hover:border-ink disabled:cursor-not-allowed disabled:opacity-55 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-cardinal"
           >
             {saving ? "Saving…" : "Save schedule"}
           </button>
@@ -409,7 +412,7 @@ function RefreshSchedule({
             type="button"
             disabled={checking || saving}
             onClick={() => void onCheckNow()}
-            className="cursor-pointer bg-cardinal px-4 py-2.5 font-semibold text-[#fffdf8] hover:bg-cardinal-dark disabled:cursor-not-allowed disabled:opacity-55 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-cardinal"
+            className="cursor-pointer rounded-control bg-cardinal px-4 py-2.5 font-semibold text-paper hover:bg-cardinal-dark disabled:cursor-not-allowed disabled:opacity-55 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-cardinal"
           >
             {checking ? "Checking…" : "Check for updates now"}
           </button>
@@ -462,7 +465,7 @@ function Stat({
   hint: string;
 }) {
   return (
-    <div className="rounded-sm border border-line bg-paper px-4 py-4">
+    <div className="rounded-card border border-line/80 bg-paper px-4 py-4 shadow-card">
       <p className="text-[0.72rem] font-bold uppercase tracking-[0.14em] text-cardinal">
         {label}
       </p>
@@ -481,11 +484,15 @@ function statusLabel(status: string | null): string | null {
 function PolicyCard({ policy }: { policy: PolicyRecord }) {
   const badge = statusLabel(policy.refresh_status);
   return (
-    <li className="grid gap-3 rounded-sm border border-line bg-paper p-5">
+    <li className="grid gap-3 rounded-card border border-line/80 bg-paper p-5 shadow-card">
       <div>
-        <p className="text-[0.72rem] font-bold uppercase tracking-[0.14em] text-cardinal">
+        <p className="flex flex-wrap items-center gap-2 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-cardinal">
           {policy.category || "Uncategorized"}
-          {badge ? ` · ${badge}` : ""}
+          {badge ? (
+            <span className="rounded-pill bg-cardinal/10 px-2 py-0.5 text-[0.65rem] tracking-[0.08em] text-cardinal">
+              {badge}
+            </span>
+          ) : null}
         </p>
         <h3 className="mt-1 font-serif text-xl font-semibold leading-tight tracking-tight">
           {policy.title}

@@ -10,16 +10,25 @@ import type { CheckResponse, Finding, Severity } from "@/lib/types";
 const CHECK_TOAST_ID = "document-check";
 const HTML_FILE = /\.(html|htm|txt)$/i;
 
+const CARD =
+  "rounded-card border border-line/80 bg-paper p-5 shadow-card";
+const PRIMARY_BUTTON =
+  "cursor-pointer rounded-control bg-cardinal px-4 py-2.5 font-semibold text-paper hover:bg-cardinal-dark disabled:cursor-not-allowed disabled:opacity-55 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-cardinal";
+const SECONDARY_BUTTON =
+  "cursor-pointer rounded-control border border-line bg-transparent px-4 py-2.5 font-semibold hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-cardinal";
+const CONTROL =
+  "rounded-control border border-line bg-paper font-normal text-ink focus:outline-2 focus:outline-offset-2 focus:outline-solid focus:outline-cardinal";
+
 const scoreTone: Record<Severity, string> = {
-  pass: "border-pass text-pass",
-  warn: "border-warn text-warn",
-  fail: "border-fail text-fail",
+  pass: "bg-pass/10 text-pass",
+  warn: "bg-warn/10 text-warn",
+  fail: "bg-fail/10 text-fail",
 };
 
-const markTone: Record<Severity, string> = {
-  pass: "text-pass",
-  warn: "text-warn",
-  fail: "text-fail",
+const pillTone: Record<Severity, string> = {
+  pass: "bg-pass/12 text-pass",
+  warn: "bg-warn/15 text-warn",
+  fail: "bg-fail/12 text-fail",
 };
 
 export function ComplianceChecker() {
@@ -99,7 +108,7 @@ export function ComplianceChecker() {
 
   return (
     <div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
-      <section className="rounded-sm border border-line bg-paper p-5 shadow-[0_18px_40px_rgba(46,45,41,0.06)]">
+      <section className={CARD}>
         <div className="mb-4">
           <p className="mb-1 text-[0.72rem] font-bold uppercase tracking-[0.16em] text-cardinal">
             Source
@@ -109,7 +118,7 @@ export function ComplianceChecker() {
           </h2>
         </div>
 
-        <label className="grid cursor-pointer gap-0.5 border border-dashed border-[#c4b8a4] bg-cardinal/5 p-4 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-solid focus-within:outline-cardinal">
+        <label className="grid cursor-pointer gap-0.5 rounded-control border border-dashed border-line bg-cardinal/5 p-4 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-solid focus-within:outline-cardinal">
           <input
             type="file"
             accept=".html,.htm,.txt,text/html"
@@ -127,21 +136,17 @@ export function ComplianceChecker() {
             onChange={(event) => setHtml(event.target.value)}
             placeholder="Paste a Stanford HTML document…"
             spellCheck={false}
-            className="min-h-70 w-full resize-y border border-line bg-[#fffdf8] p-3.5 font-mono text-xs leading-relaxed text-ink focus:outline-2 focus:outline-offset-2 focus:outline-solid focus:outline-cardinal"
+            className={`min-h-70 w-full resize-y p-3.5 font-mono text-xs leading-relaxed ${CONTROL}`}
           />
         </label>
 
         <div className="mt-4 flex flex-wrap gap-3">
-          <button
-            type="button"
-            className="cursor-pointer border border-line bg-transparent px-4 py-2.5 font-semibold hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-cardinal"
-            onClick={loadSample}
-          >
+          <button type="button" className={SECONDARY_BUTTON} onClick={loadSample}>
             Load sample draft
           </button>
           <button
             type="button"
-            className="cursor-pointer bg-cardinal px-4 py-2.5 font-semibold text-[#fffdf8] hover:bg-cardinal-dark disabled:cursor-not-allowed disabled:opacity-55 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-cardinal"
+            className={PRIMARY_BUTTON}
             disabled={!canCheck}
             onClick={() => void runCheck()}
           >
@@ -150,7 +155,7 @@ export function ComplianceChecker() {
         </div>
       </section>
 
-      <section className="rounded-sm border border-line bg-paper p-5 shadow-[0_18px_40px_rgba(46,45,41,0.06)]">
+      <section className={CARD}>
         <div className="mb-4">
           <p className="mb-1 text-[0.72rem] font-bold uppercase tracking-[0.16em] text-cardinal">
             Report
@@ -161,7 +166,7 @@ export function ComplianceChecker() {
         </div>
 
         {error ? (
-          <p className="mb-4 bg-[#f8e8e8] px-3.5 py-3 leading-relaxed text-fail">
+          <p className="mb-4 rounded-control bg-fail/10 px-3.5 py-3 leading-relaxed text-fail">
             {error}
           </p>
         ) : null}
@@ -186,11 +191,11 @@ function Results({ report }: { report: CheckResponse }) {
 
   return (
     <div className="grid gap-4">
-      <div className={`border-l-4 bg-[#fffdf8] px-4 py-4 ${scoreTone[tone]}`}>
+      <div className={`rounded-control px-4 py-4 ${scoreTone[tone]}`}>
         <p className="text-[0.72rem] font-bold uppercase tracking-[0.14em]">
           Compliance score
         </p>
-        <p className="font-serif text-6xl leading-none">{report.summary.score}</p>
+        <p className="font-serif text-6xl leading-none text-ink">{report.summary.score}</p>
         <p className="mb-3.5 text-sm text-muted">{report.filename}</p>
         <dl className="grid grid-cols-3 gap-3">
           <div>
@@ -219,9 +224,9 @@ function Results({ report }: { report: CheckResponse }) {
 
 function FindingRow({ finding }: { finding: Finding }) {
   return (
-    <li className="grid grid-cols-1 gap-1 border-t border-line py-3 sm:grid-cols-[3.4rem_minmax(0,1fr)] sm:gap-3">
+    <li className="grid grid-cols-1 gap-2 border-t border-line py-3 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-start sm:gap-3">
       <span
-        className={`mt-0.5 self-start text-[0.72rem] font-extrabold uppercase tracking-[0.12em] ${markTone[finding.severity]}`}
+        className={`mt-0.5 self-start rounded-pill px-2.5 py-0.5 text-[0.68rem] font-extrabold uppercase tracking-[0.12em] ${pillTone[finding.severity]}`}
       >
         {labelFor(finding.severity)}
       </span>

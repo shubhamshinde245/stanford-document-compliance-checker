@@ -26,7 +26,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="en" className={`${sans.variable} ${serif.variable} h-full`}>
-      <body className="min-h-full bg-sand bg-[radial-gradient(1200px_500px_at_10%_-10%,rgba(140,21,21,0.08),transparent_50%)] font-sans text-ink antialiased">
+      <body className="min-h-full bg-canvas font-sans text-ink antialiased">
         <AppShell>{children}</AppShell>
       </body>
     </html>

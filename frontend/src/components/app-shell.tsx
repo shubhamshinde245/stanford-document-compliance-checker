@@ -26,9 +26,11 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-full">
+    <div className="flex min-h-full gap-3 p-3">
       <AppSidebar collapsed={collapsed} onToggle={onToggle} />
-      <div className="min-w-0 flex-1">{children}</div>
+      <div className="min-w-0 flex-1 overflow-auto rounded-shell bg-paper/55">
+        {children}
+      </div>
       <ToastProvider />
     </div>
   );

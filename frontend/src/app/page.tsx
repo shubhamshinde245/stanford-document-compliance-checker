@@ -2,8 +2,8 @@ import { ComplianceChecker } from "@/components/compliance-checker";
 
 export default function Home() {
   return (
-    <div className="mx-auto max-w-6xl px-5 pb-16 pt-10">
-      <header className="mb-8 border-b border-line pb-6">
+    <div className="mx-auto max-w-6xl px-5 pb-16 pt-10 sm:px-8">
+      <header className="mb-8 pb-6">
         <p className="mb-2 text-[0.78rem] font-bold uppercase tracking-[0.18em] text-cardinal">
           Stanford University
         </p>
