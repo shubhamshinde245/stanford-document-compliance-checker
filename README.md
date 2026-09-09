@@ -117,7 +117,8 @@ Response:
       "confidence": 87.4,
       "score": 0.874,
       "snippet": "Title: Network Device Management Policy Purpose: … Scope: …",
-      "chunk_id": "network-device-management-policy:summary"
+      "chunk_id": "network-device-management-policy:summary",
+      "source_url": "https://www.sans.org/information-security-policy/network-device-management-policy"
     }
   ]
 }

@@ -72,6 +72,7 @@ def rank_policies(
             score=round(score, 4),
             snippet=snippet_from(snippet_source),
             chunk_id=str(row.get("chunk_id") or ""),
+            source_url=live.get("source_url") or str(row.get("source_url") or ""),
         )
     return sorted(best_by_slug.values(), key=lambda item: item.score, reverse=True)
 
@@ -84,6 +85,7 @@ def _catalog_by_slug() -> dict[str, dict[str, str]]:
         lookup[str(item["slug"])] = {
             "title": str(item.get("title") or ""),
             "category": str(item.get("category") or ""),
+            "source_url": str(item.get("source_url") or ""),
         }
     return lookup
 

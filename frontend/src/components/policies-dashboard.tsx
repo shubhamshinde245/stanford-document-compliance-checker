@@ -495,7 +495,18 @@ function PolicyCard({ policy }: { policy: PolicyRecord }) {
           ) : null}
         </p>
         <h3 className="mt-1 font-serif text-xl font-semibold leading-tight tracking-tight">
-          {policy.title}
+          {policy.source_url ? (
+            <a
+              href={policy.source_url}
+              target="_blank"
+              rel="noreferrer"
+              className="text-ink underline decoration-line underline-offset-2 hover:text-cardinal"
+            >
+              {policy.title}
+            </a>
+          ) : (
+            policy.title
+          )}
         </h3>
         <p className="mt-1 text-sm text-muted">
           Published {formatDate(policy.published_on)}
@@ -522,13 +533,15 @@ function PolicyCard({ policy }: { policy: PolicyRecord }) {
         >
           Source URL
         </a>
-        {policy.pdf_path ? (
+        {policy.source_url || policy.pdf_path ? (
           <a
-            href={policyPdfUrl(policy.slug)}
+            href={policy.source_url || policyPdfUrl(policy.slug)}
             target="_blank"
             rel="noreferrer"
             className="text-cardinal underline-offset-2 hover:underline"
-            onClick={() => toast.info(`Opening PDF: ${policy.title}`)}
+            onClick={() =>
+              toast.info(`Opening SANS page: ${policy.title}`)
+            }
           >
             Open PDF
           </a>

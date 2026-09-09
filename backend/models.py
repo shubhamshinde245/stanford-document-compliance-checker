@@ -11,6 +11,7 @@ class PolicyMatch(BaseModel):
     score: float
     snippet: str
     chunk_id: str
+    source_url: str = ""
 
 
 class CheckResponse(BaseModel):

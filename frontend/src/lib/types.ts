@@ -6,6 +6,7 @@ export type PolicyMatch = {
   score: number;
   snippet: string;
   chunk_id: string;
+  source_url: string;
 };
 
 export type CheckResponse = {

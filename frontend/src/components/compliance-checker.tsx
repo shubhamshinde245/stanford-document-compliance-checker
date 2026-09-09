@@ -3,7 +3,7 @@
 import { useState, type DragEvent } from "react";
 import { toast } from "react-toastify/unstyled";
 
-import { checkDocument, policyPdfUrl } from "@/lib/api";
+import { checkDocument } from "@/lib/api";
 import type { CheckResponse, PolicyMatch } from "@/lib/types";
 
 const CHECK_TOAST_ID = "document-check";
@@ -146,13 +146,16 @@ export function ComplianceChecker() {
       </section>
 
       <section className={CARD}>
-        <div className="mb-4">
-          <p className="mb-1 text-[0.72rem] font-bold uppercase tracking-[0.16em] text-cardinal">
-            Report
-          </p>
-          <h2 className="font-serif text-[1.55rem] font-semibold tracking-tight">
-            Findings
-          </h2>
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <p className="mb-1 text-[0.72rem] font-bold uppercase tracking-[0.16em] text-cardinal">
+              Report
+            </p>
+            <h2 className="font-serif text-[1.55rem] font-semibold tracking-tight">
+              Findings
+            </h2>
+          </div>
+          <ConfidenceHint />
         </div>
 
         {error ? (
@@ -194,7 +197,18 @@ function Results({ report }: { report: CheckResponse }) {
         <p className="mt-2 text-sm text-muted">{report.filename}</p>
         {top ? (
           <p className="mt-1 text-sm text-muted">
-            {top.title}
+            {top.source_url ? (
+              <a
+                href={top.source_url}
+                target="_blank"
+                rel="noreferrer"
+                className="font-semibold text-ink underline decoration-line underline-offset-2 hover:text-cardinal"
+              >
+                {top.title}
+              </a>
+            ) : (
+              top.title
+            )}
             {top.category ? ` · ${top.category}` : ""}
           </p>
         ) : (
@@ -225,6 +239,7 @@ function Results({ report }: { report: CheckResponse }) {
 
 function MatchRow({ match }: { match: PolicyMatch }) {
   const tone = confidenceTone(match.confidence);
+  const href = match.source_url;
   return (
     <li className="grid grid-cols-1 gap-2 border-t border-line py-3 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-start sm:gap-3">
       <span
@@ -233,14 +248,18 @@ function MatchRow({ match }: { match: PolicyMatch }) {
         {match.confidence.toFixed(1)}%
       </span>
       <div>
-        <a
-          href={policyPdfUrl(match.slug)}
-          target="_blank"
-          rel="noreferrer"
-          className="font-bold text-ink underline decoration-line underline-offset-2 hover:text-cardinal"
-        >
-          {match.title}
-        </a>
+        {href ? (
+          <a
+            href={href}
+            target="_blank"
+            rel="noreferrer"
+            className="font-bold text-ink underline decoration-line underline-offset-2 hover:text-cardinal"
+          >
+            {match.title}
+          </a>
+        ) : (
+          <span className="font-bold text-ink">{match.title}</span>
+        )}
         {match.category ? (
           <p className="mt-0.5 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-cardinal">
             {match.category}
@@ -251,6 +270,42 @@ function MatchRow({ match }: { match: PolicyMatch }) {
         </p>
       </div>
     </li>
+  );
+}
+
+function ConfidenceHint() {
+  return (
+    <details className="relative shrink-0">
+      <summary
+        className="grid h-9 w-9 cursor-pointer list-none place-items-center rounded-control text-muted hover:bg-cardinal/10 hover:text-cardinal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-cardinal [&::-webkit-details-marker]:hidden"
+        aria-label="How confidence is calculated"
+      >
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          className="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+        >
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 10.5v6" />
+          <circle cx="12" cy="7.25" r="0.85" fill="currentColor" stroke="none" />
+        </svg>
+      </summary>
+      <div
+        role="note"
+        className="absolute right-0 z-10 mt-2 w-72 rounded-control border border-line bg-paper p-3.5 text-sm leading-relaxed text-muted shadow-card"
+      >
+        Confidence is cosine similarity between the uploaded procedure and each
+        policy&apos;s Purpose and Scope summary, shown as a percentage. The
+        backend embeds both sides with the same model; the closest upload chunk
+        to that summary sets the score. 100% means the vectors point the same
+        way, not that the procedure satisfies the policy.
+      </div>
+    </details>
   );
 }
 
