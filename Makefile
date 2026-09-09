@@ -4,7 +4,7 @@ API_HOST ?= 127.0.0.1
 API_PORT ?= 8000
 WEB_PORT ?= 3000
 
-.PHONY: help install ensure-env start dev backend frontend scrape
+.PHONY: help install ensure-env start dev backend frontend scrape index
 
 help:
 	@echo "make install   Install Python and Node dependencies, Chromium for scrape"
@@ -12,6 +12,7 @@ help:
 	@echo "make backend   Start FastAPI only"
 	@echo "make frontend  Start Next.js only"
 	@echo "make scrape    Download SANS policy PDFs into data/sans-policies/"
+	@echo "make index     Embed Purpose/Scope summaries into the parked policy index"
 
 install:
 	uv sync
@@ -57,3 +58,6 @@ dev: start
 
 scrape: ensure-env
 	uv run python -m backend.scraper
+
+index: ensure-env
+	uv run python -m backend.retrieve

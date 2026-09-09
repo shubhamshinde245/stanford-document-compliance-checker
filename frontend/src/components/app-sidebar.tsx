@@ -1,5 +1,6 @@
 "use client";
 
+import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -64,41 +65,75 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
       </div>
 
       <nav className="flex flex-1 flex-col gap-1 px-2" aria-label="Primary">
-        {NAV.map((item) => {
-          const active =
-            item.href === "/"
-              ? pathname === "/"
-              : pathname === item.href || pathname.startsWith(`${item.href}/`);
-          const Icon = item.icon;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              title={item.label}
-              className={`flex items-center gap-3 no-underline transition-colors ${
-                collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5"
-              } rounded-control ${
-                active
-                  ? "bg-white/15 text-white"
-                  : "text-white/80 hover:bg-white/10 hover:text-white"
-              }`}
-            >
-              <Icon className="size-4 shrink-0" />
-              {!collapsed ? (
-                <span className="min-w-0">
-                  <span className="block text-sm font-semibold">{item.label}</span>
-                  <span className="mt-0.5 block text-xs text-white/65">
-                    {item.description}
-                  </span>
-                </span>
-              ) : (
-                <span className="sr-only">{item.label}</span>
-              )}
-            </Link>
-          );
-        })}
+        {NAV.map((item) => (
+          <NavLink
+            key={item.href}
+            href={item.href}
+            label={item.label}
+            description={item.description}
+            icon={item.icon}
+            collapsed={collapsed}
+            active={
+              item.href === "/"
+                ? pathname === "/"
+                : pathname === item.href || pathname.startsWith(`${item.href}/`)
+            }
+          />
+        ))}
       </nav>
+      <div className="mt-auto px-2 pt-3">
+        <NavLink
+          href="/settings"
+          label="Settings"
+          description="Models and effort"
+          icon={SettingsIcon}
+          collapsed={collapsed}
+          active={pathname === "/settings" || pathname.startsWith("/settings/")}
+        />
+      </div>
     </aside>
+  );
+}
+
+function NavLink({
+  href,
+  label,
+  description,
+  icon: Icon,
+  collapsed,
+  active,
+}: {
+  href: string;
+  label: string;
+  description: string;
+  icon: (props: { className?: string }) => ReactNode;
+  collapsed: boolean;
+  active: boolean;
+}) {
+  return (
+    <Link
+      href={href}
+      title={label}
+      className={`flex items-center gap-3 no-underline transition-colors ${
+        collapsed ? "justify-center px-2 py-2.5" : "px-3 py-2.5"
+      } rounded-control ${
+        active
+          ? "bg-white/15 text-white"
+          : "text-white/80 hover:bg-white/10 hover:text-white"
+      }`}
+    >
+      <Icon className="size-4 shrink-0" />
+      {!collapsed ? (
+        <span className="min-w-0">
+          <span className="block text-sm font-semibold">{label}</span>
+          <span className="mt-0.5 block text-xs text-white/65">
+            {description}
+          </span>
+        </span>
+      ) : (
+        <span className="sr-only">{label}</span>
+      )}
+    </Link>
   );
 }
 
@@ -136,6 +171,24 @@ function PoliciesIcon({ className }: { className?: string }) {
       <path d="M6.5 5.5h11A1.5 1.5 0 0 1 19 7v12.5H7.5A2.5 2.5 0 0 1 5 17V7a1.5 1.5 0 0 1 1.5-1.5Z" />
       <path d="M5 17a2.5 2.5 0 0 1 2.5-2.5H19" />
       <path d="M9 9h6M9 12.5h4" />
+    </svg>
+  );
+}
+
+function SettingsIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="12" cy="12" r="3.1" />
+      <path d="M12 3.6v1.8M12 18.6v1.8M4.9 6.5l1.3 1.3M17.8 16.2l1.3 1.3M3.6 12h1.8M18.6 12h1.8M4.9 17.5l1.3-1.3M17.8 7.8l1.3-1.3" />
     </svg>
   );
 }

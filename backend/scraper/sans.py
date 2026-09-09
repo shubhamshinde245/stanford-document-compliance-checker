@@ -348,6 +348,25 @@ def _keep_existing(card: dict, prior: dict, status: str) -> dict:
     return record
 
 
+def _index_downloaded_policy(record: dict) -> None:
+    slug = str(record.get("slug") or "")
+    dest = pdf_path_for(slug)
+    if not slug or not dest.is_file():
+        return
+    try:
+        from backend.retrieve.index import upsert_summary_chunk_sync
+
+        result = upsert_summary_chunk_sync(record, dest)
+        record["purpose"] = result.get("purpose") or ""
+        record["scope"] = result.get("scope") or ""
+        record["index_error"] = None
+        extra = " (already parked)" if result.get("skipped") else ""
+        print(f"  indexed Purpose/Scope summary chunk{extra}")
+    except Exception as exc:  # noqa: BLE001 — PDF save still counts
+        record["index_error"] = str(exc)
+        print(f"  index skipped: {exc}")
+
+
 def scrape(base_url: str | None = None, *, incremental: bool = True) -> dict:
     source_url = (base_url or SANS_BASE_URL).rstrip("/")
     ensure_dirs()
@@ -418,8 +437,11 @@ def scrape(base_url: str | None = None, *, incremental: bool = True) -> dict:
                 "pdf_path": prior.get("pdf_path") if prior else None,
                 "pdf_bytes": prior.get("pdf_bytes") if prior else None,
                 "summary": prior.get("summary") if prior else "",
+                "purpose": prior.get("purpose") if prior else "",
+                "scope": prior.get("scope") if prior else "",
                 "scraped_at": scraped_at,
                 "error": None,
+                "index_error": prior.get("index_error") if prior else None,
                 "refresh_status": status,
                 "previous_published_on": (prior or {}).get("published_on") or None,
             }
@@ -458,6 +480,7 @@ def scrape(base_url: str | None = None, *, incremental: bool = True) -> dict:
                     else:
                         stats[status] += 1
                         print(f"  Saved {pdf_path} ({pdf_bytes} bytes)")
+                        _index_downloaded_policy(record)
             except Exception as exc:  # noqa: BLE001 — keep the rest of the catalog
                 record["error"] = str(exc)
                 stats["failed"] += 1

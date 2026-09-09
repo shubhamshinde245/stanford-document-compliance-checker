@@ -1,57 +1,43 @@
 "use client";
 
-import { useState } from "react";
+import { useState, type DragEvent } from "react";
 import { toast } from "react-toastify/unstyled";
 
-import { checkDocument } from "@/lib/api";
-import { SAMPLE_FILENAME, SAMPLE_HTML } from "@/lib/sample-document";
-import type { CheckResponse, Finding, Severity } from "@/lib/types";
+import { checkDocument, policyPdfUrl } from "@/lib/api";
+import type { CheckResponse, PolicyMatch } from "@/lib/types";
 
 const CHECK_TOAST_ID = "document-check";
-const HTML_FILE = /\.(html|htm|txt)$/i;
+const ACCEPT = ".pdf,.txt,.md,.html,.htm,.docx";
+const ALLOWED = /\.(pdf|txt|md|html|htm|docx)$/i;
+const MAX_BYTES = 12 * 1024 * 1024;
 
 const CARD =
   "rounded-card border border-line/80 bg-paper p-5 shadow-card";
 const PRIMARY_BUTTON =
   "cursor-pointer rounded-control bg-cardinal px-4 py-2.5 font-semibold text-paper hover:bg-cardinal-dark disabled:cursor-not-allowed disabled:opacity-55 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-cardinal";
-const SECONDARY_BUTTON =
-  "cursor-pointer rounded-control border border-line bg-transparent px-4 py-2.5 font-semibold hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-cardinal";
-const CONTROL =
-  "rounded-control border border-line bg-paper font-normal text-ink focus:outline-2 focus:outline-offset-2 focus:outline-solid focus:outline-cardinal";
-
-const scoreTone: Record<Severity, string> = {
-  pass: "bg-pass/10 text-pass",
-  warn: "bg-warn/10 text-warn",
-  fail: "bg-fail/10 text-fail",
-};
-
-const pillTone: Record<Severity, string> = {
-  pass: "bg-pass/12 text-pass",
-  warn: "bg-warn/15 text-warn",
-  fail: "bg-fail/12 text-fail",
-};
 
 export function ComplianceChecker() {
-  const [html, setHtml] = useState("");
-  const [filename, setFilename] = useState("document.html");
+  const [file, setFile] = useState<File | null>(null);
+  const [dragOver, setDragOver] = useState(false);
   const [result, setResult] = useState<CheckResponse | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [isChecking, setIsChecking] = useState(false);
 
-  const canCheck = html.trim().length > 0 && !isChecking;
+  const canCheck = Boolean(file) && !isChecking;
 
   async function runCheck() {
+    if (!file) return;
     setIsChecking(true);
     setError(null);
-    toast.loading("Checking document against Stanford rules…", {
+    toast.loading("Ranking the document against SANS policies…", {
       toastId: CHECK_TOAST_ID,
     });
     try {
-      const response = await checkDocument(html, filename);
+      const response = await checkDocument(file);
       setResult(response);
       toast.update(CHECK_TOAST_ID, {
         render: checkCompleteMessage(response),
-        type: toastTypeFor(response),
+        type: "success",
         isLoading: false,
         autoClose: 5000,
       });
@@ -71,39 +57,39 @@ export function ComplianceChecker() {
     }
   }
 
-  function loadSample() {
-    setHtml(SAMPLE_HTML);
-    setFilename(SAMPLE_FILENAME);
-    setResult(null);
-    setError(null);
-    toast.info("Sample draft loaded. Run a check to score it.");
-  }
-
-  async function onFile(file: File | undefined) {
-    if (!file) {
+  function acceptFile(next: File | undefined) {
+    if (!next) {
       toast.warning("No file selected.");
       return;
     }
-    if (!HTML_FILE.test(file.name)) {
-      toast.error("Please choose an HTML or text file.");
+    if (!ALLOWED.test(next.name)) {
+      toast.error("Upload a PDF, DOCX, HTML, Markdown, or text file.");
       return;
     }
-    let text: string;
-    try {
-      text = await file.text();
-    } catch {
-      toast.error(`Could not read ${file.name}.`);
+    if (next.size > MAX_BYTES) {
+      toast.error("File is larger than 12 MB.");
       return;
     }
-    if (!text.trim()) {
-      toast.warning(`${file.name} is empty. Paste HTML or pick another file.`);
-      return;
-    }
-    setHtml(text);
-    setFilename(file.name);
+    setFile(next);
     setResult(null);
     setError(null);
-    toast.success(`Loaded ${file.name}. Ready to run a compliance check.`);
+    toast.success(`Selected ${next.name}. Ready to run a compliance check.`);
+  }
+
+  function onDragOver(event: DragEvent<HTMLLabelElement>) {
+    event.preventDefault();
+    setDragOver(true);
+  }
+
+  function onDragLeave(event: DragEvent<HTMLLabelElement>) {
+    event.preventDefault();
+    setDragOver(false);
+  }
+
+  function onDrop(event: DragEvent<HTMLLabelElement>) {
+    event.preventDefault();
+    setDragOver(false);
+    acceptFile(event.dataTransfer.files?.[0]);
   }
 
   return (
@@ -118,32 +104,36 @@ export function ComplianceChecker() {
           </h2>
         </div>
 
-        <label className="grid cursor-pointer gap-0.5 rounded-control border border-dashed border-line bg-cardinal/5 p-4 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-solid focus-within:outline-cardinal">
+        <label
+          onDragOver={onDragOver}
+          onDragLeave={onDragLeave}
+          onDrop={onDrop}
+          className={`grid cursor-pointer gap-0.5 rounded-control border border-dashed p-4 focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-solid focus-within:outline-cardinal ${
+            dragOver
+              ? "border-cardinal bg-cardinal/10"
+              : "border-line bg-cardinal/5"
+          }`}
+        >
           <input
             type="file"
-            accept=".html,.htm,.txt,text/html"
+            accept={ACCEPT}
             className="sr-only"
-            onChange={(event) => void onFile(event.target.files?.[0])}
+            onChange={(event) => {
+              acceptFile(event.target.files?.[0]);
+              event.target.value = "";
+            }}
           />
-          <span className="font-semibold">Drop an HTML file or click to upload</span>
-          <span className="text-sm text-muted">{filename}</span>
-        </label>
-
-        <label className="mt-4 grid gap-1.5 text-sm font-semibold">
-          HTML
-          <textarea
-            value={html}
-            onChange={(event) => setHtml(event.target.value)}
-            placeholder="Paste a Stanford HTML document…"
-            spellCheck={false}
-            className={`min-h-70 w-full resize-y p-3.5 font-mono text-xs leading-relaxed ${CONTROL}`}
-          />
+          <span className="font-semibold">
+            Drop a procedure here or click to upload
+          </span>
+          <span className="text-sm text-muted">
+            {file
+              ? file.name
+              : "PDF, DOCX, HTML, Markdown, or text · up to 12 MB"}
+          </span>
         </label>
 
         <div className="mt-4 flex flex-wrap gap-3">
-          <button type="button" className={SECONDARY_BUTTON} onClick={loadSample}>
-            Load sample draft
-          </button>
           <button
             type="button"
             className={PRIMARY_BUTTON}
@@ -173,9 +163,9 @@ export function ComplianceChecker() {
 
         {!result && !error ? (
           <p className="leading-relaxed text-muted">
-            Upload or paste a document, then run a check. The backend parses the HTML
-            with Beautiful Soup and scores Stanford identity, accessibility, and
-            structure rules.
+            Upload a procedure, then run a check. The backend embeds the document
+            and ranks it against each policy&apos;s Purpose and Scope summary.
+            This pass does not issue aligned or contradicted verdicts.
           </p>
         ) : null}
 
@@ -186,80 +176,107 @@ export function ComplianceChecker() {
 }
 
 function Results({ report }: { report: CheckResponse }) {
-  const tone: Severity =
-    report.summary.failed > 0 ? "fail" : report.summary.warnings > 0 ? "warn" : "pass";
+  const [expanded, setExpanded] = useState(false);
+  const top = report.matches[0];
+  const tone = confidenceTone(top?.confidence ?? 0);
+  const visible = expanded ? report.matches : report.matches.slice(0, 5);
+  const remaining = Math.max(report.matches.length - 5, 0);
 
   return (
     <div className="grid gap-4">
-      <div className={`rounded-control px-4 py-4 ${scoreTone[tone]}`}>
+      <div className={`rounded-control px-4 py-4 ${tone.well}`}>
         <p className="text-[0.72rem] font-bold uppercase tracking-[0.14em]">
-          Compliance score
+          Top match confidence
         </p>
-        <p className="font-serif text-6xl leading-none text-ink">{report.summary.score}</p>
-        <p className="mb-3.5 text-sm text-muted">{report.filename}</p>
-        <dl className="grid grid-cols-3 gap-3">
-          <div>
-            <dt className="text-xs text-muted">Passed</dt>
-            <dd className="mt-0.5 text-xl font-bold text-ink">{report.summary.passed}</dd>
-          </div>
-          <div>
-            <dt className="text-xs text-muted">Warnings</dt>
-            <dd className="mt-0.5 text-xl font-bold text-ink">{report.summary.warnings}</dd>
-          </div>
-          <div>
-            <dt className="text-xs text-muted">Failed</dt>
-            <dd className="mt-0.5 text-xl font-bold text-ink">{report.summary.failed}</dd>
-          </div>
-        </dl>
+        <p className="font-serif text-6xl leading-none text-ink">
+          {top ? top.confidence.toFixed(1) : "—"}
+        </p>
+        <p className="mt-2 text-sm text-muted">{report.filename}</p>
+        {top ? (
+          <p className="mt-1 text-sm text-muted">
+            {top.title}
+            {top.category ? ` · ${top.category}` : ""}
+          </p>
+        ) : (
+          <p className="mt-1 text-sm text-muted">No policy matches returned.</p>
+        )}
       </div>
 
       <ol className="grid list-none gap-2.5 p-0">
-        {report.findings.map((finding) => (
-          <FindingRow key={finding.id} finding={finding} />
+        {visible.map((match) => (
+          <MatchRow key={match.slug} match={match} />
         ))}
       </ol>
+
+      {remaining > 0 ? (
+        <button
+          type="button"
+          onClick={() => setExpanded((current) => !current)}
+          className="cursor-pointer rounded-control border border-line px-4 py-2.5 text-sm font-semibold hover:border-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-cardinal"
+        >
+          {expanded
+            ? "Show top 5"
+            : `Show all ${report.matches.length} policies`}
+        </button>
+      ) : null}
     </div>
   );
 }
 
-function FindingRow({ finding }: { finding: Finding }) {
+function MatchRow({ match }: { match: PolicyMatch }) {
+  const tone = confidenceTone(match.confidence);
   return (
     <li className="grid grid-cols-1 gap-2 border-t border-line py-3 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-start sm:gap-3">
       <span
-        className={`mt-0.5 self-start rounded-pill px-2.5 py-0.5 text-[0.68rem] font-extrabold uppercase tracking-[0.12em] ${pillTone[finding.severity]}`}
+        className={`mt-0.5 self-start rounded-pill px-2.5 py-0.5 text-[0.68rem] font-extrabold uppercase tracking-[0.12em] ${tone.pill}`}
       >
-        {labelFor(finding.severity)}
+        {match.confidence.toFixed(1)}%
       </span>
       <div>
-        <p className="font-bold">{finding.title}</p>
-        <p className="mt-1 text-[0.95rem] leading-snug text-muted">{finding.message}</p>
-        {finding.details ? (
-          <p className="mt-1 text-[0.95rem] leading-snug text-muted">{finding.details}</p>
+        <a
+          href={policyPdfUrl(match.slug)}
+          target="_blank"
+          rel="noreferrer"
+          className="font-bold text-ink underline decoration-line underline-offset-2 hover:text-cardinal"
+        >
+          {match.title}
+        </a>
+        {match.category ? (
+          <p className="mt-0.5 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-cardinal">
+            {match.category}
+          </p>
         ) : null}
+        <p className="mt-1 text-[0.95rem] leading-snug text-muted">
+          {match.snippet}
+        </p>
       </div>
     </li>
   );
 }
 
-function labelFor(severity: Severity) {
-  if (severity === "pass") return "Pass";
-  if (severity === "warn") return "Warn";
-  return "Fail";
-}
-
-function toastTypeFor(report: CheckResponse): "success" | "warning" | "error" {
-  if (report.summary.failed > 0) return "error";
-  if (report.summary.warnings > 0) return "warning";
-  return "success";
+function confidenceTone(confidence: number) {
+  if (confidence >= 70) {
+    return {
+      well: "bg-pass/10 text-pass",
+      pill: "bg-pass/12 text-pass",
+    };
+  }
+  if (confidence >= 40) {
+    return {
+      well: "bg-warn/10 text-warn",
+      pill: "bg-warn/15 text-warn",
+    };
+  }
+  return {
+    well: "bg-fail/10 text-fail",
+    pill: "bg-fail/12 text-fail",
+  };
 }
 
 function checkCompleteMessage(report: CheckResponse): string {
-  const { score, failed, warnings, passed } = report.summary;
-  if (failed > 0) {
-    return `Check complete for ${report.filename}. Score ${score} — ${failed} failed, ${warnings} warnings.`;
+  const top = report.matches[0];
+  if (!top) {
+    return `Check complete for ${report.filename}. No policy matches.`;
   }
-  if (warnings > 0) {
-    return `Check complete for ${report.filename}. Score ${score} with ${warnings} warnings.`;
-  }
-  return `Check complete for ${report.filename}. Score ${score} — all ${passed} rules passed.`;
+  return `Check complete for ${report.filename}. Top match ${top.title} at ${top.confidence.toFixed(1)}%.`;
 }

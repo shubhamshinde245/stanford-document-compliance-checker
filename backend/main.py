@@ -2,19 +2,37 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 import asyncio
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
-from backend.checks import RULES, check_html
+from backend.llm.providers import LLMError, configured_providers
+from backend.llm.router import llm
+from backend.llm.store import LLMConfigError, save_settings
 from backend.models import (
-    CheckRequest,
     CheckResponse,
     HealthResponse,
+    LLMChatRequest,
+    LLMChatResponse,
+    LLMEmbedRequest,
+    LLMEmbedResponse,
+    LLMModelInfo,
+    LLMProviderStatus,
+    LLMSettings,
+    LLMSettingsUpdate,
+    OutputColumn,
+    OutputSchemaPreview,
     PolicyCatalog,
     PolicySchedule,
     PolicyScheduleUpdate,
-    RuleInfo,
+)
+from backend.retrieve import IndexNotReady, check_upload, describe_index
+from backend.retrieve.text import ExtractError, SUPPORTED_SUFFIXES
+from backend.llm.schema import (
+    LOCKED_NAMES,
+    VERDICTS,
+    build_system_prompt,
+    compile_json_schema,
 )
 from backend.scraper.catalog import (
     PDF_DIR,
@@ -34,9 +52,13 @@ from backend.scraper.scheduler import (
 from backend.settings import AI_GATEWAY_API_KEY
 
 
+MAX_UPLOAD_BYTES = 12 * 1024 * 1024
+
+
 @asynccontextmanager
 async def lifespan(_app: FastAPI):
     start_scheduler()
+    print(describe_index())
     yield
     stop_scheduler()
 
@@ -44,7 +66,7 @@ async def lifespan(_app: FastAPI):
 app = FastAPI(
     title="Stanford Document Compliance Checker",
     version="0.1.0",
-    description="Checks HTML documents against Stanford accessibility and identity rules.",
+    description="Ranks uploaded procedures against parked SANS policy embeddings.",
     lifespan=lifespan,
 )
 
@@ -58,6 +80,45 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def _llm_http_error(exc: LLMError | LLMConfigError) -> HTTPException:
+    status = getattr(exc, "status_code", 400)
+    return HTTPException(status_code=status, detail=str(exc))
+
+
+def _settings_response() -> LLMSettings:
+    data = llm.settings()
+    return LLMSettings(
+        provider=data["provider"],
+        chat_model=data["chat_model"],
+        embedding_model=data["embedding_model"],
+        reasoning_effort=data["reasoning_effort"],
+        output_columns=[
+            OutputColumn.model_validate(item) for item in data["output_columns"]
+        ],
+        locked_columns=sorted(LOCKED_NAMES),
+        configured=LLMProviderStatus.model_validate(data["configured"]),
+    )
+
+
+def _require_provider_key(provider: str) -> None:
+    configured = configured_providers()
+    if provider == "stanford" and not configured["stanford"]:
+        raise HTTPException(
+            status_code=503,
+            detail="Stanford Gateway is not configured. Add AI_GATEWAY_API_KEY.",
+        )
+    if provider == "openai" and not configured["openai"]:
+        raise HTTPException(
+            status_code=400,
+            detail="OpenAI is not configured. Add OPENAI_API_KEY on the server.",
+        )
+    if provider == "anthropic" and not configured["anthropic"]:
+        raise HTTPException(
+            status_code=400,
+            detail="Anthropic is not configured. Add ANTHROPIC_API_KEY on the server.",
+        )
 
 
 def _schedule_response() -> PolicySchedule:
@@ -76,17 +137,31 @@ def health() -> HealthResponse:
     )
 
 
-@app.get("/api/rules", response_model=list[RuleInfo])
-def list_rules() -> list[RuleInfo]:
-    return RULES
-
-
 @app.post("/api/check", response_model=CheckResponse)
-def check_document(payload: CheckRequest) -> CheckResponse:
-    html = payload.html.strip()
-    if not html:
-        raise HTTPException(status_code=400, detail="HTML document is empty.")
-    return check_html(html, payload.filename)
+async def check_document(file: UploadFile = File(...)) -> CheckResponse:
+    filename = Path(file.filename or "document").name
+    suffix = Path(filename).suffix.lower()
+    if suffix not in SUPPORTED_SUFFIXES:
+        raise HTTPException(
+            status_code=400,
+            detail="Unsupported file type. Upload a PDF, DOCX, HTML, Markdown, or text file.",
+        )
+    length = file.headers.get("content-length")
+    if length and length.isdigit() and int(length) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail="File is larger than 12 MB.")
+    data = await file.read()
+    if len(data) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail="File is larger than 12 MB.")
+    if not data:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+    try:
+        return await check_upload(filename, data)
+    except IndexNotReady as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except ExtractError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except LLMError as extra:
+        raise _llm_http_error(extra) from extra
 
 
 @app.get("/api/policies", response_model=PolicyCatalog)
@@ -149,3 +224,60 @@ def policy_pdf(slug: str) -> FileResponse:
         media_type="application/pdf",
         filename=f"{slug}.pdf",
     )
+
+
+@app.get("/api/llm/settings", response_model=LLMSettings)
+def get_llm_settings() -> LLMSettings:
+    return _settings_response()
+
+
+@app.put("/api/llm/settings", response_model=LLMSettings)
+def update_llm_settings(payload: LLMSettingsUpdate) -> LLMSettings:
+    _require_provider_key(payload.provider)
+    try:
+        save_settings(payload.model_dump())
+    except LLMConfigError as exc:
+        raise _llm_http_error(exc) from exc
+    return _settings_response()
+
+
+@app.get("/api/llm/output-schema", response_model=OutputSchemaPreview)
+def get_output_schema() -> OutputSchemaPreview:
+    """The exact prompt and json_schema every verdict call is sent with."""
+    columns = llm.settings()["output_columns"]
+    return OutputSchemaPreview(
+        system_prompt=build_system_prompt(columns),
+        json_schema=compile_json_schema(columns),
+        verdicts=list(VERDICTS),
+    )
+
+
+@app.get("/api/llm/models", response_model=list[LLMModelInfo])
+async def list_llm_models() -> list[LLMModelInfo]:
+    try:
+        models = await llm.list_models()
+    except LLMError as exc:
+        raise _llm_http_error(exc) from exc
+    return [LLMModelInfo.model_validate(item) for item in models]
+
+
+@app.post("/api/llm/chat", response_model=LLMChatResponse)
+async def test_llm_chat(payload: LLMChatRequest) -> LLMChatResponse:
+    try:
+        result = await llm.chat(
+            payload.prompt,
+            model=payload.model,
+            reasoning_effort=payload.reasoning_effort,
+        )
+    except LLMError as exc:
+        raise _llm_http_error(exc) from exc
+    return LLMChatResponse.model_validate(result)
+
+
+@app.post("/api/llm/embeddings", response_model=LLMEmbedResponse)
+async def test_llm_embeddings(payload: LLMEmbedRequest) -> LLMEmbedResponse:
+    try:
+        result = await llm.embed(payload.input, model=payload.model)
+    except LLMError as exc:
+        raise _llm_http_error(exc) from exc
+    return LLMEmbedResponse.model_validate(result)

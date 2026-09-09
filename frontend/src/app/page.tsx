@@ -11,8 +11,10 @@ export default function Home() {
           Document Compliance Checker
         </h1>
         <p className="mt-4 max-w-xl text-[1.05rem] leading-relaxed text-muted">
-          Parse HTML with Beautiful Soup and flag gaps in language, headings,
-          alternative text, identity, copyright, and accessibility contact.
+          Upload a procedure and rank it against Purpose and Scope summaries
+          from the parked SANS policy library. The backend chunks the document,
+          embeds it, and returns every policy ordered by cosine confidence.
+          This pass does not issue aligned or contradicted verdicts.
         </p>
       </header>
       <main>

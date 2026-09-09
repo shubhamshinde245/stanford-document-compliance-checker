@@ -42,6 +42,11 @@ def run_refresh(incremental: bool = True) -> dict[str, Any]:
         schedule["last_run_status"] = "ok"
         schedule["last_run_summary"] = _summary_from_catalog(catalog)
         save_schedule(schedule)
+        threading.Thread(
+            target=_rebuild_index_safe,
+            name="sans-index",
+            daemon=True,
+        ).start()
         return catalog
     except Exception as exc:
         schedule = load_schedule()
@@ -52,6 +57,18 @@ def run_refresh(incremental: bool = True) -> dict[str, Any]:
         raise
     finally:
         _run_lock.release()
+
+
+def _rebuild_index_safe() -> None:
+    try:
+        import asyncio
+
+        from backend.retrieve.index import ensure_index
+
+        status = asyncio.run(ensure_index())
+        print(status.message)
+    except Exception as exc:  # noqa: BLE001 — scrape must still succeed
+        print(f"Policy index update failed: {exc}")
 
 
 def _job() -> None:
