@@ -1,10 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { toast } from "react-toastify/unstyled";
 
 import { checkDocument } from "@/lib/api";
 import { SAMPLE_FILENAME, SAMPLE_HTML } from "@/lib/sample-document";
 import type { CheckResponse, Finding, Severity } from "@/lib/types";
+
+const CHECK_TOAST_ID = "document-check";
+const HTML_FILE = /\.(html|htm|txt)$/i;
 
 const scoreTone: Record<Severity, string> = {
   pass: "border-pass text-pass",
@@ -30,12 +34,29 @@ export function ComplianceChecker() {
   async function runCheck() {
     setIsChecking(true);
     setError(null);
+    toast.loading("Checking document against Stanford rules…", {
+      toastId: CHECK_TOAST_ID,
+    });
     try {
       const response = await checkDocument(html, filename);
       setResult(response);
+      toast.update(CHECK_TOAST_ID, {
+        render: checkCompleteMessage(response),
+        type: toastTypeFor(response),
+        isLoading: false,
+        autoClose: 5000,
+      });
     } catch (caught) {
+      const message =
+        caught instanceof Error ? caught.message : "Something went wrong.";
       setResult(null);
-      setError(caught instanceof Error ? caught.message : "Something went wrong.");
+      setError(message);
+      toast.update(CHECK_TOAST_ID, {
+        render: message,
+        type: "error",
+        isLoading: false,
+        autoClose: 6000,
+      });
     } finally {
       setIsChecking(false);
     }
@@ -46,15 +67,34 @@ export function ComplianceChecker() {
     setFilename(SAMPLE_FILENAME);
     setResult(null);
     setError(null);
+    toast.info("Sample draft loaded. Run a check to score it.");
   }
 
   async function onFile(file: File | undefined) {
-    if (!file) return;
-    const text = await file.text();
+    if (!file) {
+      toast.warning("No file selected.");
+      return;
+    }
+    if (!HTML_FILE.test(file.name)) {
+      toast.error("Please choose an HTML or text file.");
+      return;
+    }
+    let text: string;
+    try {
+      text = await file.text();
+    } catch {
+      toast.error(`Could not read ${file.name}.`);
+      return;
+    }
+    if (!text.trim()) {
+      toast.warning(`${file.name} is empty. Paste HTML or pick another file.`);
+      return;
+    }
     setHtml(text);
     setFilename(file.name);
     setResult(null);
     setError(null);
+    toast.success(`Loaded ${file.name}. Ready to run a compliance check.`);
   }
 
   return (
@@ -200,4 +240,21 @@ function labelFor(severity: Severity) {
   if (severity === "pass") return "Pass";
   if (severity === "warn") return "Warn";
   return "Fail";
+}
+
+function toastTypeFor(report: CheckResponse): "success" | "warning" | "error" {
+  if (report.summary.failed > 0) return "error";
+  if (report.summary.warnings > 0) return "warning";
+  return "success";
+}
+
+function checkCompleteMessage(report: CheckResponse): string {
+  const { score, failed, warnings, passed } = report.summary;
+  if (failed > 0) {
+    return `Check complete for ${report.filename}. Score ${score} — ${failed} failed, ${warnings} warnings.`;
+  }
+  if (warnings > 0) {
+    return `Check complete for ${report.filename}. Score ${score} with ${warnings} warnings.`;
+  }
+  return `Check complete for ${report.filename}. Score ${score} — all ${passed} rules passed.`;
 }

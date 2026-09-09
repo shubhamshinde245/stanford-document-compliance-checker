@@ -55,6 +55,17 @@ class PolicyRecord(BaseModel):
     summary: str = ""
     scraped_at: str = ""
     error: str | None = None
+    refresh_status: str | None = None
+    previous_published_on: str | None = None
+
+
+class ScrapeCheck(BaseModel):
+    checked_at: str = ""
+    added: int = 0
+    updated: int = 0
+    unchanged: int = 0
+    kept: int = 0
+    failed: int = 0
 
 
 class PolicyCatalog(BaseModel):
@@ -63,4 +74,23 @@ class PolicyCatalog(BaseModel):
     listed: int = 0
     total: int = 0
     scraped_at: str = ""
+    last_check: ScrapeCheck | None = None
     policies: list[PolicyRecord] = Field(default_factory=list)
+
+
+class PolicySchedule(BaseModel):
+    enabled: bool = True
+    hour: int = Field(default=8, ge=0, le=23)
+    minute: int = Field(default=0, ge=0, le=59)
+    timezone: str = "America/Los_Angeles"
+    last_run_at: str | None = None
+    last_run_status: str | None = None
+    last_run_summary: str | None = None
+    next_run_at: str | None = None
+    running: bool = False
+
+
+class PolicyScheduleUpdate(BaseModel):
+    enabled: bool = True
+    hour: int = Field(ge=0, le=23)
+    minute: int = Field(ge=0, le=59)

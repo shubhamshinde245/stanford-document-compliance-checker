@@ -3,7 +3,15 @@
   "showing_text": "Showing 36 of 36",
   "listed": 36,
   "total": 36,
-  "scraped_at": "2026-09-09T18:53:30+00:00",
+  "scraped_at": "2026-09-09T19:07:04+00:00",
+  "last_check": {
+    "checked_at": "2026-09-09T19:07:04+00:00",
+    "added": 0,
+    "updated": 0,
+    "unchanged": 36,
+    "kept": 0,
+    "failed": 0
+  },
   "policies": [
     {
       "slug": "safeguard-validation-management-policy",
@@ -16,7 +24,8 @@
       "pdf_bytes": 206610,
       "summary": "The successful deployment of security measures requires a well-defined process that ensures safeguards are implemented consistently and effectively. This framework establishes clear guidelines for integrating security controls into business operations, managing deployment risks, and continuously monitoring effectiveness. By maintaining alignment with organizational risk strategies and regulatory standards, this approach enhances resilience, reduces vulnerabilities, and strengthens the overall security posture.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "software-development-management-policy",
@@ -29,7 +38,8 @@
       "pdf_bytes": 207359,
       "summary": "Developing secure and reliable software requires clear guidelines that integrate security best practices, testing procedures, and compliance requirements. This framework provides structured methodologies for planning, coding, testing, and deploying software while ensuring security is prioritized at every stage. By enforcing secure coding standards, vulnerability assessments, and change management controls, organizations can reduce risks and deliver high-quality software that meets business objectives and regulatory expectations.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "education-management-policy",
@@ -42,7 +52,8 @@
       "pdf_bytes": 205157,
       "summary": "Building a strong security culture starts with effective education and training programs that empower employees with the knowledge needed to protect sensitive data and uphold compliance standards. This framework establishes clear guidelines for delivering continuous learning opportunities, assessing knowledge retention, and integrating security awareness into daily operations. By fostering a well-informed workforce, organizations can reduce human-related risks, improve regulatory adherence, and create a resilient security environment.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "perimeter-network-access-management-policy",
@@ -55,7 +66,8 @@
       "pdf_bytes": 208549,
       "summary": "Protecting an organization’s network perimeter is crucial for defending against external threats and unauthorized access attempts. This structured approach outlines best practices for firewalls, intrusion detection systems, VPNs, and access control mechanisms. By implementing strict monitoring, anomaly detection, and security policies, organizations can strengthen their defenses and mitigate cyber risks at the perimeter.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "network-device-management-policy",
@@ -68,7 +80,8 @@
       "pdf_bytes": 204849,
       "summary": "Securing network devices is essential for preventing unauthorized access and maintaining network integrity. This framework establishes best practices for device authentication, firmware updates, and real-time monitoring to detect potential threats. By enforcing standardized security policies and proactive risk management, organizations can strengthen their network security and maintain reliable connectivity.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "privileged-account-management-policy",
@@ -81,7 +94,8 @@
       "pdf_bytes": 204901,
       "summary": "Privileged accounts pose a significant security risk if mismanaged, making strict control measures essential for safeguarding critical systems. This structured framework defines best practices for provisioning, monitoring, and auditing high-level access accounts, ensuring they are used securely and responsibly. By implementing least privilege principles, multi-factor authentication, and continuous activity monitoring, organizations can reduce attack surfaces and prevent unauthorized access to sensitive resources.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "cloud-service-provider-management-policy",
@@ -94,7 +108,8 @@
       "pdf_bytes": 204194,
       "summary": "Leveraging cloud services requires robust oversight to ensure security, compliance, and operational efficiency. This framework establishes guidelines for selecting, monitoring, and securing cloud service providers while enforcing data protection measures. By maintaining visibility into cloud operations, organizations can mitigate risks, maintain regulatory compliance, and optimize cloud security.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "access-management-policy",
@@ -106,8 +121,10 @@
       "pdf_path": "pdfs/access-management-policy.pdf",
       "pdf_bytes": 172450,
       "summary": "Controlling access to sensitive information and systems is essential for preventing unauthorized activity and ensuring compliance with security policies. This framework establishes best practices for identity verification, role-based access control, and periodic access reviews. By enforcing the principle of least privilege and continuous monitoring, organizations can mitigate risks, prevent unauthorized access, and maintain secure operations.",
-      "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "scraped_at": "2026-09-09T19:05:00+00:00",
+      "error": null,
+      "refresh_status": "unchanged",
+      "previous_published_on": "2020-01-01"
     },
     {
       "slug": "safeguard-selection-management-policy",
@@ -120,7 +137,8 @@
       "pdf_bytes": 206700,
       "summary": "Implementing the right security measures requires a methodical selection process that balances effectiveness, compliance, and business priorities. This framework provides a systematic approach for evaluating, selecting, and prioritizing safeguards that mitigate risks while optimizing resources. By aligning security controls with regulatory requirements and industry best practices, organizations can enhance resilience, reduce vulnerabilities, and maintain a proactive security posture.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "privacy-management-policy",
@@ -133,7 +151,8 @@
       "pdf_bytes": 206384,
       "summary": "Safeguarding personal and sensitive data is essential for maintaining trust, regulatory compliance, and risk mitigation. This structured framework defines policies for data collection, storage, processing, and sharing to ensure responsible handling of information. By implementing clear privacy controls, enforcing access restrictions, and providing transparency in data practices, organizations can protect individual privacy rights while meeting legal and industry standards.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "data-management-policy",
@@ -146,7 +165,8 @@
       "pdf_bytes": 206523,
       "summary": "",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "software-management-policy",
@@ -159,7 +179,8 @@
       "pdf_bytes": 205094,
       "summary": "Managing software effectively requires strict controls over installation, updates, and lifecycle management to prevent security breaches and operational disruptions. This framework outlines policies for secure coding practices, software patching, licensing compliance, and risk assessments. By maintaining proper governance over software assets, organizations can enhance security, ensure regulatory compliance, and optimize system performance.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "risk-communication-management-policy",
@@ -172,7 +193,8 @@
       "pdf_bytes": 205138,
       "summary": "Proactively managing security risks requires transparent communication that enables informed decision-making at all levels of an organization. This structured approach defines protocols for identifying, documenting, and escalating risk-related information, ensuring that key stakeholders have the insights needed to mitigate threats. By fostering a culture of open communication and accountability, organizations can enhance collaboration, drive risk-aware decision-making, and improve overall security preparedness.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "configuration-management-policy",
@@ -185,7 +207,8 @@
       "pdf_bytes": 205603,
       "summary": "Ensuring that IT systems are configured securely and consistently is essential for reducing vulnerabilities and preventing unauthorized changes. This framework defines best practices for baseline configurations, change management, and automated monitoring to maintain system integrity. By enforcing standardized settings and continuous compliance checks, organizations can minimize risks, improve operational efficiency, and enhance cybersecurity resilience.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "identity-management-policy",
@@ -198,7 +221,8 @@
       "pdf_bytes": 210317,
       "summary": "Managing digital identities is critical to preventing unauthorized access and ensuring compliance with security policies. This framework establishes guidelines for identity verification, multi-factor authentication, role-based access controls, and lifecycle management of user credentials. By enforcing strict access policies and continuous monitoring, organizations can enhance security, mitigate insider threats, and protect sensitive assets from unauthorized exposure.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "third-party-risk-management-policy",
@@ -211,7 +235,8 @@
       "pdf_bytes": 207809,
       "summary": "Engaging with third-party vendors introduces additional risks that must be carefully managed to protect organizational data and systems. \n\nThis framework establishes clear guidelines for assessing, onboarding, and monitoring third-party partners to ensure compliance with security policies and regulatory standards. \n\nBy implementing standardized risk assessments, contractual safeguards, and ongoing oversight, organizations can reduce exposure to external threats while maintaining operational efficiency and business continuity.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "physical-security-management-policy",
@@ -224,7 +249,8 @@
       "pdf_bytes": 204975,
       "summary": "Protecting an organization’s physical environment is critical to preventing unauthorized access, theft, and potential security breaches. This structured framework establishes clear policies for facility access, surveillance, visitor management, and emergency response procedures. By integrating physical security measures with overall risk management strategies, organizations can enhance protection, ensure compliance with regulatory standards, and maintain a secure working environment for employees and stakeholders.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "resilience-management-policy",
@@ -237,7 +263,8 @@
       "pdf_bytes": 210616,
       "summary": "Proactively managing security risks requires transparent communication that enables informed decision-making at all levels of an organization. This structured approach defines protocols for identifying, documenting, and escalating risk-related information, ensuring that key stakeholders have the insights needed to mitigate threats. By fostering a culture of open communication and accountability, organizations can enhance collaboration, drive risk-aware decision-making, and improve overall security preparedness.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "program-management-policy",
@@ -250,7 +277,8 @@
       "pdf_bytes": 204564,
       "summary": "Effective oversight of initiatives is essential for achieving strategic goals, maintaining operational efficiency, and ensuring compliance with security and regulatory requirements. This structured framework provides a clear methodology for planning, executing, and monitoring initiatives, optimizing resource allocation, and enhancing accountability across all levels. By establishing standardized processes and performance metrics, organizations can mitigate risks, improve coordination, and drive continuous improvement while maintaining alignment with business objectives.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "vulnerability-management-policy",
@@ -263,7 +291,8 @@
       "pdf_bytes": 203638,
       "summary": "Mitigating security risks requires continuous identification and remediation of vulnerabilities across IT environments. This structured approach defines best practices for conducting regular security assessments, prioritizing risk-based patching, and monitoring for emerging threats. By implementing automated scanning tools, threat intelligence integration, and clear remediation processes, organizations can enhance security posture and prevent potential exploits.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "asset-management-policy",
@@ -276,7 +305,8 @@
       "pdf_bytes": 203571,
       "summary": "Protecting valuable technology and information assets requires a structured approach to inventory tracking, classification, usage, and disposal. This framework defines best practices for asset lifecycle management, ensuring resources are adequately protected, properly maintained, and securely decommissioned. By implementing clear controls and oversight, organizations can prevent unauthorized access, optimize resource allocation, and maintain compliance with industry regulations while reducing operational risks.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "system-protection-management-policy",
@@ -289,7 +319,8 @@
       "pdf_bytes": 206994,
       "summary": "Securing IT infrastructure requires a proactive approach that includes patch management, endpoint security, and continuous monitoring. This framework provides clear guidelines for protecting systems against malware, unauthorized modifications, and external threats. By enforcing rigorous security controls, regular audits, and incident response protocols, organizations can ensure the resilience and integrity of their IT environments.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "email-management-policy",
@@ -302,7 +333,8 @@
       "pdf_bytes": 204606,
       "summary": "Email remains a primary attack vector, making effective security controls essential for preventing threats and protecting sensitive information. This framework defines policies for encryption, spam filtering, and phishing prevention while ensuring compliance with regulatory requirements. By enforcing strict security measures and user awareness training, organizations can enhance email security and safeguard critical communications.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "log-management-policy",
@@ -315,7 +347,8 @@
       "pdf_bytes": 205429,
       "summary": "Effective log management provides critical visibility into system activity, helping organizations detect anomalies, investigate security incidents, and meet compliance requirements. This framework defines best practices for log retention, real-time monitoring, and access controls, ensuring that all relevant data is captured and analyzed securely. By implementing centralized log collection and automated threat detection, organizations can improve security posture and respond swiftly to potential threats.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "internal-network-access-management-policy",
@@ -328,7 +361,8 @@
       "pdf_bytes": 204205,
       "summary": "Controlling internal network access is essential for protecting sensitive systems and data from unauthorized users and potential security threats. This framework establishes best practices for identity-based authentication, device monitoring, and role-based access control to prevent unauthorized access. By enforcing strict security policies and continuous access reviews, organizations can maintain a secure internal environment while supporting operational efficiency and compliance.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "software-development-vulnerability-management-policy",
@@ -341,7 +375,8 @@
       "pdf_bytes": 210987,
       "summary": "Addressing security vulnerabilities in software development is crucial for preventing exploits and maintaining compliance with security standards. This framework outlines best practices for secure coding, automated vulnerability scanning, patch management, and penetration testing. By integrating continuous monitoring and risk-based remediation strategies, organizations can strengthen software security, reduce potential attack surfaces, and ensure the resilience of their applications.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "mobile-device-management-policy",
@@ -354,7 +389,8 @@
       "pdf_bytes": 203501,
       "summary": "With mobile devices playing a critical role in business operations, organizations must establish strict security controls to protect sensitive data. This framework provides best practices for device enrollment, encryption, remote wiping, and application control. By enforcing policies that safeguard mobile endpoints, organizations can prevent data leaks, manage security risks, and ensure compliance with corporate and regulatory requirements.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "safeguard-implementation-management-policy",
@@ -367,7 +403,8 @@
       "pdf_bytes": 205059,
       "summary": "Protecting valuable technology and information assets requires a structured approach to inventory tracking, classification, usage, and disposal. This framework defines best practices for asset lifecycle management, ensuring resources are adequately protected, properly maintained, and securely decommissioned. By implementing clear controls and oversight, organizations can prevent unauthorized access, optimize resource allocation, and maintain compliance with industry regulations while reducing operational risks.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "password-construction-standard",
@@ -380,7 +417,8 @@
       "pdf_bytes": 187862,
       "summary": "Weak passwords remain a leading cause of security breaches, making strong password policies essential for protecting user accounts and sensitive systems. This framework establishes guidelines for password length, complexity, storage, and rotation, ensuring robust authentication security. By promoting passphrase-based authentication, multi-factor security, and periodic compliance checks, organizations can minimize the risk of unauthorized access and strengthen overall security posture.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "database-credentials-standard",
@@ -393,7 +431,8 @@
       "pdf_bytes": 203239,
       "summary": "Protecting database credentials is critical to preventing unauthorized access and data breaches. This framework outlines best practices for securely storing, encrypting, and managing authentication credentials to ensure only authorized users and applications can access databases. By enforcing strong password policies, role-based access controls, and regular audits, organizations can enhance data security and maintain compliance with industry regulations.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "technology-equipment-disposal-standard",
@@ -406,7 +445,8 @@
       "pdf_bytes": 193938,
       "summary": "Disposing of outdated technology requires strict security and environmental considerations to prevent data leaks and ensure compliance with disposal regulations. This framework outlines procedures for data sanitization, secure decommissioning, and proper e-waste recycling. By enforcing secure data-wiping techniques, asset tracking, and responsible disposal practices, organizations can mitigate risks, protect confidential information, and support sustainability initiatives.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "acceptable-use-standard",
@@ -419,7 +459,8 @@
       "pdf_bytes": 215090,
       "summary": "Ensuring responsible use of company resources is critical for maintaining security, productivity, and regulatory compliance. This framework establishes acceptable behaviors for using IT systems, internet access, and communication tools while outlining prohibited activities to mitigate security risks. By enforcing strict guidelines and regular compliance audits, organizations can promote a culture of accountability, prevent cyber threats, and safeguard corporate assets.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "acceptable-encryption-standard",
@@ -432,7 +473,8 @@
       "pdf_bytes": 199593,
       "summary": "Defining the minimum encryption requirements for securing sensitive data, ensuring that only cryptographic algorithms with substantial public review and proven effectiveness are utilized. The policy mandates adherence to recognized standards such as AES for symmetric encryption, RSA or Elliptic Curve Cryptography (ECC) for asymmetric encryption, and FIPS 140-2 compliance for cryptographic modules. Additionally, it specifies secure key management practices, authentication requirements, and guidelines for hash functions and key exchanges, ensuring compliance with industry regulations while safeguarding data from unauthorized access or compromise.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "artificial-intelligence-acceptable-use-standard",
@@ -445,7 +487,8 @@
       "pdf_bytes": 254247,
       "summary": "Assessing new acquisitions is critical to ensuring they meet security, regulatory, and operational requirements before integration into the organization. This framework defines best practices for evaluating potential risks, conducting due diligence, and aligning acquisitions with strategic business goals. By implementing rigorous assessment criteria and stakeholder reviews, organizations can make informed purchasing decisions, reduce risks, and optimize technology investments.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "internet-acceptable-use-standard",
@@ -458,7 +501,8 @@
       "pdf_bytes": 231352,
       "summary": "Unrestricted internet access can introduce security vulnerabilities and compliance risks if not properly managed. This framework defines acceptable internet usage policies, prohibiting access to malicious websites, unauthorized downloads, and risky online behaviors. By implementing monitoring tools, content filtering, and employee awareness programs, organizations can enhance cybersecurity, protect corporate assets, and ensure regulatory compliance while maintaining productivity.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     },
     {
       "slug": "acquisition-assessment-standard",
@@ -471,7 +515,8 @@
       "pdf_bytes": 192198,
       "summary": "Assessing new acquisitions is critical to ensuring they meet security, regulatory, and operational requirements before integration into the organization. This framework defines best practices for evaluating potential risks, conducting due diligence, and aligning acquisitions with strategic business goals. By implementing rigorous assessment criteria and stakeholder reviews, organizations can make informed purchasing decisions, reduce risks, and optimize technology investments.",
       "scraped_at": "2026-09-09T18:53:30+00:00",
-      "error": null
+      "error": null,
+      "refresh_status": "unchanged"
     }
   ]
 }

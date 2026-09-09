@@ -40,7 +40,7 @@ ensure-env:
 	fi
 
 backend: ensure-env
-	uv run uvicorn backend.main:app --reload --env-file .env.local --host $(API_HOST) --port $(API_PORT)
+	uv run uvicorn backend.main:app --reload --reload-dir backend --env-file .env.local --host $(API_HOST) --port $(API_PORT)
 
 frontend: ensure-env
 	cd frontend && npm run dev -- --port $(WEB_PORT)
@@ -50,7 +50,7 @@ start: ensure-env
 	@echo "Web  http://localhost:$(WEB_PORT)"
 	@echo "Key  .env.local  (AI_GATEWAY_API_KEY)"
 	@trap 'kill 0' EXIT INT TERM; \
-		uv run uvicorn backend.main:app --reload --env-file .env.local --host $(API_HOST) --port $(API_PORT) & \
+		uv run uvicorn backend.main:app --reload --reload-dir backend --env-file .env.local --host $(API_HOST) --port $(API_PORT) & \
 		cd frontend && npm run dev -- --port $(WEB_PORT)
 
 dev: start

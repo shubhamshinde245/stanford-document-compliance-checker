@@ -1,4 +1,36 @@
 @import "tailwindcss";
+@import "react-toastify/dist/ReactToastify.css";
+
+:root {
+  --toastify-font-family: var(--font-source-sans), "Source Sans 3", ui-sans-serif,
+    system-ui, sans-serif;
+  --toastify-toast-background: #fbf8f2;
+  --toastify-text-color-light: #2e2d29;
+  --toastify-color-info: #8c1515;
+  --toastify-color-success: #175e54;
+  --toastify-color-warning: #8c6a12;
+  --toastify-color-error: #8c1515;
+  --toastify-color-progress-info: #8c1515;
+  --toastify-color-progress-success: #175e54;
+  --toastify-color-progress-warning: #8c6a12;
+  --toastify-color-progress-error: #8c1515;
+  --toastify-icon-color-info: #8c1515;
+  --toastify-icon-color-success: #175e54;
+  --toastify-icon-color-warning: #8c6a12;
+  --toastify-icon-color-error: #8c1515;
+  --toastify-color-progress-light: #8c1515;
+}
+
+.Toastify__toast {
+  border: 1px solid #d9d1c3;
+  border-radius: 2px;
+  box-shadow: 0 18px 40px rgba(46, 45, 41, 0.08);
+}
+
+.Toastify__toast-body {
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
 
 @theme {
   --color-sand: #f4efe6;

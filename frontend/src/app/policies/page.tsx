@@ -13,7 +13,8 @@ export default function PoliciesPage() {
         <p className="mt-4 max-w-xl text-[1.05rem] leading-relaxed text-muted">
           Official CRF / SANS cybersecurity policy templates, scraped from the
           public library with source URL, published date, and a local PDF for
-          each document.
+          each document. Dates are checked daily at 8:00 AM Pacific unless you
+          reschedule that job here.
         </p>
       </header>
       <main>

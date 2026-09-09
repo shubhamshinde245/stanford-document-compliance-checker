@@ -10,6 +10,7 @@ from playwright.sync_api import sync_playwright
 
 from backend.scraper.catalog import (
     ensure_dirs,
+    load_catalog,
     pdf_path_for,
     relative_pdf_path,
     save_catalog,
@@ -89,11 +90,6 @@ def display_label(text: str | None) -> str:
 
 
 def slug_from_url(url: str) -> str:
-    path = urlparse(url).path.rstrip("/")
-    match = DETAIL_PATH_RE.search(path)
-    if match:
-        return match.group(1)
-    return path.rsplit("/", 1)[-1]
     path = urlparse(url).path.rstrip("/")
     match = DETAIL_PATH_RE.search(path)
     if match:
@@ -316,10 +312,51 @@ def _download_pdf(page, slug: str) -> tuple[str | None, int | None, str | None]:
         return None, None, "Timed out waiting for the PDF download."
 
 
-def scrape(base_url: str | None = None) -> dict:
+def _needs_download(
+    card: dict, prior: dict | None, incremental: bool
+) -> tuple[bool, str]:
+    slug = card["slug"]
+    pdf_ok = bool(
+        prior
+        and prior.get("pdf_path")
+        and pdf_path_for(slug).is_file()
+    )
+    if not incremental or prior is None or not pdf_ok:
+        if prior is None:
+            return True, "added"
+        if not pdf_ok:
+            return True, "updated"
+        return True, "updated"
+    listing_date = card.get("published_on") or ""
+    stored_date = prior.get("published_on") or ""
+    if not listing_date:
+        return True, "updated"
+    if listing_date != stored_date:
+        return True, "updated"
+    return False, "unchanged"
+
+
+def _keep_existing(card: dict, prior: dict, status: str) -> dict:
+    record = dict(prior)
+    record["title"] = card.get("title") or prior.get("title") or card["slug"]
+    record["category"] = card.get("category") or prior.get("category") or ""
+    record["kind"] = card.get("kind") or prior.get("kind") or "Policy template"
+    record["published_on"] = card.get("published_on") or prior.get("published_on") or ""
+    record["source_url"] = card.get("source_url") or prior.get("source_url")
+    record["refresh_status"] = status
+    record["error"] = None
+    return record
+
+
+def scrape(base_url: str | None = None, *, incremental: bool = True) -> dict:
     source_url = (base_url or SANS_BASE_URL).rstrip("/")
     ensure_dirs()
     scraped_at = utc_now()
+    existing = {
+        item.get("slug"): item
+        for item in load_catalog().get("policies", [])
+        if item.get("slug")
+    }
 
     with sync_playwright() as playwright:
         browser = playwright.chromium.launch(headless=True)
@@ -359,17 +396,33 @@ def scrape(base_url: str | None = None) -> dict:
             raise RuntimeError("No policy template links found after clicking Show 60.")
 
         policies: list[dict] = []
+        listed_slugs: set[str] = set()
+        stats = {"added": 0, "updated": 0, "unchanged": 0, "kept": 0, "failed": 0}
+
         for index, card in enumerate(cards, start=1):
             slug = card["slug"]
+            listed_slugs.add(slug)
+            prior = existing.get(slug)
+            download, status = _needs_download(card, prior, incremental)
+            print(
+                f"[{index}/{len(cards)}] {card['title']} ({slug}) "
+                f"{card.get('published_on') or 'unknown date'} → {status}"
+            )
+            if not download and prior:
+                policies.append(_keep_existing(card, prior, "unchanged"))
+                stats["unchanged"] += 1
+                continue
+
             record = {
                 **card,
-                "pdf_path": None,
-                "pdf_bytes": None,
-                "summary": "",
+                "pdf_path": prior.get("pdf_path") if prior else None,
+                "pdf_bytes": prior.get("pdf_bytes") if prior else None,
+                "summary": prior.get("summary") if prior else "",
                 "scraped_at": scraped_at,
                 "error": None,
+                "refresh_status": status,
+                "previous_published_on": (prior or {}).get("published_on") or None,
             }
-            print(f"[{index}/{len(cards)}] {record['title']} ({slug})")
             try:
                 page.goto(card["source_url"], wait_until="domcontentloaded")
                 page.wait_for_timeout(500)
@@ -381,21 +434,45 @@ def scrape(base_url: str | None = None) -> dict:
                     record["published_on"] = detail["published_on"]
                 if detail["summary"]:
                     record["summary"] = detail["summary"]
-                pdf_path, pdf_bytes, error = _download_pdf(page, slug)
-                record["pdf_path"] = pdf_path
-                record["pdf_bytes"] = pdf_bytes
-                record["error"] = error
-                if error:
-                    print(f"  PDF skipped: {error}")
+                still_same = (
+                    incremental
+                    and prior
+                    and record["published_on"]
+                    and record["published_on"] == (prior.get("published_on") or "")
+                    and prior.get("pdf_path")
+                    and pdf_path_for(slug).is_file()
+                )
+                if still_same:
+                    record = _keep_existing(card, prior, "unchanged")
+                    record["summary"] = detail["summary"] or prior.get("summary") or ""
+                    stats["unchanged"] += 1
+                    print("  date unchanged after detail page; keeping PDF")
                 else:
-                    print(f"  Saved {pdf_path} ({pdf_bytes} bytes)")
+                    pdf_path, pdf_bytes, error = _download_pdf(page, slug)
+                    record["pdf_path"] = pdf_path
+                    record["pdf_bytes"] = pdf_bytes
+                    record["error"] = error
+                    if error:
+                        stats["failed"] += 1
+                        print(f"  PDF skipped: {error}")
+                    else:
+                        stats[status] += 1
+                        print(f"  Saved {pdf_path} ({pdf_bytes} bytes)")
             except Exception as exc:  # noqa: BLE001 — keep the rest of the catalog
                 record["error"] = str(exc)
+                stats["failed"] += 1
                 print(f"  Error: {exc}")
             policies.append(record)
             time.sleep(0.6)
 
         browser.close()
+
+    for slug, prior in existing.items():
+        if slug not in listed_slugs:
+            kept = dict(prior)
+            kept["refresh_status"] = "kept"
+            policies.append(kept)
+            stats["kept"] += 1
 
     catalog = {
         "source_url": source_url,
@@ -403,16 +480,23 @@ def scrape(base_url: str | None = None) -> dict:
         "listed": listed,
         "total": total,
         "scraped_at": scraped_at,
+        "last_check": {"checked_at": scraped_at, **stats},
         "policies": policies,
     }
     path = save_catalog(catalog)
     saved = sum(1 for item in policies if item.get("pdf_path"))
-    print(f"Wrote {path} ({saved}/{len(policies)} PDFs).")
+    print(
+        f"Wrote {path} ({saved}/{len(policies)} PDFs; "
+        f"{stats['added']} added, {stats['updated']} updated, "
+        f"{stats['unchanged']} unchanged, {stats['kept']} kept)."
+    )
     return catalog
 
 
 def main() -> None:
-    scrape()
+    import sys
+
+    scrape(incremental="--full" not in sys.argv)
 
 
 if __name__ == "__main__":

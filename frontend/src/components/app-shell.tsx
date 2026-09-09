@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { AppSidebar } from "@/components/app-sidebar";
+import { ToastProvider } from "@/components/toast-provider";
 
 const STORAGE_KEY = "sidebar-collapsed";
 
@@ -28,6 +29,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
     <div className="flex min-h-full">
       <AppSidebar collapsed={collapsed} onToggle={onToggle} />
       <div className="min-w-0 flex-1">{children}</div>
+      <ToastProvider />
     </div>
   );
 }

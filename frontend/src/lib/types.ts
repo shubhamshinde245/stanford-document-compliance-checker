@@ -39,6 +39,17 @@ export type PolicyRecord = {
   summary: string;
   scraped_at: string;
   error: string | null;
+  refresh_status: string | null;
+  previous_published_on: string | null;
+};
+
+export type ScrapeCheck = {
+  checked_at: string;
+  added: number;
+  updated: number;
+  unchanged: number;
+  kept: number;
+  failed: number;
 };
 
 export type PolicyCatalog = {
@@ -47,5 +58,18 @@ export type PolicyCatalog = {
   listed: number;
   total: number;
   scraped_at: string;
+  last_check: ScrapeCheck | null;
   policies: PolicyRecord[];
+};
+
+export type PolicySchedule = {
+  enabled: boolean;
+  hour: number;
+  minute: number;
+  timezone: string;
+  last_run_at: string | null;
+  last_run_status: string | null;
+  last_run_summary: string | null;
+  next_run_at: string | null;
+  running: boolean;
 };

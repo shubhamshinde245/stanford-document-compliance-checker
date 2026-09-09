@@ -58,6 +58,10 @@ Refresh the offline SANS library (PDFs + metadata under `data/sans-policies/`):
 make scrape
 ```
 
+`make scrape` is incremental: it compares published dates on the SANS listing to the stored catalog and downloads a PDF only when a date changed, a policy is new, or a file is missing. Use `uv run python -m backend.scraper --full` to force every PDF.
+
+While the API is running, a daily job also checks at **8:00 AM Pacific Time** (America/Los_Angeles). Change that time — or run a check immediately — from **Policies** in the sidebar.
+
 The home page is the document checker. Open **Policies** in the sidebar to browse the catalog.
 
 `.env.local` is gitignored. Individual targets: `make backend`, `make frontend`, `make install`, `make scrape`.
@@ -72,6 +76,9 @@ The Next.js app proxies `/api/*` to FastAPI (`API_URL`, default `http://127.0.0.
 | `GET` | `/api/rules` | Rule catalog |
 | `POST` | `/api/check` | Check an HTML document |
 | `GET` | `/api/policies` | Scraped SANS policy catalog (metadata + local PDF paths) |
+| `GET` | `/api/policies/schedule` | Daily refresh time (Pacific) and last/next run |
+| `PUT` | `/api/policies/schedule` | Set daily hour/minute and enabled flag |
+| `POST` | `/api/policies/scrape` | Incremental date check; download PDFs only if dates changed |
 | `GET` | `/api/policies/{slug}/pdf` | Downloaded policy PDF |
 
 `POST /api/check` body:

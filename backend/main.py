@@ -1,4 +1,6 @@
+from contextlib import asynccontextmanager
 from pathlib import Path
+import asyncio
 
 from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
@@ -10,15 +12,40 @@ from backend.models import (
     CheckResponse,
     HealthResponse,
     PolicyCatalog,
+    PolicySchedule,
+    PolicyScheduleUpdate,
     RuleInfo,
 )
-from backend.scraper.catalog import PDF_DIR, load_catalog, pdf_path_for
+from backend.scraper.catalog import (
+    PDF_DIR,
+    load_catalog,
+    load_schedule,
+    next_run_at,
+    pdf_path_for,
+    save_schedule,
+)
+from backend.scraper.scheduler import (
+    apply_schedule,
+    is_running,
+    run_refresh,
+    start_scheduler,
+    stop_scheduler,
+)
 from backend.settings import AI_GATEWAY_API_KEY
+
+
+@asynccontextmanager
+async def lifespan(_app: FastAPI):
+    start_scheduler()
+    yield
+    stop_scheduler()
+
 
 app = FastAPI(
     title="Stanford Document Compliance Checker",
     version="0.1.0",
     description="Checks HTML documents against Stanford accessibility and identity rules.",
+    lifespan=lifespan,
 )
 
 app.add_middleware(
@@ -31,6 +58,13 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+
+def _schedule_response() -> PolicySchedule:
+    data = load_schedule()
+    data["next_run_at"] = next_run_at(data)
+    data["running"] = is_running()
+    return PolicySchedule.model_validate(data)
 
 
 @app.get("/api/health", response_model=HealthResponse)
@@ -58,6 +92,38 @@ def check_document(payload: CheckRequest) -> CheckResponse:
 @app.get("/api/policies", response_model=PolicyCatalog)
 def list_policies() -> PolicyCatalog:
     return PolicyCatalog.model_validate(load_catalog())
+
+
+@app.get("/api/policies/schedule", response_model=PolicySchedule)
+def get_policy_schedule() -> PolicySchedule:
+    return _schedule_response()
+
+
+@app.put("/api/policies/schedule", response_model=PolicySchedule)
+def update_policy_schedule(payload: PolicyScheduleUpdate) -> PolicySchedule:
+    current = load_schedule()
+    current["enabled"] = payload.enabled
+    current["hour"] = payload.hour
+    current["minute"] = payload.minute
+    save_schedule(current)
+    apply_schedule()
+    return _schedule_response()
+
+
+@app.post("/api/policies/scrape", response_model=PolicyCatalog)
+async def scrape_policies() -> PolicyCatalog:
+    if is_running():
+        raise HTTPException(
+            status_code=409,
+            detail="A policy refresh is already running.",
+        )
+    try:
+        catalog = await asyncio.to_thread(run_refresh, True)
+    except RuntimeError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=502, detail=str(exc)) from exc
+    return PolicyCatalog.model_validate(catalog)
 
 
 @app.get("/api/policies/{slug}/pdf")
