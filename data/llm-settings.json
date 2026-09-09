@@ -1,0 +1,28 @@
+{
+  "provider": "stanford",
+  "chat_model": "gpt-5.6-sol",
+  "embedding_model": "text-embedding-ada-002",
+  "reasoning_effort": "low",
+  "output_columns": [
+    {
+      "name": "requirement_id",
+      "description": "The id of the requirement being judged, copied exactly from the requirement given in the prompt."
+    },
+    {
+      "name": "verdict",
+      "description": "aligned when the procedure satisfies the requirement, contradicted when it states something that conflicts with it, missing when the procedure never addresses it, flagged when the evidence is ambiguous and a person should review it."
+    },
+    {
+      "name": "requirement_quote",
+      "description": "The sentence from the standard that states this requirement, quoted verbatim."
+    },
+    {
+      "name": "evidence_quote",
+      "description": "The sentence from the uploaded document that supports the verdict, quoted verbatim from one of the supplied chunks. Empty string only when the verdict is missing."
+    },
+    {
+      "name": "rationale",
+      "description": "One or two sentences explaining why this verdict follows from the quoted evidence."
+    }
+  ]
+}

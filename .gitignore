@@ -30,5 +30,9 @@ out/
 .vscode/
 .DS_Store
 
+# Parked policy embeddings (rebuild with `make index`)
+data/sans-policies/index.json
+data/sans-policies/index.npz
+
 # Instructions
 docs/

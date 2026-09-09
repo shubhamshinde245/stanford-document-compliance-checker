@@ -1,16 +1,57 @@
 @import "tailwindcss";
+@import "react-toastify/dist/ReactToastify.css";
+
+:root {
+  --toastify-font-family: var(--font-source-sans), "Source Sans 3", ui-sans-serif,
+    system-ui, sans-serif;
+  --toastify-toast-background: #fbf8f2;
+  --toastify-text-color-light: #2e2d29;
+  --toastify-color-info: #8c1515;
+  --toastify-color-success: #175e54;
+  --toastify-color-warning: #8c6a12;
+  --toastify-color-error: #8c1515;
+  --toastify-color-progress-info: #8c1515;
+  --toastify-color-progress-success: #175e54;
+  --toastify-color-progress-warning: #8c6a12;
+  --toastify-color-progress-error: #8c1515;
+  --toastify-icon-color-info: #8c1515;
+  --toastify-icon-color-success: #175e54;
+  --toastify-icon-color-warning: #8c6a12;
+  --toastify-icon-color-error: #8c1515;
+  --toastify-color-progress-light: #8c1515;
+}
+
+.Toastify__toast {
+  border: 1px solid #d9d1c3;
+  border-radius: 0.9rem;
+  box-shadow: 0 18px 40px rgba(46, 45, 41, 0.08);
+}
+
+.Toastify__toast-body {
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
 
 @theme {
   --color-sand: #f4efe6;
+  --color-canvas: #f4efe6;
   --color-paper: #fbf8f2;
+  --color-elevated: #fbf8f2;
   --color-ink: #2e2d29;
   --color-muted: #5e574e;
   --color-line: #d9d1c3;
   --color-cardinal: #8c1515;
-  --color-cardinal-dark: #6e1010;
+  --color-cardinal-dark: #820000;
+  --color-sidebar-from: #8c1515;
+  --color-sidebar-to: #8c1515;
   --color-fail: #8c1515;
   --color-warn: #8c6a12;
   --color-pass: #175e54;
+  --radius-card: 1.25rem;
+  --radius-control: 0.9rem;
+  --radius-pill: 999px;
+  --radius-shell: 1.75rem;
+  --shadow-card: 0 18px 40px rgba(46, 45, 41, 0.08);
   --font-sans: var(--font-source-sans), "Source Sans 3", ui-sans-serif, system-ui,
     sans-serif;
   --font-serif: var(--font-source-serif), "Source Serif 4", ui-serif, Georgia,

@@ -1,13 +1,19 @@
 [project]
 name = "stanford-document-compliance-checker"
 version = "0.1.0"
-description = "Check HTML documents against Stanford accessibility and identity rules."
+description = "Rank uploaded procedures against parked SANS policy embeddings."
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "beautifulsoup4>=4.15.0",
     "fastapi>=0.141.1",
+    "playwright>=1.49.0",
+    "apscheduler>=3.10.4,<4",
     "python-dotenv>=1.2.3",
     "python-multipart>=0.0.32",
     "uvicorn[standard]>=0.52.4",
+    "httpx>=0.28.1",
+    "numpy>=2.4.6",
+    "pypdf>=6.18.0",
+    "python-docx>=1.2.0",
 ]
