@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import Any, Literal
 
 import httpx
@@ -163,15 +164,35 @@ class OpenAICompatibleProvider:
         model: str,
         prompt: str,
         reasoning_effort: str,
+        json_schema: dict[str, Any] | None = None,
+        system: str | None = None,
+        max_tokens: int | None = None,
     ) -> dict[str, Any]:
+        messages: list[dict[str, str]] = []
+        if system and system.strip():
+            messages.append({"role": "system", "content": system.strip()})
+        messages.append({"role": "user", "content": prompt})
         body: dict[str, Any] = {
             "model": model,
             "stream": False,
-            "messages": [{"role": "user", "content": prompt}],
+            "messages": messages,
         }
         if reasoning_effort and reasoning_effort != "none":
             body["reasoning_effort"] = reasoning_effort
-            body["max_completion_tokens"] = 2048
+            body["max_completion_tokens"] = max_tokens or 2048
+        elif max_tokens:
+            body["max_completion_tokens"] = max_tokens
+        if json_schema:
+            schema = json_schema.get("schema") if "schema" in json_schema else json_schema
+            name = str(json_schema.get("name") or "result")
+            body["response_format"] = {
+                "type": "json_schema",
+                "json_schema": {
+                    "name": name,
+                    "strict": True,
+                    "schema": schema,
+                },
+            }
         payload = await _request_json(
             "POST",
             f"{self.base_url}/chat/completions",
@@ -297,17 +318,31 @@ class AnthropicProvider:
         model: str,
         prompt: str,
         reasoning_effort: str,
+        json_schema: dict[str, Any] | None = None,
+        system: str | None = None,
+        max_tokens: int | None = None,
     ) -> dict[str, Any]:
         del reasoning_effort
+        user = prompt
+        if json_schema:
+            user = (
+                prompt
+                + "\n\nRespond with JSON only that matches this schema:\n"
+                + json.dumps(json_schema.get("schema") or json_schema)
+            )
+        messages: list[dict[str, str]] = [{"role": "user", "content": user}]
+        payload_body: dict[str, Any] = {
+            "model": model,
+            "max_tokens": max_tokens or 1024,
+            "messages": messages,
+        }
+        if system and system.strip():
+            payload_body["system"] = system.strip()
         payload = await _request_json(
             "POST",
             f"{self.base_url}/v1/messages",
             headers=self._headers(),
-            json={
-                "model": model,
-                "max_tokens": 1024,
-                "messages": [{"role": "user", "content": prompt}],
-            },
+            json=payload_body,
         )
         content = ""
         if isinstance(payload, dict):

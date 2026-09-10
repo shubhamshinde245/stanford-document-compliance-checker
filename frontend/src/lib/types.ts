@@ -6,6 +6,12 @@ export type PolicyMatch = {
   score: number;
   snippet: string;
   chunk_id: string;
+  source_url: string;
+  pdf_url: string;
+  pdf_path: string | null;
+  pdf_bytes: number | null;
+  published_on: string | null;
+  summary: string;
 };
 
 export type CheckResponse = {
@@ -22,6 +28,7 @@ export type PolicyRecord = {
   published_on: string | null;
   source_url: string;
   pdf_path: string | null;
+  pdf_url: string | null;
   pdf_bytes: number | null;
   summary: string;
   purpose: string;
@@ -31,6 +38,18 @@ export type PolicyRecord = {
   index_error: string | null;
   refresh_status: string | null;
   previous_published_on: string | null;
+  safeguard_count: number;
+};
+
+export type PolicySafeguard = {
+  category: string;
+  definition: string;
+};
+
+export type PolicySafeguardsResponse = {
+  slug: string;
+  title: string;
+  safeguards: PolicySafeguard[];
 };
 
 export type ScrapeCheck = {

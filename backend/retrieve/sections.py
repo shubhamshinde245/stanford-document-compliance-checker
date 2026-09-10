@@ -16,11 +16,11 @@ HEADING_KEYS = {
     "scope": "scope",
     "purpose and scope": "purpose_and_scope",
     "scope and purpose": "purpose_and_scope",
+    "safeguards": "safeguards",
+    "safeguard": "safeguards",
 }
 
 STOP_KEYS = {
-    "safeguards",
-    "safeguard",
     "policy",
     "policy statement",
     "policy statements",
@@ -103,6 +103,17 @@ def build_summary_text(*, title: str, category: str, purpose: str, scope: str) -
     if scope.strip():
         lines.append(f"Scope: {scope.strip()}")
     return "\n".join(lines)
+
+
+def extract_safeguards_section(pages: list[PageText]) -> str:
+    """Body of the Safeguards section, or the full document if that heading is missing."""
+    lines = _numbered_lines(pages)
+    headings = _heading_spans(lines)
+    body, _page = _section_body(lines, headings, "safeguards")
+    text = _clean(body)
+    if text:
+        return text
+    return _clean(" ".join(page.text for page in pages))
 
 
 def _numbered_lines(pages: list[PageText]) -> list[tuple[int, str]]:

@@ -12,7 +12,7 @@ help:
 	@echo "make backend   Start FastAPI only"
 	@echo "make frontend  Start Next.js only"
 	@echo "make scrape    Download SANS policy PDFs into data/sans-policies/"
-	@echo "make index     Embed Purpose/Scope summaries into the parked policy index"
+	@echo "make index     Embed Purpose/Scope summaries and extract safeguards"
 
 install:
 	uv sync

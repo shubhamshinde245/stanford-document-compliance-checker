@@ -23,10 +23,12 @@ from backend.models import (
     OutputColumn,
     OutputSchemaPreview,
     PolicyCatalog,
+    PolicySafeguardsResponse,
     PolicySchedule,
     PolicyScheduleUpdate,
 )
 from backend.retrieve import IndexNotReady, check_upload, describe_index
+from backend.retrieve.safeguards import load_safeguards
 from backend.retrieve.text import ExtractError, SUPPORTED_SUFFIXES
 from backend.llm.schema import (
     LOCKED_NAMES,
@@ -199,6 +201,24 @@ async def scrape_policies() -> PolicyCatalog:
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=502, detail=str(exc)) from exc
     return PolicyCatalog.model_validate(catalog)
+
+
+@app.get("/api/policies/{slug}/safeguards", response_model=PolicySafeguardsResponse)
+def policy_safeguards(slug: str) -> PolicySafeguardsResponse:
+    if "/" in slug or "\\" in slug or ".." in slug:
+        raise HTTPException(status_code=400, detail="Invalid policy slug.")
+    catalog = load_catalog()
+    record = next(
+        (item for item in catalog.get("policies", []) if item.get("slug") == slug),
+        None,
+    )
+    if record is None:
+        raise HTTPException(status_code=404, detail="Policy not found.")
+    return PolicySafeguardsResponse(
+        slug=slug,
+        title=str(record.get("title") or slug),
+        safeguards=load_safeguards(slug),
+    )
 
 
 @app.get("/api/policies/{slug}/pdf")

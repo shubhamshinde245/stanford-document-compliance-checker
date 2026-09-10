@@ -3,8 +3,10 @@
 import { useState, type DragEvent } from "react";
 import { toast } from "react-toastify/unstyled";
 
-import { checkDocument, policyPdfUrl } from "@/lib/api";
-import type { CheckResponse, PolicyMatch } from "@/lib/types";
+import { checkDocument } from "@/lib/api";
+import type { CheckResponse } from "@/lib/types";
+import { PolicyCard } from "@/components/policy-card";
+import { SafeguardsDialog } from "@/components/safeguards-dialog";
 
 const CHECK_TOAST_ID = "document-check";
 const ACCEPT = ".pdf,.txt,.md,.html,.htm,.docx";
@@ -93,7 +95,8 @@ export function ComplianceChecker() {
   }
 
   return (
-    <div className="grid gap-6 lg:grid-cols-[minmax(0,1.05fr)_minmax(0,0.95fr)]">
+    <div className="grid gap-6">
+      <div className="grid gap-6 lg:grid-cols-2">
       <section className={CARD}>
         <div className="mb-4">
           <p className="mb-1 text-[0.72rem] font-bold uppercase tracking-[0.16em] text-cardinal">
@@ -146,13 +149,16 @@ export function ComplianceChecker() {
       </section>
 
       <section className={CARD}>
-        <div className="mb-4">
-          <p className="mb-1 text-[0.72rem] font-bold uppercase tracking-[0.16em] text-cardinal">
-            Report
-          </p>
-          <h2 className="font-serif text-[1.55rem] font-semibold tracking-tight">
-            Findings
-          </h2>
+        <div className="mb-4 flex items-start justify-between gap-3">
+          <div>
+            <p className="mb-1 text-[0.72rem] font-bold uppercase tracking-[0.16em] text-cardinal">
+              Report
+            </p>
+            <h2 className="font-serif text-[1.55rem] font-semibold tracking-tight">
+              Findings
+            </h2>
+          </div>
+          <ConfidenceHint />
         </div>
 
         {error ? (
@@ -169,42 +175,64 @@ export function ComplianceChecker() {
           </p>
         ) : null}
 
-        {result ? <Results report={result} /> : null}
+        {result ? <ScoreWell report={result} /> : null}
       </section>
+      </div>
+
+      {result ? <Results report={result} /> : null}
+    </div>
+  );
+}
+
+function ScoreWell({ report }: { report: CheckResponse }) {
+  const top = report.matches[0];
+  const tone = confidenceTone(top?.confidence ?? 0);
+  return (
+    <div className={`rounded-control px-4 py-4 ${tone.well}`}>
+      <p className="text-[0.72rem] font-bold uppercase tracking-[0.14em]">
+        Top match confidence
+      </p>
+      <p className="font-serif text-6xl leading-none text-ink">
+        {top ? top.confidence.toFixed(1) : "—"}
+      </p>
+      <p className="mt-2 text-sm text-muted">{report.filename}</p>
+      {top ? (
+        <p className="mt-1 text-sm text-muted">
+          {top.title}
+          {top.category ? ` · ${top.category}` : ""}
+        </p>
+      ) : (
+        <p className="mt-1 text-sm text-muted">No policy matches returned.</p>
+      )}
     </div>
   );
 }
 
 function Results({ report }: { report: CheckResponse }) {
   const [expanded, setExpanded] = useState(false);
-  const top = report.matches[0];
-  const tone = confidenceTone(top?.confidence ?? 0);
+  const [safeguards, setSafeguards] = useState<{
+    slug: string;
+    title: string;
+  } | null>(null);
   const visible = expanded ? report.matches : report.matches.slice(0, 5);
   const remaining = Math.max(report.matches.length - 5, 0);
 
+  if (report.matches.length === 0) {
+    return null;
+  }
+
   return (
     <div className="grid gap-4">
-      <div className={`rounded-control px-4 py-4 ${tone.well}`}>
-        <p className="text-[0.72rem] font-bold uppercase tracking-[0.14em]">
-          Top match confidence
-        </p>
-        <p className="font-serif text-6xl leading-none text-ink">
-          {top ? top.confidence.toFixed(1) : "—"}
-        </p>
-        <p className="mt-2 text-sm text-muted">{report.filename}</p>
-        {top ? (
-          <p className="mt-1 text-sm text-muted">
-            {top.title}
-            {top.category ? ` · ${top.category}` : ""}
-          </p>
-        ) : (
-          <p className="mt-1 text-sm text-muted">No policy matches returned.</p>
-        )}
-      </div>
-
-      <ol className="grid list-none gap-2.5 p-0">
+      <ol className="grid list-none gap-4 p-0 md:grid-cols-2">
         {visible.map((match) => (
-          <MatchRow key={match.slug} match={match} />
+          <PolicyCard
+            key={match.slug}
+            policy={match}
+            confidence={match.confidence}
+            onViewSafeguards={(item) =>
+              setSafeguards({ slug: item.slug, title: item.title })
+            }
+          />
         ))}
       </ol>
 
@@ -219,58 +247,62 @@ function Results({ report }: { report: CheckResponse }) {
             : `Show all ${report.matches.length} policies`}
         </button>
       ) : null}
+
+      {safeguards ? (
+        <SafeguardsDialog
+          slug={safeguards.slug}
+          title={safeguards.title}
+          onClose={() => setSafeguards(null)}
+        />
+      ) : null}
     </div>
   );
 }
 
-function MatchRow({ match }: { match: PolicyMatch }) {
-  const tone = confidenceTone(match.confidence);
+function ConfidenceHint() {
   return (
-    <li className="grid grid-cols-1 gap-2 border-t border-line py-3 sm:grid-cols-[auto_minmax(0,1fr)] sm:items-start sm:gap-3">
-      <span
-        className={`mt-0.5 self-start rounded-pill px-2.5 py-0.5 text-[0.68rem] font-extrabold uppercase tracking-[0.12em] ${tone.pill}`}
+    <details className="relative shrink-0">
+      <summary
+        className="grid h-9 w-9 cursor-pointer list-none place-items-center rounded-control text-muted hover:bg-cardinal/10 hover:text-cardinal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-solid focus-visible:outline-cardinal [&::-webkit-details-marker]:hidden"
+        aria-label="How confidence is calculated"
       >
-        {match.confidence.toFixed(1)}%
-      </span>
-      <div>
-        <a
-          href={policyPdfUrl(match.slug)}
-          target="_blank"
-          rel="noreferrer"
-          className="font-bold text-ink underline decoration-line underline-offset-2 hover:text-cardinal"
+        <svg
+          viewBox="0 0 24 24"
+          aria-hidden="true"
+          className="h-5 w-5"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         >
-          {match.title}
-        </a>
-        {match.category ? (
-          <p className="mt-0.5 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-cardinal">
-            {match.category}
-          </p>
-        ) : null}
-        <p className="mt-1 text-[0.95rem] leading-snug text-muted">
-          {match.snippet}
-        </p>
+          <circle cx="12" cy="12" r="9" />
+          <path d="M12 10.5v6" />
+          <circle cx="12" cy="7.25" r="0.85" fill="currentColor" stroke="none" />
+        </svg>
+      </summary>
+      <div
+        role="note"
+        className="absolute right-0 z-10 mt-2 w-72 rounded-control border border-line bg-paper p-3.5 text-sm leading-relaxed text-muted shadow-card"
+      >
+        Confidence is cosine similarity between the uploaded procedure and each
+        policy&apos;s Purpose and Scope summary, shown as a percentage. The
+        backend embeds both sides with the same model; the closest upload chunk
+        to that summary sets the score. 100% means the vectors point the same
+        way, not that the procedure satisfies the policy.
       </div>
-    </li>
+    </details>
   );
 }
 
 function confidenceTone(confidence: number) {
   if (confidence >= 70) {
-    return {
-      well: "bg-pass/10 text-pass",
-      pill: "bg-pass/12 text-pass",
-    };
+    return { well: "bg-pass/10 text-pass" };
   }
   if (confidence >= 40) {
-    return {
-      well: "bg-warn/10 text-warn",
-      pill: "bg-warn/15 text-warn",
-    };
+    return { well: "bg-warn/10 text-warn" };
   }
-  return {
-    well: "bg-fail/10 text-fail",
-    pill: "bg-fail/12 text-fail",
-  };
+  return { well: "bg-fail/10 text-fail" };
 }
 
 function checkCompleteMessage(report: CheckResponse): string {

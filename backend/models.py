@@ -11,6 +11,12 @@ class PolicyMatch(BaseModel):
     score: float
     snippet: str
     chunk_id: str
+    source_url: str = ""
+    pdf_url: str = ""
+    pdf_path: str | None = None
+    pdf_bytes: int | None = None
+    published_on: str | None = None
+    summary: str = ""
 
 
 class CheckResponse(BaseModel):
@@ -33,6 +39,7 @@ class PolicyRecord(BaseModel):
     published_on: str | None = None
     source_url: str
     pdf_path: str | None = None
+    pdf_url: str | None = None
     pdf_bytes: int | None = None
     summary: str = ""
     purpose: str = ""
@@ -42,6 +49,18 @@ class PolicyRecord(BaseModel):
     index_error: str | None = None
     refresh_status: str | None = None
     previous_published_on: str | None = None
+    safeguard_count: int = 0
+
+
+class PolicySafeguard(BaseModel):
+    category: str
+    definition: str
+
+
+class PolicySafeguardsResponse(BaseModel):
+    slug: str
+    title: str
+    safeguards: list[PolicySafeguard] = Field(default_factory=list)
 
 
 class ScrapeCheck(BaseModel):

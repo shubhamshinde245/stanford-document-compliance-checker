@@ -1,0 +1,13 @@
+slug,title,pdf_sha256,category,definition
+email-management-policy,Email Management Policy,f3375101a47282067160c40f3f33f1ff6d83d627a6a0735be6e6d5c71f3f64ec,EM-01,Maintain an inventory of each domain name authorized to use email.
+email-management-policy,Email Management Policy,f3375101a47282067160c40f3f33f1ff6d83d627a6a0735be6e6d5c71f3f64ec,EM-02,Maintain an inventory of Mail Transfer Agents (MTAs) authorized for each approved email domain.
+email-management-policy,Email Management Policy,f3375101a47282067160c40f3f33f1ff6d83d627a6a0735be6e6d5c71f3f64ec,EM-03,"Maintain appropriate Domain Name System (DNS) records for each approved email domain, including SPF, DKIM, and DMARC."
+email-management-policy,Email Management Policy,f3375101a47282067160c40f3f33f1ff6d83d627a6a0735be6e6d5c71f3f64ec,EM-04,Require encrypted connections (TLS) between all internal and external email servers.
+email-management-policy,Email Management Policy,f3375101a47282067160c40f3f33f1ff6d83d627a6a0735be6e6d5c71f3f64ec,EM-05,"Block emails from domains not using appropriate DNS records, including SPF, DKIM, and DMARC."
+email-management-policy,Email Management Policy,f3375101a47282067160c40f3f33f1ff6d83d627a6a0735be6e6d5c71f3f64ec,EM-06,Perform spam content filtering for all emails received or sent by the organization.
+email-management-policy,Email Management Policy,f3375101a47282067160c40f3f33f1ff6d83d627a6a0735be6e6d5c71f3f64ec,EM-07,Perform malware content filtering for all emails received or sent by the organization.
+email-management-policy,Email Management Policy,f3375101a47282067160c40f3f33f1ff6d83d627a6a0735be6e6d5c71f3f64ec,EM-08,Perform anti-phishing content filtering for all emails received or sent by the organization.
+email-management-policy,Email Management Policy,f3375101a47282067160c40f3f33f1ff6d83d627a6a0735be6e6d5c71f3f64ec,EM-09,Perform anti-phishing URL filtering for all emails received or sent by the organization.
+email-management-policy,Email Management Policy,f3375101a47282067160c40f3f33f1ff6d83d627a6a0735be6e6d5c71f3f64ec,EM-10,Filter data content for all emails received or sent by the organization.
+email-management-policy,Email Management Policy,f3375101a47282067160c40f3f33f1ff6d83d627a6a0735be6e6d5c71f3f64ec,EM-11,"Perform attachment filtering for all emails received or sent by the organization, including using sandboxes to validate each attachment."
+email-management-policy,Email Management Policy,f3375101a47282067160c40f3f33f1ff6d83d627a6a0735be6e6d5c71f3f64ec,EM-12,Maintain a file transfer portal system separate from the email system for sending large files to individuals outside the organization.

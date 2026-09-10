@@ -69,7 +69,7 @@ make index
 
 `make index` embeds a slug only when the PDF bytes or the Settings embedding model changed. Each policy is one summary vector, not overlapping body windows. `POST /api/check` never embeds the library; if the index is missing or was built with a different model, the API returns HTTP 503 and asks you to run `make index`.
 
-`make scrape` is incremental: it compares published dates on the SANS listing to the stored catalog and downloads a PDF only when a date changed, a policy is new, or a file is missing. After each successful download it extracts Purpose and Scope and parks that summary vector. After a successful scrape the API also refreshes stale index slugs in a background thread. Use `uv run python -m backend.scraper --full` to force every PDF.
+`make scrape` is incremental: it compares published dates on the SANS listing to the stored catalog and downloads a PDF only when a date changed, a policy is new, or a file is missing. After each successful download it extracts Purpose and Scope, parks that summary vector, and uses `gpt-5.6-sol` structured output to write safeguards to `data/sans-policies/safeguards/{slug}.csv`. After a successful scrape the API also refreshes stale index slugs in a background thread. Use `uv run python -m backend.scraper --full` to force every PDF.
 
 While the API is running, a daily job also checks at **8:00 AM Pacific Time** (America/Los_Angeles). Change that time — or run a check immediately — from **Policies** in the sidebar.
 
@@ -89,6 +89,7 @@ The Next.js app proxies `/api/*` to FastAPI (`API_URL`, default `http://127.0.0.
 | `GET` | `/api/policies/schedule` | Daily refresh time (Pacific) and last/next run |
 | `PUT` | `/api/policies/schedule` | Set daily hour/minute and enabled flag |
 | `POST` | `/api/policies/scrape` | Incremental date check; download PDFs only if dates changed |
+| `GET` | `/api/policies/{slug}/safeguards` | Extracted safeguards (category + definition) |
 | `GET` | `/api/policies/{slug}/pdf` | Downloaded policy PDF |
 | `GET` | `/api/llm/settings` | Saved provider, chat model, embedding model, and effort |
 | `PUT` | `/api/llm/settings` | Save those defaults |
@@ -117,7 +118,8 @@ Response:
       "confidence": 87.4,
       "score": 0.874,
       "snippet": "Title: Network Device Management Policy Purpose: … Scope: …",
-      "chunk_id": "network-device-management-policy:summary"
+      "chunk_id": "network-device-management-policy:summary",
+      "source_url": "https://www.sans.org/information-security-policy/network-device-management-policy"
     }
   ]
 }

@@ -28,7 +28,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Cybersecurity Safeguard Validation Policy aims to establish a systematic and comprehensive framework for planning, conducting, and managing cybersecurity audits within our organization. This policy aims to provide clear guidelines and procedures for assessing the effectiveness of our cybersecurity controls, identifying vulnerabilities and weaknesses, and ensuring compliance with industry standards, legal regulations, and internal policies. By implementing effective audit management practices, this policy seeks to enhance our cybersecurity governance, identify areas for improvement, and mitigate potential risks and threats. Through regular audits and independent assessments, we strive to maintain the integrity, confidentiality, and availability of our systems, data, and networks while continuously improving our security posture and demonstrating our commitment to security to stakeholders.",
       "scope": "The Cybersecurity Safeguard Validation Policy applies to all employees, contractors, and stakeholders involved in conducting and managing cybersecurity audits within our organization. This policy encompasses the planning, execution, and oversight of audits to evaluate cybersecurity controls and processes' effectiveness, compliance, and maturity. It covers internal and external audits, including regulatory compliance audits, vulnerability assessments, penetration tests, and security risk assessments. The policy establishes guidelines for audit planning, scoping, resource allocation, documentation, and reporting. It ensures that audit findings are addressed, remediation plans are developed, and continuous improvement is fostered. Compliance with this policy is mandatory for all individuals involved in Cybersecurity Safeguard Validation, and any deviations or exceptions require approval from the designated authority responsible for cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 16,
+      "pdf_url": "https://sansorg.egnyte.com/dl/WfYBkPwbFP9x"
     },
     {
       "slug": "software-development-management-policy",
@@ -45,7 +47,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Software Development Policy aims to define and implement robust, secure, and standardized practices throughout the software lifecycle, including design, development, testing, deployment, and maintenance. This policy aims to mitigate the risks associated with insecure coding practices, inadequate testing, and unauthorized modifications, thereby ensuring the reliability, stability, and security of the software we create and deploy. By establishing clear procedures, this policy upholds our commitment to deliver high-quality, secure software that supports our business objectives, meets regulatory compliance standards, and provides value to our stakeholders while protecting our digital assets' integrity, confidentiality, and availability.",
       "scope": "The Software Development Policy applies to all software development activities conducted by employees, contractors, and third-party vendors on behalf of our organization. It encompasses the entire software development lifecycle, including planning, design, coding, testing, deployment, maintenance, and retirement of software applications and systems. This policy applies to all software development projects, regardless of the platform, programming language, or development methodology employed. It establishes guidelines, standards, and best practices to ensure the security, reliability, and integrity of the software developed within our organization. Compliance with this policy is mandatory for all individuals involved in software development, and adherence to industry-specific regulations, software licensing requirements, and intellectual property rights is essential. Deviations or exceptions to this policy must be approved by the designated authority responsible for software development governance and security. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 16,
+      "pdf_url": "https://sansorg.egnyte.com/dl/pvQMpRRB98V4"
     },
     {
       "slug": "education-management-policy",
@@ -62,7 +66,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Cybersecurity Education Policy aims to establish a comprehensive framework for promoting a culture of cybersecurity awareness, knowledge, and responsible behavior throughout our organization. This policy aims to provide guidelines and procedures for developing, implementing, and continuously improving cybersecurity education and awareness programs that empower our employees to recognize, prevent, and respond to potential cyber threats. By prioritizing education and awareness, this policy seeks to enhance the overall security posture of our organization, reduce the likelihood of human error leading to security incidents, and foster a sense of shared responsibility for protecting our systems, data, and networks. Through regular training, communication, and engagement initiatives, we strive to cultivate a vigilant and resilient workforce equipped to safeguard our sensitive information and assets in the face of evolving cybersecurity risks.",
       "scope": "The Cybersecurity Education Policy applies to all our organization's employees, contractors, vendors, and stakeholders. This policy encompasses planning, developing, implementing, and evaluating cybersecurity education and awareness programs to foster a culture of security awareness and responsible behavior. It covers training sessions, workshops, communication campaigns, and resources to enhance understanding of cybersecurity risks, best practices, policies, and procedures. The policy applies to all individuals who access the organization's network, systems, and sensitive information. Compliance with this policy is mandatory for all personnel, and active participation in cybersecurity education and awareness initiatives is required. Any exceptions or deviations from this policy require approval from the designated authority responsible for cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 14,
+      "pdf_url": "https://sansorg.egnyte.com/dl/MF4Kh4RYHKM7"
     },
     {
       "slug": "perimeter-network-access-management-policy",
@@ -79,7 +85,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Perimeter Network Access Policy aims to establish a comprehensive framework for effectively filtering and monitoring network traffic entering and exiting our organization's network boundaries. This policy aims to provide clear guidelines and procedures for implementing boundary filtering technologies, such as firewalls, intrusion prevention systems, and secure web gateways, to enforce network security controls, protect against unauthorized access, and mitigate the risk of external threats. By implementing robust boundary filtering practices, this policy seeks to minimize the risk of malicious activities, such as unauthorized access attempts, malware infections, and data exfiltration. By configuring appropriate filtering rules, continuous monitoring, and regular updates, we strive to ensure our network resources' confidentiality, integrity, and availability, safeguard sensitive information, and maintain compliance with industry standards and regulatory requirements. By prioritizing boundary filtering, we strengthen our overall cybersecurity posture, enhance network resilience, and maintain the trust and confidence of our stakeholders.",
       "scope": "The Perimeter Network Access Policy applies to all our organization's employees, contractors, and stakeholders. It encompasses implementing and managing boundary filtering mechanisms to protect our network from unauthorized access and malicious activities. This policy covers all network boundaries, including external connections such as internet access points, virtual private networks (VPNs), and remote access services. It sets forth guidelines for configuring and maintaining boundary filtering technologies, such as firewalls, intrusion prevention systems (IPS), and network access control (NAC) solutions. The policy defines procedures for monitoring and filtering network traffic at the boundaries to enforce security policies, prevent unauthorized access, and detect and block malicious activities. Compliance with this policy is mandatory for all individuals within the organization, and any deviations or exceptions require approval from the designated authority responsible for boundary filtering and cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 23,
+      "pdf_url": "https://sansorg.egnyte.com/dl/4Y4gcM4YBMw4"
     },
     {
       "slug": "network-device-management-policy",
@@ -96,7 +104,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Network Device Management Policy aims to establish a comprehensive framework for the secure configuration, monitoring, and management of network devices within our organization. This policy aims to provide clear guidelines and procedures for properly administering, maintaining, and protecting network devices, including routers, switches, firewalls, and wireless access points. This policy seeks to minimize the risk of unauthorized access, data breaches, and network disruptions by implementing effective network device management practices. By enforcing secure configurations, regular patch management, and proactive monitoring, we strive to ensure our network infrastructure's availability, integrity, and confidentiality, protect against emerging threats, and maintain compliance with industry standards and regulatory requirements. By prioritizing network device management, we strengthen our overall cybersecurity posture, optimize network performance, and maintain the trust and confidence of our stakeholders.",
       "scope": "The Network Device Management Policy applies to all our organization's employees, contractors, and stakeholders and encompasses the management and control of network devices within our IT infrastructure. This policy covers all network devices, including routers, switches, firewalls, wireless access points, and other networking equipment. It sets forth guidelines for device configuration, monitoring, and maintenance to ensure network communications' availability, integrity, and security. The policy defines procedures for device inventory, regular updates, patch management, and vulnerability scanning to mitigate risks associated with network devices. It also outlines the responsibilities of individuals involved in network device management processes, including network administrators, IT managers, and security personnel. Compliance with this policy is mandatory for all individuals within the organization, and any deviations or exceptions require approval from the designated authority responsible for network device management and cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 14,
+      "pdf_url": "https://sansorg.egnyte.com/dl/xprfPwhd8KWv"
     },
     {
       "slug": "privileged-account-management-policy",
@@ -113,7 +123,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Privileged Account Management Policy aims to establish a comprehensive framework for the secure management and control of privileged accounts within our organization. This policy aims to provide clear guidelines and procedures for granting, monitoring, and revoking privileges associated with administrative or privileged accounts. This policy seeks to minimize the risk of unauthorized access, data breaches, and insider threats by implementing effective privileged account management practices. By implementing strong authentication mechanisms, segregation of duties, and regular privileged account reviews, we strive to ensure that privileged access is granted only to authorized individuals, protect the confidentiality and integrity of our systems and data, and maintain compliance with regulatory requirements. By prioritizing privileged account management, we strengthen our overall cybersecurity posture, mitigate the potential for security incidents, and maintain the trust and confidence of our stakeholders.",
       "scope": "The Privileged Account Management Policy applies to all our organization's employees, contractors, and stakeholders. It encompasses managing and controlling privileged accounts, which have elevated access privileges within our IT infrastructure. This policy covers all accounts with administrative or superuser rights, including system administrators, network administrators, and other privileged roles. It sets guidelines for creating, monitoring, and protecting privileged accounts, including strong authentication mechanisms, secure password management, and regular access reviews. The policy defines privileged account provisioning, deprovisioning, and session monitoring procedures to mitigate the risks associated with privileged access. It also outlines the responsibilities of individuals involved in privileged account management processes, including privileged account administrators, IT managers, and security personnel. Compliance with this policy is mandatory for all individuals within the organization, and any deviations or exceptions require approval from the designated authority responsible for privileged account management and cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 16,
+      "pdf_url": "https://sansorg.egnyte.com/dl/B7tqKFXgYv4y"
     },
     {
       "slug": "cloud-service-provider-management-policy",
@@ -130,7 +142,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Cloud Service Provider Policy is designed to establish a comprehensive and systematic framework for the selection, engagement, and continuous oversight of cloud services within our organization. This policy delineates clear criteria and protocols for evaluating potential cloud service providers, ensuring that they meet our stringent security, privacy, and operational performance standards. By laying out structured due diligence and risk assessment procedures, this policy is instrumental in mitigating the potential risks associated with cloud computing, such as data breaches, service disruptions, and compliance lapses.",
       "scope": "The Cloud Service Provider Policy applies to all personnel within our organization, including full-time employees, part-time staff, consultants, and external business partners who interact with cloud computing resources. This policy comprehensively encompasses cloud service providers' selection, implementation, and management. It delineates the scope of cloud services across our infrastructure, including but not limited to SaaS, PaaS, and IaaS models. It prescribes the standards for evaluating potential providers' security posture, managing cloud access controls and data protection mechanisms, and integrating cloud services with our existing IT environment. The policy mandates consistent and rigorous assessments to ensure that cloud engagements align with our organizational security requirements, data governance policies, and regulatory compliance mandates. Adherence to this policy is compulsory for all applicable entities within the company, and it necessitates that any exemptions or deviations be formally reviewed and sanctioned by the appointed governance body overseeing cloud strategy and cybersecurity directives. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 11,
+      "pdf_url": "https://sansorg.egnyte.com/dl/hrrXhMdxQPv4"
     },
     {
       "slug": "access-management-policy",
@@ -148,7 +162,9 @@
       "previous_published_on": "2020-01-01",
       "purpose": "Our Access Management Policy aims to establish a comprehensive framework for controlling and managing user access to our organization's systems, applications, and data resources. This policy aims to provide clear guidelines and procedures for granting, reviewing, and revoking access privileges, ensuring that users have the appropriate level of access based on their roles and responsibilities. This policy seeks to minimize the risk of unauthorized access, data breaches, and insider threats by implementing effective access management practices. By implementing strong authentication mechanisms, role-based access controls, and regular access reviews, we strive to ensure that only authorized individuals can access sensitive information, protect the confidentiality and integrity of our systems and data, and comply with regulatory requirements. By prioritizing access management, we strengthen our overall cybersecurity posture, safeguard against unauthorized access, and maintain the trust and confidence of our stakeholders.",
       "scope": "The Access Management Policy applies to all our organization's employees, contractors, and stakeholders. It encompasses managing and controlling user access privileges to systems, applications, and data resources within our IT infrastructure. This policy covers all accounts and credentials to authenticate and authorize individuals' access. It sets forth guidelines for user provisioning, role-based access control, and segregation of duties to ensure appropriate access levels are granted based on job responsibilities and the principle of least privilege. The policy defines user account creation, modification, and termination procedures, as well as password management, session management, and access revocation. It also outlines the responsibilities of individuals involved in access management processes, including system administrators, IT managers, and access administrators. Compliance with this policy is mandatory for all individuals within the organization, and any deviations or exceptions require approval from the designated authority responsible for access management and cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 13,
+      "pdf_url": "https://sansorg.egnyte.com/dl/HwjQCbRhKk86"
     },
     {
       "slug": "safeguard-selection-management-policy",
@@ -165,7 +181,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Cybersecurity Safeguard Selection Policy aims to establish a systematic and consistent approach to developing, maintaining, and enforcing security policies that align with industry standards, regulatory requirements, and our organization's risk appetite. This policy aims to provide clear guidelines and procedures for creating, reviewing, approving, disseminating, and enforcing security policies across our organization. By implementing effective policy management practices, this policy seeks to ensure that our security policies remain current, relevant, and enforceable, supporting protecting our systems, data, and networks from potential vulnerabilities and threats. Through a centralized and coordinated process, we aim to promote a culture of security awareness, accountability, and compliance, while enabling the efficient governance of our cybersecurity program.",
       "scope": "The Cybersecurity Safeguard Selection Policy applies to all employees, contractors, vendors, and third-party entities connected to our organization's network infrastructure and information systems. This policy encompasses identifying, assessing, monitoring, and mitigating cybersecurity threats and vulnerabilities. It outlines the procedures and practices for proactive threat intelligence, security monitoring, incident response, and recovery measures. The policy applies to all devices, systems, applications, and data assets owned or used by the organization. Compliance with this policy is mandatory for all individuals, and it is essential to promptly report any potential or actual cybersecurity threats. Any exceptions or deviations from this policy require approval from the designated authority responsible for cybersecurity threat management. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 17,
+      "pdf_url": "https://sansorg.egnyte.com/dl/tqyrMtTH9pGP"
     },
     {
       "slug": "privacy-management-policy",
@@ -182,7 +200,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Data Privacy Policy aims to establish a comprehensive framework for protecting the privacy and confidentiality of personal and sensitive data entrusted to our organization. This policy aims to provide clear guidelines and procedures for data collection, storage, use, disclosure, and disposal in compliance with applicable privacy laws, regulations, and industry best practices. By implementing effective data privacy practices, this policy seeks to ensure the lawful and ethical handling of personal information, safeguard the rights and privacy of individuals, and maintain the trust and confidence of our customers, partners, and stakeholders. Through robust data protection measures, privacy impact assessments, and ongoing monitoring, we strive to mitigate the risks of unauthorized access, data breaches, and misuse of personal information while fostering transparency, accountability, and compliance in our data handling practices.",
       "scope": "The Data Privacy Policy applies to all our organization's employees, contractors, vendors, and stakeholders. It encompasses the protection and responsible handling of personal and sensitive information collected and processed by the organization. This policy covers collecting, storing, accessing, transferring, and disposing of personal data in compliance with applicable data protection laws and regulations. It outlines procedures for obtaining consent, implementing security measures to safeguard data, ensuring data accuracy, and responding to data subject rights requests. The policy sets forth guidelines for data breach notification, data sharing agreements, and vendor management to protect the privacy and confidentiality of individuals' information. Compliance with this policy is mandatory for all individuals within the organization, and any deviations or exceptions require approval from the designated authority responsible for data privacy and cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 18,
+      "pdf_url": "https://sansorg.egnyte.com/dl/hRjx6MCd6D8T"
     },
     {
       "slug": "data-management-policy",
@@ -199,7 +219,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Data Inventory Policy aims to establish a comprehensive framework for identifying, classifying, and managing the data assets within our organization. This policy aims to provide clear guidelines and procedures for documenting the types, locations, and sensitivity levels of our data and defining ownership and accountability. This policy seeks to enhance data governance, protect sensitive information, and ensure compliance with privacy regulations and data protection requirements by implementing effective data inventory practices. Through regular data audits, mapping exercises, and classification standards, we strive to improve data visibility, enable effective data protection measures, and minimize the risk of unauthorized access or data breaches. By prioritizing data inventory management, we enhance our overall cybersecurity posture, reduce data-related risks, and maintain the trust and confidence of our stakeholders.",
       "scope": "The Data Inventory Policy applies to all our organization's employees, contractors, and stakeholders and encompasses the systematic identification, classification, and management of all data assets within our IT infrastructure. This policy covers all types of data, including sensitive, personal, confidential, and regulated information. It sets forth guidelines for data discovery, classification, and mapping to understand data assets' location, sensitivity, and ownership. The policy defines procedures for maintaining an accurate and up-to-date data inventory, including retention periods, sharing agreements, and disposal practices. It also outlines the responsibilities of individuals involved in data inventory processes, including data owners, IT administrators, and data stewards. Compliance with this policy is mandatory for all individuals within the organization, and any deviations or exceptions require approval from the designated authority responsible for data inventory and cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 19,
+      "pdf_url": "https://sansorg.egnyte.com/dl/xWwQHQpYwW6f"
     },
     {
       "slug": "software-management-policy",
@@ -216,7 +238,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Software Management Policy aims to establish a comprehensive framework for identifying, tracking, and managing software assets within our organization, ensuring their security, compliance, and effective lifecycle management. This policy provides clear guidelines and procedures for discovering, cataloging, and maintaining an accurate inventory of software applications and systems across our network. By implementing effective software inventory and discovery practices, this policy seeks to enhance visibility into our software landscape, improve license compliance, identify and remediate vulnerabilities, and reduce the risk of unauthorized or unsupported software deployments. Through regular software audits, vulnerability assessments, and patch management, we strive to mitigate the potential security risks associated with unapproved or outdated software, protect against software-related vulnerabilities, and maintain the integrity, confidentiality, and availability of our systems and data. By prioritizing software inventory and discovery, we enable effective software asset management, strengthen our overall cybersecurity posture, and ensure regulatory compliance.",
       "scope": "The Software Management Policy applies to all our organization's employees, contractors, and stakeholders. It encompasses systematically identifying, tracking, and managing all software applications and licenses utilized within our infrastructure. This policy covers commercial and in-house-developed software, including operating systems, productivity tools, and specialized applications. It establishes procedures for conducting regular software inventories, maintaining accurate records of software installations and versions, and tracking software licenses to ensure compliance. The policy sets forth guidelines for software discovery and monitoring techniques to identify unauthorized or unmanaged software within the organization's network. Compliance with this policy is mandatory for all individuals within the organization, and any deviations or exceptions require approval from the designated authority responsible for software inventory and cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 15,
+      "pdf_url": "https://sansorg.egnyte.com/dl/Dyf8t7trVy8V"
     },
     {
       "slug": "risk-communication-management-policy",
@@ -233,7 +257,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Cybersecurity Risk Communication Policy aims to establish a structured and consistent approach for identifying, assessing, documenting, and communicating cybersecurity risks to key stakeholders within our organization. This policy aims to provide clear guidelines and procedures for the timely and accurate reporting of cybersecurity risks, ensuring that decision-makers have the necessary information to make informed risk management decisions. This policy seeks to enhance transparency, accountability, and risk awareness throughout the organization by implementing effective risk reporting practices. Through standardized risk reporting formats, risk metrics, and risk mitigation recommendations, we strive to enable proactive risk management, prioritize resource allocation, and strengthen the overall cybersecurity posture of our organization. We aim to foster a risk-aware culture through regular and comprehensive risk reporting, enable risk-based decision-making, and protect our systems, data, and networks from potential threats.",
       "scope": "The Cybersecurity Risk Communication Policy applies to all employees, contractors, and stakeholders responsible for assessing, managing, and reporting cybersecurity risks within our organization. This policy encompasses identifying, analyzing, and reporting potential and existing cybersecurity risks, vulnerabilities, and threats that could impact the confidentiality, integrity, and availability of critical systems and data. It sets forth guidelines for risk assessment methodologies, risk classification, and risk reporting formats to ensure consistent and accurate reporting across the organization. The policy mandates the timely reporting of cybersecurity risks to the designated authorities, including executive management, risk management committees, and regulatory bodies, as required. Compliance with this policy is mandatory for all individuals involved in cybersecurity risk reporting, and any deviations or exceptions require approval from the designated authority responsible for cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 11,
+      "pdf_url": "https://sansorg.egnyte.com/dl/DwdfgCrqyvfM"
     },
     {
       "slug": "configuration-management-policy",
@@ -250,7 +276,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Cybersecurity Configuration Management Policy aims to establish a structured and standardized approach for managing and controlling the configuration of our organization's information systems, networks, and devices. This policy aims to provide clear guidelines and procedures for identifying, documenting, tracking, and maintaining system configurations to ensure their integrity, availability, and security. By implementing effective configuration management practices, this policy seeks to minimize the risk of unauthorized access, data breaches, and system disruptions caused by misconfigurations or vulnerabilities. Through configuration baselines, change management processes, and regular audits, we strive to enforce consistent and secure configurations, reduce the attack surface, and protect the confidentiality, integrity, and availability of our systems and data. By prioritizing configuration management, we enhance our overall cybersecurity posture, maintain compliance with industry standards and regulatory requirements, and safeguard the interests of our stakeholders.",
       "scope": "The Configuration Management Policy applies to all our organization's employees, contractors, and stakeholders and encompasses the management and control of configuration settings and changes within our IT infrastructure. This policy covers all hardware, software, network devices, and systems that require consistent and secure configurations to maintain their integrity, availability, and compliance with organizational standards. It establishes guidelines for configuration baselines, change management processes, and version control to ensure that configurations are documented, approved, and monitored. The policy also defines procedures for configuration drift detection, configuration audits, and configuration backups. Compliance with this policy is mandatory for all individuals within the organization, and any deviations or exceptions require approval from the designated authority responsible for configuration management and cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 13,
+      "pdf_url": "https://sansorg.egnyte.com/dl/yb4jYx7wx8v8"
     },
     {
       "slug": "identity-management-policy",
@@ -267,7 +295,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Identity Management Policy aims to establish a comprehensive framework for effectively managing and controlling user identities, access privileges, and authentication mechanisms within our organization. This policy aims to provide clear guidelines and procedures for creating, maintaining, and terminating user accounts, as well as enforcing access controls and authentication standards. By implementing robust identity management practices, this policy seeks to minimize the risk of unauthorized access, data breaches, and insider threats. Through strong authentication mechanisms, role-based access controls, and regular access reviews, we strive to ensure that only authorized individuals have appropriate access privileges, protect the confidentiality and integrity of our systems and data, and maintain compliance with regulatory requirements. By prioritizing identity management, we strengthen our overall cybersecurity posture, minimize the potential for security incidents, and maintain the trust and confidence of our stakeholders.",
       "scope": "The Identity Management Policy applies to all our organization's employees, contractors, and stakeholders. It encompasses managing and controlling user identities, access privileges, and authentication mechanisms within our IT infrastructure. This policy covers all accounts and credentials to access organizational systems, applications, and data resources. It sets forth guidelines for user provisioning, access controls, password management, and account lifecycle management to ensure information assets' integrity, confidentiality, and availability. The policy defines procedures for identity verification, role-based access control, single sign-on, and multi- factor authentication. It also outlines the responsibilities of individuals involved in identity management processes, including system administrators, IT managers, and identity administrators. Compliance with this policy is mandatory for all individuals within the organization, and any deviations or exceptions require approval from the designated authority responsible for identity management and cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 27,
+      "pdf_url": "https://sansorg.egnyte.com/dl/WwJ7MWt9TP7f"
     },
     {
       "slug": "third-party-risk-management-policy",
@@ -284,7 +314,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Third-Party Risk Management Policy aims to establish a robust and risk-based approach for evaluating, selecting, contracting, and monitoring third-party vendors and partners to ensure the security of our organization's information assets. This policy aims to provide clear guidelines and procedures for assessing the cybersecurity posture of third parties, managing vendor relationships, and enforcing contractual obligations related to security controls and data protection. By implementing effective third-party management practices, this policy seeks to mitigate the potential risks posed by third- party relationships, safeguard our systems, data, and networks from unauthorized access and breaches, and protect our sensitive information's confidentiality, integrity, and availability. Through a comprehensive due diligence process, regular monitoring, and ongoing communication, we strive to establish and maintain a trusted ecosystem of third-party providers that align with our security standards, regulatory requirements, and overall risk appetite.",
       "scope": "The Third-Party Risk Management Policy applies to all employees, contractors, and stakeholders engaging and collaborating with third-party entities with access to the organization's systems, data, or networks. This policy encompasses the assessment, selection, contracting, and ongoing management of third-party vendors, suppliers, partners, and service providers to protect the organization's sensitive information and maintain the integrity of its cybersecurity posture. It sets forth guidelines and procedures for evaluating third parties' cybersecurity capabilities and practices, including due diligence assessments, contractual obligations, and periodic audits. The policy mandates the inclusion of robust cybersecurity controls and requirements within vendor contracts and establishes mechanisms for monitoring, reporting, and remediation of any identified risks or incidents. Compliance with this policy is mandatory for all individuals involved in third-party management, and any deviations or exceptions require approval from the designated authority responsible for cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 14,
+      "pdf_url": "https://sansorg.egnyte.com/dl/8tH3H4WjwTT7"
     },
     {
       "slug": "physical-security-management-policy",
@@ -301,7 +333,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Physical Security Policy aims to establish a comprehensive framework for protecting the physical assets, facilities, and infrastructure that house our organization's critical systems, data, and networks. This policy aims to provide clear guidelines and procedures for implementing robust physical security measures, including access controls, surveillance systems, and incident response protocols, to mitigate the risk of unauthorized access, theft, damage, or disruption to our physical assets. By implementing effective physical security practices, this policy seeks to safeguard our information assets' confidentiality, integrity, and availability, minimize the potential impact of physical security incidents, and ensure the continuous operation of our systems and services. Through integrating physical and cybersecurity controls, we strive to create a secure and resilient environment that protects against both digital and physical threats while maintaining the trust and confidence of our stakeholders.",
       "scope": "The Physical Security Policy applies to all employees, contractors, visitors, and stakeholders accessing our organization's physical premises, facilities, and assets. This policy encompasses implementing and maintaining measures to protect the physical infrastructure and assets from unauthorized access, theft, damage, and tampering. It covers areas such as building access controls, video surveillance, visitor management, secure storage, disposal of sensitive information, and the protection of server rooms, data centers, and other critical physical locations. The policy sets guidelines for physical security assessments, incident reporting, and response procedures. Compliance with this policy is mandatory for all individuals within the organization, and any deviations or exceptions require approval from the designated authority responsible for physical security and cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 15,
+      "pdf_url": "https://sansorg.egnyte.com/dl/gt3Hp7VJv3wJ"
     },
     {
       "slug": "resilience-management-policy",
@@ -318,7 +352,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Resilience Management Policy aims to establish a comprehensive framework for ensuring the availability, resilience, and timely recovery of our critical systems, data, and networks in the event of a cybersecurity incident or disruption. This policy aims to provide clear guidelines and procedures for developing, implementing, and testing business continuity plans that address cybersecurity risks and potential threats to our operations. By implementing effective business continuity practices, this policy seeks to minimize the impact of cyber incidents, maintain essential business functions, and protect the interests of our stakeholders. Through proactive risk assessment, incident response planning, and regular testing and evaluation, we strive to mitigate vulnerabilities, reduce downtime, and enable the swift restoration of normal operations in the face of cyber disruptions. By prioritizing business continuity, we ensure the continuity of our services, safeguard our reputation, and maintain the trust of our customers, partners, and employees.",
       "scope": "The Resilience Management Policy applies to all our organization's employees, contractors, and stakeholders. It encompasses the planning, implementing, and managing strategies to ensure the continuous operation and availability of critical systems, processes, and services during disruptive incidents or disasters. This policy covers the identification of potential risks and vulnerabilities, the development of business impact analyses, the formulation of continuity plans, and the establishment of incident response and recovery procedures. It outlines the roles, responsibilities, and communication protocols during business continuity events and sets guidelines for testing, training, and maintaining readiness. Compliance with this policy is mandatory for all individuals within the organization, and any deviations or exceptions require approval from the designated authority responsible for business continuity and cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 27,
+      "pdf_url": "https://sansorg.egnyte.com/dl/RvJ6hPJjv37v"
     },
     {
       "slug": "program-management-policy",
@@ -335,7 +371,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Cybersecurity Program Management Policy aims to establish a comprehensive framework that ensures the confidentiality, integrity, and availability of our organization's information assets. This policy seeks to protect our systems, data, and networks from unauthorized access, misuse, and potential threats while promoting responsible and secure practices throughout the organization. By implementing robust governance measures, this policy seeks to mitigate risks, enhance the resilience of our infrastructure, foster a culture of security awareness, and align our cybersecurity efforts with industry best practices and regulatory requirements. Through effective governance, we strive to maintain the trust of our stakeholders, safeguard our reputation, and safeguard the sensitive information entrusted to us.",
       "scope": "The Cybersecurity Program Management Policy applies to all our organization's employees, contractors, vendors, and stakeholders, irrespective of their roles or responsibilities. This policy encompasses all aspects of cybersecurity governance, including strategic planning, risk management, compliance, incident response, and continual improvement. It establishes a framework to guide the organization in effectively managing and mitigating cybersecurity risks, protecting critical information assets, and ensuring sensitive data's confidentiality, integrity, and availability. The policy outlines the responsibilities and accountabilities of individuals within the organization for maintaining a robust cybersecurity posture, complying with relevant laws and regulations, and adhering to industry best practices. Compliance with this policy is mandatory for all personnel, and any exceptions or deviations must be approved by the designated authority responsible for cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 2,
+      "pdf_url": "https://sansorg.egnyte.com/dl/HYX44dV7phtW"
     },
     {
       "slug": "vulnerability-management-policy",
@@ -352,7 +390,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Vulnerability Management Policy aims to establish a systematic and proactive approach for identifying, assessing, prioritizing, and remediating vulnerabilities within our organization's technology infrastructure. This policy aims to provide clear guidelines and procedures for monitoring, analyzing, and mitigating vulnerabilities to reduce the risk of exploitation and unauthorized access. By implementing effective vulnerability management practices, this policy seeks to enhance the security and resilience of our systems, protect sensitive information, and maintain compliance with industry standards and regulatory requirements. Through vulnerability scanning, penetration testing, and vulnerability remediation processes, we strive to identify and address security weaknesses in a timely manner, minimize potential threats, and safeguard the confidentiality, integrity, and availability of our data and networks. By prioritizing vulnerability management, we actively manage risk, improve our overall cybersecurity posture, and ensure the trust and confidence of our stakeholders.",
       "scope": "The Vulnerability Management Policy applies to all our organization's employees, contractors, and stakeholders and encompasses the proactive identification, assessment, prioritization, mitigation, and monitoring of vulnerabilities within our IT infrastructure. This policy covers all systems, applications, network devices, and endpoints vulnerable to security flaws and weaknesses. It establishes guidelines for vulnerability scanning, penetration testing, risk assessment, and remediation processes. The policy sets forth procedures for vulnerability reporting, tracking, and patch management to ensure timely and effective resolution of identified vulnerabilities. It also defines the roles and responsibilities of individuals involved in vulnerability management processes. Compliance with this policy is mandatory for all individuals within the organization, and any deviations or exceptions require approval from the designated authority responsible for vulnerability management and cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 12,
+      "pdf_url": "https://sansorg.egnyte.com/dl/vB9VtDPKrmQv"
     },
     {
       "slug": "asset-management-policy",
@@ -369,7 +409,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Asset Management Policy aims to establish a systematic and up-to-date inventory of all information technology assets within our organization, ensuring their proper management, monitoring, and protection. This policy provides clear guidelines and procedures for identifying, documenting, and tracking hardware, software, network devices, and other digital assets throughout their lifecycle. By implementing effective Asset Management practices, this policy seeks to enhance our visibility and understanding of our technology landscape, improve asset management, and strengthen cybersecurity controls. Through regular asset audits, vulnerability assessments, and risk assessments, we strive to identify and mitigate potential vulnerabilities, ensure timely patching and updates, and protect our systems, data, and networks from unauthorized access and potential threats. By prioritizing Asset Management, we enhance our overall cybersecurity posture, enable effective risk management, and maintain our critical assets' integrity, confidentiality, and availability.",
       "scope": "The Asset Management Policy applies to all our organization's employees, contractors, and stakeholders and encompasses the systematic identification, tracking, and management of all information technology assets within our infrastructure. This policy covers hardware devices, software applications, network components, and data repositories. It establishes procedures for conducting regular asset inventories, maintaining accurate asset ownership and location records, and updating the inventory as new assets are acquired or retired. The policy sets forth guidelines for asset discovery and monitoring techniques to identify unauthorized or unmanaged assets within the organization's network. Compliance with this policy is mandatory for all individuals within the organization, and any deviations or exceptions require approval from the designated authority responsible for asset inventory and cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 9,
+      "pdf_url": "https://sansorg.egnyte.com/dl/KwfgpbYYFTmT"
     },
     {
       "slug": "system-protection-management-policy",
@@ -386,7 +428,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our System Protection Policy aims to establish a comprehensive framework for effectively managing and securing endpoints, including desktops, laptops, mobile devices, and other network-connected devices within our organization. This policy aims to provide clear guidelines and procedures for endpoint configuration, monitoring, patching, and access control to mitigate the risk of unauthorized access, data breaches, and malware infections. By implementing robust endpoint management practices, this policy seeks to enforce consistent security controls, protect against emerging threats, and ensure our data and systems' confidentiality, integrity, and availability. Through endpoint hardening, vulnerability management, and remote management capabilities, we strive to enhance our overall cybersecurity posture, minimize the attack surface, and maintain the trust and confidence of our stakeholders. By prioritizing endpoint management, we establish a strong defense against potential cyber threats, enable effective incident response, and support secure remote access and productivity.",
       "scope": "The System Protection Policy applies to all our organization's employees, contractors, and stakeholders. It encompasses implementing and managing security measures to protect endpoints, including desktops, laptops, mobile devices, and servers, from cyber threats. This policy covers all endpoints connected to the organization's network, whether company-owned or personal devices used for work purposes. It sets forth guidelines for deploying and configuring endpoint protection solutions such as antivirus, antimalware, host intrusion prevention systems, and device encryption. The policy defines procedures for regular updates, monitoring, and enforcement of endpoint protection controls. Compliance with this policy is mandatory for all individuals within the organization, and any deviations or exceptions require approval from the designated authority responsible for endpoint protection and cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 19,
+      "pdf_url": "https://sansorg.egnyte.com/dl/fMMkJtP78VVb"
     },
     {
       "slug": "email-management-policy",
@@ -403,7 +447,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Email Management Policy aims to establish a comprehensive framework for filtering and monitoring incoming and outgoing email traffic within our organization. This policy provides clear guidelines and procedures for implementing email filtering technologies to enforce security controls, protect against email-borne threats, and mitigate the risk of phishing attacks, malware infections, and data breaches. By implementing robust email filtering practices, this policy seeks to minimize the exposure to malicious emails, spam, and other potentially harmful content, ensuring the confidentiality, integrity, and availability of our systems and data. By configuring appropriate filtering rules, continuous monitoring, and regular updates, we strive to protect against emerging threats, reduce the risk of social engineering attacks, and maintain compliance with industry standards and regulatory requirements. By prioritizing email filtering, we enhance our overall cybersecurity posture, safeguard sensitive information, and maintain the trust and confidence of our stakeholders.",
       "scope": "The Email Management Policy applies to all our organization's employees, contractors, and stakeholders. It encompasses implementing and managing email filtering measures to protect against spam, malware, phishing attempts, and other email-borne threats. This policy covers all email communications sent or received by individuals within the organization, regardless of the email client or device used. It sets forth guidelines for configuring and maintaining email filtering technologies, such as spam filters, antivirus scanners, and content analysis systems. The policy defines procedures for blocking or quarantining malicious or suspicious emails and educating employees on recognizing and reporting potential email threats. Compliance with this policy is mandatory for all individuals within the organization, and any deviations or exceptions require approval from the designated authority responsible for email filtering and cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 12,
+      "pdf_url": "https://sansorg.egnyte.com/dl/cTpFRGqtDHVm"
     },
     {
       "slug": "log-management-policy",
@@ -420,7 +466,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Log Management Policy aims to establish a structured and systematic approach for collecting, monitoring, and analyzing log data generated by our organization's systems, applications, and network infrastructure. This policy aims to provide clear guidelines and procedures for collecting, retaining, protecting, and analyzing logs to support effective cybersecurity incident detection, response, and forensic investigations. By implementing robust log management practices, this policy seeks to enhance our visibility into security events, identify anomalous activities, and mitigate potential threats to our systems and data. Through implementing centralized logging, log retention periods, and log review processes, we strive to maintain the integrity, confidentiality, and availability of log data, enable timely incident response, and ensure compliance with applicable regulations and industry standards. By prioritizing log management, we strengthen our overall cybersecurity posture, enhance threat detection capabilities, and maintain the trust and confidence of our stakeholders.",
       "scope": "The Log Management Policy applies to all our organization's employees, contractors, and stakeholders. It encompasses collecting, storing, analyzing, and retaining log data generated by systems, applications, and network devices within our IT infrastructure. This policy covers all logs, including events, access, audit, and system logs. It sets forth guidelines for log generation, aggregation, and centralized management to ensure accurate and timely log data availability for security monitoring, incident detection, and forensic investigations. The policy defines procedures for log retention periods, access controls, and log review processes. It also outlines the responsibilities of individuals involved in log management activities, including system administrators, security analysts, and log administrators. Compliance with this policy is mandatory for all individuals within the organization, and any deviations or exceptions require approval from the designated authority responsible for log management and cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 15,
+      "pdf_url": "https://sansorg.egnyte.com/dl/KdMRCdqRKTKw"
     },
     {
       "slug": "internal-network-access-management-policy",
@@ -437,7 +485,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Internal Network Access Policy aims to improve security, performance, and control within our technology infrastructure. This policy guides the strategic implementation of network segmentation, aiming to limit the extent of potential cybersecurity threats, prevent unauthorized access, protect sensitive data, and ensure operational continuity. By segmenting our network and instituting robust controls, we aim to reduce the risk of internal and external attacks, minimize the impact of successful breaches, facilitate regulatory compliance, and uphold our commitments to stakeholders regarding safeguarding critical information assets.",
       "scope": "The Internal Network Access Policy applies to all our organization's employees, contractors, and stakeholders and encompasses the implementation and management of network segmentation measures to enhance the security and resilience of our IT infrastructure. This policy divides our network into distinct segments or zones based on security requirements, business functions, and risk levels. It sets guidelines for configuring and enforcing network access controls, including firewalls, VLANs, and access lists, to restrict unauthorized access and contain potential threats. The policy defines procedures for network segmentation design, regular monitoring, and updates to ensure ongoing effectiveness. It also outlines the responsibilities of individuals involved in network segmentation processes, including network administrators, IT managers, and security personnel. Compliance with this policy is mandatory for all individuals within the organization, and any deviations or exceptions require approval from the designated authority responsible for network segmentation and cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 13,
+      "pdf_url": "https://sansorg.egnyte.com/dl/KFQ6wh4tJjdw"
     },
     {
       "slug": "software-development-vulnerability-management-policy",
@@ -454,7 +504,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Software Development Vulnerability Mangement Policy aims to establish standards for systematically examining software source code, focusing on identifying and rectifying potential security vulnerabilities, code inefficiencies, and deviations from established coding standards. This policy aims to enhance our software products' security, performance, and maintainability, thereby minimizing the risks associated with insecure coding practices and software defects. Through implementing this policy, we commit to developing secure, high-quality software that aligns with industry best practices, regulatory compliance standards, and the expectations of our stakeholders while upholding the integrity, confidentiality, and availability of our organizational digital assets.",
       "scope": "The Software Development Vulnerability Management Policy applies to all software code developed or utilized within our organization, including in-house development, third-party applications, and open-source software. This policy covers the analysis of code for security vulnerabilities, coding errors, and adherence to coding standards and best practices. It applies to all software development teams, software architects, programmers, and individuals responsible for reviewing and maintaining software code. The policy outlines the procedures, tools, and methodologies for code analysis, including static analysis, dynamic analysis, and manual code reviews. Compliance with this policy is mandatory to identify and mitigate potential security risks and vulnerabilities in software code. Any exceptions or deviations from this policy must be approved by the designated authority responsible for software code analysis and security. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 20,
+      "pdf_url": "https://sansorg.egnyte.com/dl/6hVWhgRK9bpW"
     },
     {
       "slug": "mobile-device-management-policy",
@@ -471,7 +523,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Mobile Device Policy aims to establish a comprehensive framework for the secure and responsible use of mobile devices within our organization, including smartphones, tablets, and laptops. This policy aims to protect sensitive data, maintain the integrity of our systems, and mitigate the risks associated with mobile device usage. By implementing effective controls and practices, this policy defines acceptable use policies, enforces device security configurations, and ensures data protection measures, such as encryption and remote wiping capabilities. We strive to minimize the potential risks of unauthorized access, data breaches, and malware infections by enforcing strong authentication mechanisms, regular security updates, and employee training. By prioritizing the secure use of mobile devices, we protect the confidentiality, integrity, and availability of our information assets, maintain compliance with industry standards and regulatory requirements, and uphold the trust and confidence of our stakeholders.",
       "scope": "The Mobile Device Policy applies to all our organization's employees, contractors, and stakeholders. It encompasses the secure and responsible use of mobile devices in work-related activities, including smartphones, tablets, and laptops. This policy covers both organization-owned devices and personal devices used for work purposes. It sets guidelines for device configuration, data encryption, authentication mechanisms, and application management to protect sensitive information and prevent unauthorized access. The policy defines procedures for mobile device registration, device monitoring, and enforcing security controls, such as remote wipe capabilities and mobile device management (MDM) solutions. Compliance with this policy is mandatory for all individuals within the organization, and any deviations or exceptions require approval from the designated authority responsible for mobile device management and cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 9,
+      "pdf_url": "https://sansorg.egnyte.com/dl/ggkPDhqJg3xT"
     },
     {
       "slug": "safeguard-implementation-management-policy",
@@ -488,7 +542,9 @@
       "refresh_status": "unchanged",
       "purpose": "Our Cybersecurity Safeguard Implementation Policy aims to establish a structured and standardized approach to managing cybersecurity projects throughout their lifecycle, ensuring the successful implementation of security initiatives and the protection of our organization's information assets. This policy aims to provide clear guidelines and procedures for the planning, execution, monitoring, and controlling of cybersecurity projects, integrating security requirements into all phases of project management. By implementing effective project management practices, this policy seeks to minimize project risks, optimize resource allocation, and ensure the timely delivery of cybersecurity solutions that align with industry best practices and regulatory obligations. Through consistent methodologies and collaboration between stakeholders, we strive to enhance our organization's security posture, strengthen our resilience against cyber threats, and safeguard the confidentiality, integrity, and availability of our systems, data, and networks.",
       "scope": "The Cybersecurity Safeguard Implementation Policy applies to all employees, contractors, and stakeholders involved in the planning, execution, and oversight of cybersecurity projects within our organization. This policy encompasses the management of projects aimed at enhancing the organization's cybersecurity posture, implementing security controls, and addressing vulnerabilities and risks. It covers project initiation, planning, execution, monitoring, and closure phases, ensuring that cybersecurity requirements are integrated throughout the project lifecycle. The policy establishes guidelines for project governance, risk management, stakeholder communication, and resource allocation to ensure the successful delivery of cybersecurity projects. Compliance with this policy is mandatory for all individuals involved in cybersecurity project management, and any deviations or exceptions require approval from the designated authority responsible for cybersecurity governance. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 13,
+      "pdf_url": "https://sansorg.egnyte.com/dl/qQ34T8bpbtDC"
     },
     {
       "slug": "password-construction-standard",
@@ -505,7 +561,9 @@
       "refresh_status": "unchanged",
       "purpose": "The purpose of this guidelines is to provide best practices for the creation of strong passwords.",
       "scope": "This guideline applies to employees, contractors, consultants, temporary and other workers, including all personnel affiliated with third parties. This guideline applies to all passwords including but not limited to user-level accounts, system-level accounts, web accounts, e-mail accounts, screen saver protection, voicemail, and local router logins.",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 4,
+      "pdf_url": "https://sansorg.egnyte.com/dl/myCVQDx38p7B"
     },
     {
       "slug": "database-credentials-standard",
@@ -522,7 +580,9 @@
       "refresh_status": "unchanged",
       "purpose": "This policy states the requirements for securely storing and retrieving database usernames and passwords (i.e., database credentials) for use by a program that will access a database running on one of <Company Name>'s networks. Software applications running on <Company Name>'s networks may require access to one of the many internal database servers. In order to access these databases, a program must authenticate to the database by presenting acceptable credentials. If the credentials are improperly stored, the credentials may be compromised leading to a compromise of the database.",
       "scope": "This policy is directed at all system implementer and/or software engineers who may be coding applications that will access a production database server on the <Company Name> Network. This policy applies to all software (programs, modules, libraries or APIS that will access a <Company Name>, multi-user production database. It is recommended that similar requirements be in place for non-production servers and lap environments since they don’t always use sanitized information.",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 21,
+      "pdf_url": "https://sansorg.egnyte.com/dl/6WxJQhvVXyBF"
     },
     {
       "slug": "technology-equipment-disposal-standard",
@@ -539,7 +599,9 @@
       "refresh_status": "unchanged",
       "purpose": "The purpose of this policy it to define the guidelines for the disposal of technology equipment and components owned by <Company Name>.",
       "scope": "This policy applies to any computer/technology equipment or peripheral devices that are no longer needed within <Company Name> including, but not limited to the following: personal computers, servers, hard drives, laptops, mainframes, smart phones, or handheld computers ( i.e., Windows Mobile, iOS or Android-based devices), peripherals (i.e., keyboards, mice, speakers), printers, scanners, typewriters, compact and floppy discs, portable storage devices (i.e., USB drives), backup tapes, printed materials. All <Company Name> employees and affiliates must comply with this policy.",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 22,
+      "pdf_url": "https://sansorg.egnyte.com/dl/bkCwR6FyDB76"
     },
     {
       "slug": "acceptable-use-standard",
@@ -556,7 +618,9 @@
       "refresh_status": "unchanged",
       "purpose": "The purpose of this policy is to outline the acceptable use of computer equipment and other electronic devices at <Company Name>. These rules are in place to protect the employee and <Company Name>. Inappropriate use exposes <Company Name> to cyber risks including virus attacks including ransomware, compromise of network systems and services, data breach, and legal issues.",
       "scope": "This policy applies to the use of information, electronic and computing devices, and network resources to conduct <Company Name> business or interact with internal networks and business systems, whether owned or leased by <Company Name>, the employee, or a third party. All employees, contractors, consultants, temporary, and other workers at <Company Name> and its subsidiaries are responsible for exercising good judgment regarding appropriate use of information, electronic devices, and network resources in accordance with <Company Name> policies and standards, and local laws and regulation. Exceptions to this policy are documented in section 5.2 This policy applies to employees, contractors, consultants, temporaries, and other workers at <Company Name>, including all personnel affiliated with third parties. This policy applies to all equipment that is owned or leased by <Company Name>. Page 2",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 53,
+      "pdf_url": "https://sansorg.egnyte.com/dl/HMyyypyXVW6Y"
     },
     {
       "slug": "acceptable-encryption-standard",
@@ -573,7 +637,9 @@
       "refresh_status": "unchanged",
       "purpose": "The purpose of this policy is to provide guidance that limits the use of encryption to those algorithms that have received substantial public review and have been proven to work effectively. Additionally, this policy provides direction to ensure that Federal regulations are followed, and legal authority is granted for the dissemination and use of encryption technologies outside of the United States.",
       "scope": "This policy applies to all <Company Name> employees and affiliates.",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 20,
+      "pdf_url": "https://sansorg.egnyte.com/dl/rbw6B8Y4P6gX"
     },
     {
       "slug": "artificial-intelligence-acceptable-use-standard",
@@ -590,7 +656,9 @@
       "refresh_status": "unchanged",
       "purpose": "Page 1 Artificial Intelligence Standard (Last Updated April 2025) Scope This policy applies to all <Company Name> employees and affiliates. Safeguards I. Introduction. YourCompanyName is committed to full compliance with applicable laws related to the use of artificial intelligence in the countries in which YourCompanyName provides products and services. Additionally, YourCompanyName is committed to the ethical use of artificial intelligence. This Artificial Intelligence Use Policy (“Policy”) outlines YourCompanyName’s requirements with respect to the adoption of all forms of artificial intelligence at YourCompanyName. Such artificial intelligence adoption includes use for business efficiencies, operations, and inclusion in YourCompanyName’s products and services. This Policy is applicable to all YourCompanyName directors, officers, board members, employees, contractors, representatives, affiliates, agents, and any person or entity performing services for or on behalf of YourCompanyName. The ResponsibleCorporateOfficer at YourCompanyName is responsible for the enforcement of this Policy. II. Definitions. “Artificial intelligence” or “AI” means the use of machine learning technology, software, automation, and algorithms to perform tasks and make rules or predictions based on existing datasets and instructions. “Artificial Intelligence Committee” or “AI Committee” is an internal YourCompanyName committee tasked with reviewing and approving uses of AI at YourCompanyName. “Artificial intelligence system” or “AI system” means software that is developed with one or more of the techniques and approaches listed in Annex I and can, for a given set of human-defined objectives, generate outputs such as content, predictions, recommendations, or decisions influencing the environments they interact with.",
       "scope": "This policy applies to all <Company Name> employees and affiliates.",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 80,
+      "pdf_url": "https://sansorg.egnyte.com/dl/KmGPm4xP9hKY"
     },
     {
       "slug": "internet-acceptable-use-standard",
@@ -607,7 +675,9 @@
       "refresh_status": "unchanged",
       "purpose": "The purpose of this policy is to define the appropriate uses of the Internet by <Company Name> employees and affiliates.",
       "scope": "The Internet usage Policy applies to all Internet users (individuals working for the company, including permanent full-time and part-time employees, contract workers, temporary agency workers, business partners, and vendors) who access the Internet through the computing or networking resources. The company's Internet users are expected to be familiar with and to comply with this policy, and are also required to use their common sense and exercise their good judgment while using Internet services.",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 65,
+      "pdf_url": "https://sansorg.egnyte.com/dl/DqqTd9QRpDCv"
     },
     {
       "slug": "acquisition-assessment-standard",
@@ -624,7 +694,9 @@
       "refresh_status": "unchanged",
       "purpose": "The purpose of this policy is to establish our organization’s responsibilities regarding corporate acquisitions and mergers. This policy also defines the minimum security requirements involved in the Information Security acquisition assessment.",
       "scope": "This policy applies to all <Company Name> employees and affiliates.",
-      "index_error": null
+      "index_error": null,
+      "safeguard_count": 18,
+      "pdf_url": "https://sansorg.egnyte.com/dl/3pmckcrwYDD4"
     }
   ]
 }

@@ -13,7 +13,7 @@ import numpy as np
 
 from backend.llm.router import llm
 from backend.llm.store import load_settings
-from backend.retrieve.sections import build_summary_text, extract_purpose_and_scope
+from backend.retrieve.safeguards import extract_and_store_safeguards, safeguards_are_current
 from backend.retrieve.text import extract_document
 from backend.scraper.catalog import CATALOG_DIR, PDF_DIR, load_catalog, pdf_path_for, save_catalog
 
@@ -145,6 +145,15 @@ async def upsert_summary_chunk(item: dict[str, Any], path: Path) -> dict[str, An
                         and str(row.get("slug")) == slug
                         and str(row.get("pdf_sha256") or "") == sha
                     ):
+                        if not safeguards_are_current(slug, sha):
+                            try:
+                                pages = extract_document(path.name, path.read_bytes())
+                                safeguards = await extract_and_store_safeguards(
+                                    item, pages, sha
+                                )
+                                print(f"  {slug}: {len(safeguards)} safeguards")
+                            except Exception as exc:  # noqa: BLE001
+                                print(f"  {slug}: safeguard extract skipped: {exc}")
                         return {
                             "purpose": str(row.get("purpose") or ""),
                             "scope": str(row.get("scope") or ""),
@@ -154,6 +163,11 @@ async def upsert_summary_chunk(item: dict[str, Any], path: Path) -> dict[str, An
 
     pages = extract_document(path.name, path.read_bytes())
     sections = extract_purpose_and_scope(pages)
+    try:
+        safeguards = await extract_and_store_safeguards(item, pages, sha)
+        print(f"  {slug}: {len(safeguards)} safeguards")
+    except Exception as exc:  # noqa: BLE001 — summary embed can still proceed
+        print(f"  {slug}: safeguard extract skipped: {exc}")
     title = str(item.get("title") or slug)
     category = str(item.get("category") or "")
     text = build_summary_text(
@@ -218,6 +232,7 @@ async def ensure_index(*, force: bool = False) -> IndexStatus:
         print(
             f"Policy index already up to date: {inspect_index().message}"
         )
+        await _backfill_safeguards(available)
         return inspect_index()
 
     print(
@@ -271,6 +286,11 @@ async def ensure_index(*, force: bool = False) -> IndexStatus:
         rebuilt.add(slug)
         note = " (first-page fallback)" if sections.fallback else ""
         print(f"  {slug}: summary chunk{note}")
+        try:
+            safeguards = await extract_and_store_safeguards(item, pages, sha)
+            print(f"  {slug}: {len(safeguards)} safeguards")
+        except Exception as exc:  # noqa: BLE001
+            print(f"  {slug}: safeguard extract skipped: {exc}")
 
     if not new_rows and not inspect_index().ready:
         raise IndexBuildError("No policy summaries could be indexed.")
@@ -286,6 +306,7 @@ async def ensure_index(*, force: bool = False) -> IndexStatus:
             model_name=model_name,
             dimensions=dimensions,
         )
+    await _backfill_safeguards(available)
     return inspect_index()
 
 
@@ -319,6 +340,27 @@ def _stale_jobs(
             continue
         jobs.append((item, path, pdf_sha256(path)))
     return jobs
+
+
+async def _backfill_safeguards(
+    available: list[tuple[dict[str, Any], Path]],
+) -> None:
+    pending = [
+        (item, path, pdf_sha256(path))
+        for item, path in available
+        if not safeguards_are_current(str(item["slug"]), pdf_sha256(path))
+    ]
+    if not pending:
+        return
+    print(f"Extracting safeguards for {len(pending)} policy PDF(s)…")
+    for item, path, sha in pending:
+        slug = str(item["slug"])
+        try:
+            pages = extract_document(path.name, path.read_bytes())
+            rows = await extract_and_store_safeguards(item, pages, sha)
+            print(f"  {slug}: {len(rows)} safeguards")
+        except Exception as exc:  # noqa: BLE001
+            print(f"  {slug}: safeguard extract skipped: {exc}")
 
 
 def _merge_write(

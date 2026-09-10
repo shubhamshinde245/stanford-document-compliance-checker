@@ -6,30 +6,16 @@ import { toast } from "react-toastify/unstyled";
 import {
   fetchPolicies,
   fetchPolicySchedule,
-  policyPdfUrl,
   runPolicyScrape,
   savePolicySchedule,
 } from "@/lib/api";
-import type { PolicyCatalog, PolicyRecord, PolicySchedule } from "@/lib/types";
-
-function formatDate(iso: string | null): string {
-  if (!iso) return "Unknown date";
-  const parsed = new Date(`${iso}T00:00:00`);
-  if (Number.isNaN(parsed.getTime())) return iso;
-  return parsed.toLocaleDateString("en-GB", {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-}
-
-function formatBytes(bytes: number | null): string {
-  if (!bytes) return "";
-  if (bytes < 1024) return `${bytes} B`;
-  const kb = bytes / 1024;
-  if (kb < 1024) return `${kb.toFixed(0)} KB`;
-  return `${(kb / 1024).toFixed(2)} MB`;
-}
+import type {
+  PolicyCatalog,
+  PolicyRecord,
+  PolicySchedule,
+} from "@/lib/types";
+import { PolicyCard } from "@/components/policy-card";
+import { SafeguardsDialog } from "@/components/safeguards-dialog";
 
 function formatPacific(iso: string | null): string {
   if (!iso) return "—";
@@ -63,6 +49,10 @@ export function PoliciesDashboard() {
   const [error, setError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [category, setCategory] = useState("all");
+  const [safeguardsPolicy, setSafeguardsPolicy] = useState<{
+    slug: string;
+    title: string;
+  } | null>(null);
 
   useEffect(() => {
     let cancelled = false;
@@ -239,11 +229,25 @@ export function PoliciesDashboard() {
 
           <ol className="grid list-none gap-4 p-0 md:grid-cols-2">
             {filtered.map((policy) => (
-              <PolicyCard key={policy.slug} policy={policy} />
+              <PolicyCard
+                key={policy.slug}
+                policy={policy}
+                onViewSafeguards={(item) =>
+                  setSafeguardsPolicy({ slug: item.slug, title: item.title })
+                }
+              />
             ))}
           </ol>
         </>
       )}
+
+      {safeguardsPolicy ? (
+        <SafeguardsDialog
+          slug={safeguardsPolicy.slug}
+          title={safeguardsPolicy.title}
+          onClose={() => setSafeguardsPolicy(null)}
+        />
+      ) : null}
     </div>
   );
 }
@@ -472,70 +476,5 @@ function Stat({
       <p className="mt-1 font-serif text-4xl font-semibold leading-none">{value}</p>
       <p className="mt-2 text-sm text-muted">{hint}</p>
     </div>
-  );
-}
-
-function statusLabel(status: string | null): string | null {
-  if (status === "updated") return "Updated";
-  if (status === "added") return "New";
-  return null;
-}
-
-function PolicyCard({ policy }: { policy: PolicyRecord }) {
-  const badge = statusLabel(policy.refresh_status);
-  return (
-    <li className="grid gap-3 rounded-card border border-line/80 bg-paper p-5 shadow-card">
-      <div>
-        <p className="flex flex-wrap items-center gap-2 text-[0.72rem] font-bold uppercase tracking-[0.14em] text-cardinal">
-          {policy.category || "Uncategorized"}
-          {badge ? (
-            <span className="rounded-pill bg-cardinal/10 px-2 py-0.5 text-[0.65rem] tracking-[0.08em] text-cardinal">
-              {badge}
-            </span>
-          ) : null}
-        </p>
-        <h3 className="mt-1 font-serif text-xl font-semibold leading-tight tracking-tight">
-          {policy.title}
-        </h3>
-        <p className="mt-1 text-sm text-muted">
-          Published {formatDate(policy.published_on)}
-          {policy.previous_published_on &&
-          policy.previous_published_on !== policy.published_on
-            ? ` (was ${formatDate(policy.previous_published_on)})`
-            : ""}
-          {policy.pdf_bytes ? ` · ${formatBytes(policy.pdf_bytes)}` : ""}
-        </p>
-      </div>
-      {policy.summary ? (
-        <p className="text-[0.95rem] leading-relaxed text-muted">{policy.summary}</p>
-      ) : null}
-      {policy.error ? (
-        <p className="text-sm text-fail">{policy.error}</p>
-      ) : null}
-      <div className="flex flex-wrap gap-3 text-sm font-semibold">
-        <a
-          href={policy.source_url}
-          target="_blank"
-          rel="noreferrer"
-          className="text-cardinal underline-offset-2 hover:underline"
-          onClick={() => toast.info(`Opening source for “${policy.title}”.`)}
-        >
-          Source URL
-        </a>
-        {policy.pdf_path ? (
-          <a
-            href={policyPdfUrl(policy.slug)}
-            target="_blank"
-            rel="noreferrer"
-            className="text-cardinal underline-offset-2 hover:underline"
-            onClick={() => toast.info(`Opening PDF: ${policy.title}`)}
-          >
-            Open PDF
-          </a>
-        ) : (
-          <span className="text-muted">PDF unavailable</span>
-        )}
-      </div>
-    </li>
   );
 }

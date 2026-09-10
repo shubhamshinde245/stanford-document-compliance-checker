@@ -44,7 +44,7 @@ def rank_policies(
     query_vectors: np.ndarray,
     index_matrix: np.ndarray,
     rows: list[dict[str, Any]],
-    catalog_by_slug: dict[str, dict[str, str]],
+    catalog_by_slug: dict[str, dict[str, Any]],
 ) -> list[PolicyMatch]:
     if query_vectors.size == 0 or index_matrix.size == 0:
         return []
@@ -64,6 +64,8 @@ def rank_policies(
             continue
         live = catalog_by_slug.get(slug, {})
         snippet_source = str(row.get("text") or "")
+        summary = str(live.get("summary") or "") or snippet_from(snippet_source)
+        pdf_bytes = live.get("pdf_bytes")
         best_by_slug[slug] = PolicyMatch(
             slug=slug,
             title=live.get("title") or str(row.get("title") or slug),
@@ -72,18 +74,30 @@ def rank_policies(
             score=round(score, 4),
             snippet=snippet_from(snippet_source),
             chunk_id=str(row.get("chunk_id") or ""),
+            source_url=live.get("source_url") or str(row.get("source_url") or ""),
+            pdf_url=live.get("pdf_url") or str(row.get("pdf_url") or ""),
+            pdf_path=live.get("pdf_path") or None,
+            pdf_bytes=int(pdf_bytes) if isinstance(pdf_bytes, (int, float)) else None,
+            published_on=live.get("published_on") or None,
+            summary=summary,
         )
     return sorted(best_by_slug.values(), key=lambda item: item.score, reverse=True)
 
 
-def _catalog_by_slug() -> dict[str, dict[str, str]]:
-    lookup: dict[str, dict[str, str]] = {}
+def _catalog_by_slug() -> dict[str, dict[str, Any]]:
+    lookup: dict[str, dict[str, Any]] = {}
     for item in load_catalog().get("policies", []):
         if not isinstance(item, dict) or not item.get("slug"):
             continue
         lookup[str(item["slug"])] = {
             "title": str(item.get("title") or ""),
             "category": str(item.get("category") or ""),
+            "source_url": str(item.get("source_url") or ""),
+            "pdf_url": str(item.get("pdf_url") or ""),
+            "pdf_path": str(item.get("pdf_path") or "") or None,
+            "summary": str(item.get("summary") or ""),
+            "published_on": str(item.get("published_on") or "") or None,
+            "pdf_bytes": item.get("pdf_bytes"),
         }
     return lookup
 
