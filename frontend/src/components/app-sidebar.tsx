@@ -12,6 +12,12 @@ const NAV = [
     icon: CheckerIcon,
   },
   {
+    href: "/reports",
+    label: "Reports",
+    description: "Saved evaluations",
+    icon: ReportsIcon,
+  },
+  {
     href: "/policies",
     label: "Policies",
     description: "SANS library",
@@ -151,6 +157,25 @@ function CheckerIcon({ className }: { className?: string }) {
       <path d="M8 4.5h6.2L18.5 9v10.5A1.5 1.5 0 0 1 17 21H8a1.5 1.5 0 0 1-1.5-1.5V6A1.5 1.5 0 0 1 8 4.5Z" />
       <path d="M14.2 4.5V9h4.3" />
       <path d="M8.8 13.2 10.6 15l3.6-4" />
+    </svg>
+  );
+}
+
+function ReportsIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M8 6.5h9.5A1.5 1.5 0 0 1 19 8v11.5H9.5A1.5 1.5 0 0 1 8 18V6.5Z" />
+      <path d="M8 8.5H6.5A1.5 1.5 0 0 0 5 10v9.5A1.5 1.5 0 0 0 6.5 21H16" />
+      <path d="M10.5 11h5M10.5 14.5h3.5" />
     </svg>
   );
 }

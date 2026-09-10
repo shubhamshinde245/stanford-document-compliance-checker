@@ -13,7 +13,7 @@ a human reviewer can trace it back to a sentence in a real document. That rules 
 architecture where the model is trusted, and it rules out one where the answer changes
 between two runs on the same inputs.
 
-Every decision below carries a **Tradeoff / Impact** table directly under its title.
+Each of the fifteen decisions below carries a **Tradeoff / Impact** table directly under its title.
 The impact column is not theoretical — the figures come from an end-to-end browser run
 against the live app, recorded in [Verified behavior](#verified-behavior).
 
@@ -185,7 +185,7 @@ per-slug (`pdf_sha256`).
 
 | Tradeoff | Impact on the system |
 | --- | --- |
-| A document matching a policy's *body* but not its stated scope ranks lower than it should. And `MATCH_THRESHOLD = 50.0` is calibrated against `text-embedding-ada-002`, whose cosine similarities sit in a compressed band. | **This has already broken, and the fixtures prove it.** ada-002 never produces a score near 50 — an unrelated tree-care calendar scores 65.9–71.6% across all 36 policies and is reported `matched: true`, so the no-match branch in `evaluate.py` is unreachable in practice (see [Verified behavior](#verified-behavior)). Routing itself is fine — the correct policy ranks first at 91.5% — but the *confidence* decision is not. The upside stands: 36 vectors mean search is one `numpy` matmul and **there is no vector database in the stack**. |
+| A document matching a policy's *body* but not its stated scope ranks lower than it should. And any absolute score threshold is a property of the embedding model, not of the problem. | **The absolute threshold did break, and the fixtures caught it.** `MATCH_THRESHOLD = 50.0` sat far below anything ada-002 produces, so an unrelated tree-care calendar scored 71.6% and reported `matched: true` — the no-match branch was unreachable. Fixed by [decision 15](#15-matching-is-a-two-part-test-both-configurable): matching now also requires a lead over the runner-up, which is model-relative. The upside is unchanged: 36 vectors mean search is one `numpy` matmul and **there is no vector database in the stack**. |
 
 **Context.** Stage 1 has to route a document to the right policy out of 36.
 
@@ -358,6 +358,38 @@ and — the part that matters — an explicit **Forbidden** list: no navy or ele
 **Why.** A checkable list turns visual drift into a review item with a yes-or-no answer,
 instead of a matter of taste to be re-argued each session.
 
+### 15. Matching is a two-part test, both configurable
+
+| Tradeoff | Impact on the system |
+| --- | --- |
+| Two knobs instead of one, and the lead test is meaningless with a single candidate — it has to special-case that to "the whole score counts as separation". Both are also user-editable, so a reviewer can widen the gate until everything matches. | Replaces a rule that never fired. The unrelated fixture now returns `matched: false` at a 0.8 lead while both procedures pass at 5.7 and 5.1, so the no-match branch is reachable for the first time. Exposing the numbers in Settings is what makes the tradeoff honest — the rule is a calibration against one embedding model, not a truth, and the person who swaps the model is the one who has to retune it. The checker states the live rule on screen and, on a no-match, says which of the two tests failed and by how much. |
+
+**Context.** Cosine similarity from `text-embedding-ada-002` is compressed into a narrow
+band. Across all 36 policies an unrelated document spans 65.9–71.6% and a well-matched one
+spans 74.6–91.5%. There is no absolute cutoff that separates them, because the bands
+overlap — but the *shape* of the two distributions is completely different.
+
+**Decision.** A document matches a standard only if the top policy passes both tests:
+
+- `top >= match_min_confidence` — a floor, default 50.0. Rejects a uniformly weak field.
+- `top - second >= match_min_gap` — a lead, default 2.5. Rejects a field where everything
+  scores alike, which is exactly what an unrelated document looks like.
+
+Both live in `data/llm-settings.json`, are editable under **Settings → Match rule**, and
+are returned on every `/api/check` response alongside the measured gap.
+
+**Why the lead works where the floor does not.** A real match stands clear of the field;
+noise does not. Measured on the committed fixtures: 5.7 and 5.1 points of lead for the two
+procedures, 0.8 for the tree-care calendar. That ratio holds regardless of where the model
+happens to centre its scores, which is what makes it survive an embedding-model change.
+
+A z-score of the top against the whole field was also tried and rejected: it scored 3.63 /
+3.48 / 2.67, too close to separate reliably.
+
+**Tradeoff on validation.** The save path rejects an out-of-range value with a message the
+UI shows; the load path silently falls back to the default, so a hand-edited settings file
+cannot brick startup. Same split as `normalize_columns()` in decision 9.
+
 ---
 
 ## Verified behavior
@@ -397,18 +429,20 @@ Fixture 02 carries ten deliberate violations and **matched its answer key exactl
 `contradicted` on all fourteen others. No planted violation was passed. The predicted
 score (2 of 16 = 12.5%) and the reported score agreed to the decimal.
 
-**Fixture 03 exposes a real defect.** It was written to demonstrate the no-match path and
-instead demonstrated that the path never fires. The separation exists, but not in the
-absolute score — it is in the gap between the top match and the runner-up:
+**Fixture 03 exposed a real defect, now fixed.** It was written to demonstrate the
+no-match path and instead demonstrated that the path never fired. The separation exists,
+but not in the absolute score — it is in the gap between the top match and the runner-up:
 
 | Rule | 01 compliant | 02 non-compliant | 03 unrelated | Separates? |
 | --- | --- | --- | --- | --- |
-| `top >= 50.0` (current) | match | match | **match** | no |
-| `top - second >= 2.5` | match (5.7) | match (5.1) | **no match (0.8)** | **yes** |
+| `top >= 50.0` (old) | match | match | **match** | no |
+| `top - second >= 2.5` (**shipped**) | match (5.7) | match (5.1) | **no match (0.8)** | **yes** |
 | `z-score of top >= 2.5` | match (3.63) | match (3.48) | match (2.67) | no |
 
-Switching `MATCH_THRESHOLD` from an absolute score to a relative gap is the fix, and
-fixture 03 is the regression test for it.
+The lead test shipped as [decision 15](#15-matching-is-a-two-part-test-both-configurable)
+and fixture 03 is its regression test — it now returns `matched: false`. Raising the lead
+to 6.0 through the Settings API correctly un-matches fixture 01 as well (lead 5.7), which
+confirms the setting is live rather than cosmetic.
 
 **One finding worth recording.** A 341-word test document produces exactly **one** chunk
 at `WORDS_PER_CHUNK = 450`, so top-3 retrieval had nothing to choose between and every
@@ -425,10 +459,6 @@ Honest inventory of what is not done.
 - **No tests, no CI, no linter config.** The single biggest gap. There is no `tests/`, no
   pytest dependency, and no `.github/`. The browser pass above was written for this
   document, not committed as a suite.
-- **`MATCH_THRESHOLD` is miscalibrated and the no-match path is dead code.** At 50.0 it sits
-  far below anything ada-002 produces, so `matched` is true for every input, including a
-  document with no security content at all. Replacing it with a top-vs-runner-up gap rule
-  is item 2 below.
 - **Hardcoded models bypass Settings.** `EVAL_MODEL` / `EVAL_EFFORT`
   (`backend/retrieve/evaluate.py:23-24`) and `SAFEGUARD_MODEL`
   (`backend/retrieve/safeguards.py:16`) are pinned to `gpt-5.6-sol`, so the chat model the
@@ -459,26 +489,22 @@ Ordered by what unblocks the most.
    downgrade path. Then a fake provider for the router so the pipeline can be tested
    offline, and the Playwright pass above committed as a smoke test. This comes first
    because every item below changes logic that currently has no safety net.
-2. **Replace the absolute match threshold with a relative one.** `top - second >= 2.5`
-   separates all three committed fixtures where `top >= 50.0` separates none. This is a
-   handful of lines in `backend/retrieve/match.py` and it makes an entire user-facing
-   branch reachable for the first time. Cheap, and currently a correctness bug.
-3. **Real provider failover.** A health check plus try-the-next-configured-provider in
+2. **Real provider failover.** A health check plus try-the-next-configured-provider in
    `LLMRouter`, and wire `OllamaProvider` against Ollama's `/api/chat` and
    `/api/embeddings` so the app runs fully offline. This is what decision 2 was built for
    and is its most visible unfinished edge.
-4. **Route the hardcoded models through `load_settings()`** so Settings governs every call,
+3. **Route the hardcoded models through `load_settings()`** so Settings governs every call,
    not just the test buttons.
-5. **Persist check sessions** to SQLite or `data/sessions/` so evaluation survives a reload
+4. **Persist check sessions** to SQLite or `data/sessions/` so evaluation survives a reload
    and a `check_id` can be shared or revisited.
-6. **Sentence-boundary, heading-aware chunking** instead of fixed 450-word windows. The
+5. **Sentence-boundary, heading-aware chunking** instead of fixed 450-word windows. The
    verified-behavior note above is the argument: short documents collapse to a single
    chunk and every requirement gets the same evidence.
-7. **Evaluate a stronger embedding model** now that the threshold rule is relative — better
+6. **Evaluate a stronger embedding model** now that the threshold rule is relative — better
    separation would let the gap rule run with a wider margin.
-8. **Export a findings report** (PDF or CSV) with requirement, verdict, evidence quote, and
+7. **Export a findings report** (PDF or CSV) with requirement, verdict, evidence quote, and
    page citation. That artifact — not the web UI — is what a reviewer circulates.
-9. **Concurrency in `ensure_index()`** via `asyncio.gather` with a semaphore, as
+8. **Concurrency in `ensure_index()`** via `asyncio.gather` with a semaphore, as
    `_judge_batches()` already does. Today indexing is a serial 36-policy loop.
-10. **Generate `frontend/src/lib/types.ts` from the FastAPI OpenAPI schema** so the client
+9. **Generate `frontend/src/lib/types.ts` from the FastAPI OpenAPI schema** so the client
    types cannot drift from the Pydantic models.

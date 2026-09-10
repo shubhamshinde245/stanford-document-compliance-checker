@@ -27,9 +27,12 @@ from backend.models import (
     PolicySafeguardsResponse,
     PolicySchedule,
     PolicyScheduleUpdate,
+    SavedReport,
+    SavedReportList,
 )
 from backend.retrieve import IndexNotReady, check_upload, describe_index
 from backend.retrieve.evaluate import EvaluateError, evaluate_upload
+from backend.retrieve.reports import ReportError, delete_report, list_reports, load_report
 from backend.retrieve.safeguards import load_safeguards
 from backend.retrieve.text import ExtractError, SUPPORTED_SUFFIXES
 from backend.llm.schema import (
@@ -86,6 +89,13 @@ app.add_middleware(
 )
 
 
+def _safe_slug(slug: str) -> str:
+    """Reject anything that could escape the policy directory."""
+    if "/" in slug or "\\" in slug or ".." in slug:
+        raise HTTPException(status_code=400, detail="Invalid policy slug.")
+    return slug
+
+
 def _llm_http_error(exc: LLMError | LLMConfigError) -> HTTPException:
     status = getattr(exc, "status_code", 400)
     return HTTPException(status_code=status, detail=str(exc))
@@ -98,6 +108,8 @@ def _settings_response() -> LLMSettings:
         chat_model=data["chat_model"],
         embedding_model=data["embedding_model"],
         reasoning_effort=data["reasoning_effort"],
+        match_min_confidence=data["match_min_confidence"],
+        match_min_gap=data["match_min_gap"],
         output_columns=[
             OutputColumn.model_validate(item) for item in data["output_columns"]
         ],
@@ -181,8 +193,7 @@ async def evaluate_document(
             status_code=400,
             detail="Unsupported file type. Upload a PDF, DOCX, HTML, Markdown, or text file.",
         )
-    if "/" in slug or "\\" in slug or ".." in slug:
-        raise HTTPException(status_code=400, detail="Invalid policy slug.")
+    _safe_slug(slug)
     data = await file.read()
     if len(data) > MAX_UPLOAD_BYTES:
         raise HTTPException(status_code=413, detail="File is larger than 12 MB.")
@@ -198,6 +209,33 @@ async def evaluate_document(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
     except LLMError as extra:
         raise _llm_http_error(extra) from extra
+
+
+@app.get("/api/reports", response_model=SavedReportList)
+def get_reports() -> SavedReportList:
+    return SavedReportList(reports=list_reports())
+
+
+@app.get("/api/reports/{report_id}", response_model=SavedReport)
+def get_report(report_id: str) -> SavedReport:
+    try:
+        report = load_report(report_id)
+    except ReportError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+    if report is None:
+        raise HTTPException(status_code=404, detail="Report not found.")
+    return report
+
+
+@app.delete("/api/reports/{report_id}")
+def remove_report(report_id: str) -> dict[str, str]:
+    try:
+        deleted = delete_report(report_id)
+    except ReportError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
+    if not deleted:
+        raise HTTPException(status_code=404, detail="Report not found.")
+    return {"status": "deleted"}
 
 
 @app.get("/api/policies", response_model=PolicyCatalog)
@@ -239,8 +277,7 @@ async def scrape_policies() -> PolicyCatalog:
 
 @app.get("/api/policies/{slug}/safeguards", response_model=PolicySafeguardsResponse)
 def policy_safeguards(slug: str) -> PolicySafeguardsResponse:
-    if "/" in slug or "\\" in slug or ".." in slug:
-        raise HTTPException(status_code=400, detail="Invalid policy slug.")
+    _safe_slug(slug)
     catalog = load_catalog()
     record = next(
         (item for item in catalog.get("policies", []) if item.get("slug") == slug),
@@ -257,8 +294,7 @@ def policy_safeguards(slug: str) -> PolicySafeguardsResponse:
 
 @app.get("/api/policies/{slug}/pdf")
 def policy_pdf(slug: str) -> FileResponse:
-    if "/" in slug or "\\" in slug or ".." in slug:
-        raise HTTPException(status_code=400, detail="Invalid policy slug.")
+    _safe_slug(slug)
     catalog = load_catalog()
     record = next(
         (item for item in catalog.get("policies", []) if item.get("slug") == slug),

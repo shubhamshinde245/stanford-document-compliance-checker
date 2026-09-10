@@ -12,6 +12,8 @@ import type {
   PolicyCatalog,
   PolicySafeguardsResponse,
   PolicySchedule,
+  SavedReport,
+  SavedReportList,
 } from "./types";
 
 async function readDetail(response: Response, fallback: string): Promise<string> {
@@ -67,6 +69,33 @@ export async function evaluateDocument(
     );
   }
   return response.json();
+}
+
+export async function fetchReports(): Promise<SavedReportList> {
+  const response = await fetch("/api/reports", { cache: "no-store" });
+  if (!response.ok) {
+    throw new Error(await readDetail(response, "Could not load saved reports."));
+  }
+  return response.json();
+}
+
+export async function fetchReport(id: string): Promise<SavedReport> {
+  const response = await fetch(`/api/reports/${encodeURIComponent(id)}`, {
+    cache: "no-store",
+  });
+  if (!response.ok) {
+    throw new Error(await readDetail(response, "Could not load that report."));
+  }
+  return response.json();
+}
+
+export async function deleteSavedReport(id: string): Promise<void> {
+  const response = await fetch(`/api/reports/${encodeURIComponent(id)}`, {
+    method: "DELETE",
+  });
+  if (!response.ok) {
+    throw new Error(await readDetail(response, "Could not delete that report."));
+  }
 }
 
 export async function fetchPolicies(): Promise<PolicyCatalog> {
@@ -152,6 +181,8 @@ export async function saveLlmSettings(payload: {
   chat_model: string;
   embedding_model: string;
   reasoning_effort: LLMEffort;
+  match_min_confidence: number;
+  match_min_gap: number;
   output_columns: OutputColumn[];
 }): Promise<LLMSettings> {
   const response = await fetch("/api/llm/settings", {

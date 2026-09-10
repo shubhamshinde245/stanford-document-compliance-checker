@@ -20,7 +20,7 @@ const serif = Source_Serif_4({
 export const metadata: Metadata = {
   title: "Stanford Document Compliance Checker",
   description:
-    "Check HTML documents against Stanford accessibility, identity, and structure rules.",
+    "Rank an uploaded procedure against SANS security policy templates, then judge it requirement by requirement with quoted evidence.",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

@@ -33,6 +33,10 @@ out/
 # Parked policy embeddings (rebuild with `make index`)
 data/sans-policies/index.json
 data/sans-policies/index.npz
+data/sans-policies/index*.tmp*
+
+# Saved evaluation reports
+data/reports/*.json
 
 # Instructions
 docs/

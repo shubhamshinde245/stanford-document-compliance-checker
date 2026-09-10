@@ -25,6 +25,8 @@ class CheckResponse(BaseModel):
     check_id: str
     matched: bool
     match_threshold: float
+    match_min_gap: float = 0.0
+    match_gap: float = 0.0
     matches: list[PolicyMatch]
 
 
@@ -61,6 +63,35 @@ class EvaluateResponse(BaseModel):
     score: float
     counts: EvaluateCounts
     rows: list[EvaluateFinding] = Field(default_factory=list)
+    report_id: str | None = None
+
+
+class SavedMatch(BaseModel):
+    slug: str
+    title: str
+    category: str = ""
+    confidence: float
+
+
+class SavedReportSummary(BaseModel):
+    id: str
+    created_at: str
+    filename: str
+    check_id: str = ""
+    slug: str
+    title: str
+    category: str = ""
+    score: float
+    counts: EvaluateCounts
+
+
+class SavedReport(SavedReportSummary):
+    evaluation: EvaluateResponse
+    matches: list[SavedMatch] = Field(default_factory=list)
+
+
+class SavedReportList(BaseModel):
+    reports: list[SavedReportSummary] = Field(default_factory=list)
 
 
 class HealthResponse(BaseModel):
@@ -166,6 +197,8 @@ class LLMSettings(BaseModel):
     chat_model: str
     embedding_model: str
     reasoning_effort: LLMEffort
+    match_min_confidence: float = 50.0
+    match_min_gap: float = 2.5
     output_columns: list[OutputColumn] = Field(default_factory=list)
     locked_columns: list[str] = Field(default_factory=list)
     configured: LLMProviderStatus
@@ -176,6 +209,8 @@ class LLMSettingsUpdate(BaseModel):
     chat_model: str = Field(min_length=1)
     embedding_model: str = Field(min_length=1)
     reasoning_effort: LLMEffort
+    match_min_confidence: float = Field(default=50.0, ge=0, le=100)
+    match_min_gap: float = Field(default=2.5, ge=0, le=100)
     output_columns: list[OutputColumn] | None = None
 
 

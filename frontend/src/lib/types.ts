@@ -20,6 +20,8 @@ export type CheckResponse = {
   check_id: string;
   matched: boolean;
   match_threshold: number;
+  match_min_gap: number;
+  match_gap: number;
   matches: PolicyMatch[];
 };
 
@@ -62,6 +64,35 @@ export type EvaluateResponse = {
   score: number;
   counts: EvaluateCounts;
   rows: EvaluateFinding[];
+  report_id: string | null;
+};
+
+export type SavedMatch = {
+  slug: string;
+  title: string;
+  category: string;
+  confidence: number;
+};
+
+export type SavedReportSummary = {
+  id: string;
+  created_at: string;
+  filename: string;
+  check_id: string;
+  slug: string;
+  title: string;
+  category: string;
+  score: number;
+  counts: EvaluateCounts;
+};
+
+export type SavedReport = SavedReportSummary & {
+  evaluation: EvaluateResponse;
+  matches: SavedMatch[];
+};
+
+export type SavedReportList = {
+  reports: SavedReportSummary[];
 };
 
 export type PolicyRecord = {
@@ -154,6 +185,8 @@ export type LLMSettings = {
   chat_model: string;
   embedding_model: string;
   reasoning_effort: LLMEffort;
+  match_min_confidence: number;
+  match_min_gap: number;
   output_columns: OutputColumn[];
   locked_columns: string[];
   configured: LLMProviderStatus;
