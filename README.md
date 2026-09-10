@@ -82,9 +82,40 @@ curl -s -X POST http://127.0.0.1:8000/api/check -F "file=@procedure.pdf"
 
 ## Test documents
 
-Three hand-authored fixtures live in `tests/documents/` — a compliant procedure, one with
-ten deliberate violations plus an answer key, and an unrelated document. Drop them into
-the uploader, or:
+Hand-authored fixtures in [`tests/documents/`](tests/documents/) cover the three
+outcomes the checker has to get right. Drop them on <http://localhost:3000>.
+
+| File | Purpose |
+| --- | --- |
+| [`01-compliant-privileged-account-procedure.md`](tests/documents/01-compliant-privileged-account-procedure.md) | A procedure written to the Privileged Account Management Policy |
+| [`02-noncompliant-privileged-account-procedure.md`](tests/documents/02-noncompliant-privileged-account-procedure.md) | The same subject with ten planted violations |
+| [`02-noncompliant-ANSWER-KEY.md`](tests/documents/02-noncompliant-ANSWER-KEY.md) | Each planted quote and the verdict it should get |
+| [`03-unrelated-document.md`](tests/documents/03-unrelated-document.md) | A campus tree-care calendar — no security content, so no match |
+
+### 1. A procedure that complies
+
+Routes to **Privileged Account Management Policy** at 91.5, clearly ahead of the
+runner-up. Evaluation: **100.0%** aligned (16 of 16).
+
+![Compliant procedure ranked against the library](tests/documents/screenshots/01-compliant-match.png)
+
+![Compliant procedure evaluated at 100 percent alignment](tests/documents/screenshots/01-compliant-evaluate.png)
+
+### 2. Deliberate violations
+
+Ten planted conflicts, listed in the [answer key](tests/documents/02-noncompliant-ANSWER-KEY.md).
+Evaluation: **12.5%** aligned — PAM-01 and PAM-02 only — and 14 contradicted. The
+PAM-03 evidence quote is the planted sentence *Network devices are excluded from
+the privileged account inventory.*
+
+![Noncompliant procedure with planted contradictions](tests/documents/screenshots/02-noncompliant-evaluate.png)
+
+### 3. Unrelated document
+
+No match. Neighbors are named only — no scores, Evaluate stays off — because Log
+Management Policy and Software Management Policy are too close to call.
+
+![Unrelated tree-care calendar with no match](tests/documents/screenshots/03-unrelated-no-match.png)
 
 ```bash
 curl -s -X POST http://127.0.0.1:8000/api/evaluate \
@@ -92,7 +123,8 @@ curl -s -X POST http://127.0.0.1:8000/api/evaluate \
   -F "slug=privileged-account-management-policy"
 ```
 
-See [tests/documents/README.md](tests/documents/README.md) for expected results.
+Expected routing, scores, and the match-gap rule that keeps fixture 03 unmatched
+are in [tests/documents/README.md](tests/documents/README.md).
 
 ## Design
 
