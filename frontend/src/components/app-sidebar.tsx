@@ -86,7 +86,18 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
           />
         ))}
       </nav>
-      <div className="mt-auto px-2 pt-3">
+      <div className="mt-auto flex flex-col gap-1 px-2 pt-3">
+        <NavLink
+          href="/how-it-works"
+          label="How it works"
+          description="Matching and scores"
+          icon={HowItWorksIcon}
+          collapsed={collapsed}
+          active={
+            pathname === "/how-it-works" ||
+            pathname.startsWith("/how-it-works/")
+          }
+        />
         <NavLink
           href="/settings"
           label="Settings"
@@ -195,6 +206,26 @@ function PoliciesIcon({ className }: { className?: string }) {
       <path d="M6.5 5.5h11A1.5 1.5 0 0 1 19 7v12.5H7.5A2.5 2.5 0 0 1 5 17V7a1.5 1.5 0 0 1 1.5-1.5Z" />
       <path d="M5 17a2.5 2.5 0 0 1 2.5-2.5H19" />
       <path d="M9 9h6M9 12.5h4" />
+    </svg>
+  );
+}
+
+function HowItWorksIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.6"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <circle cx="6.5" cy="7" r="2.2" />
+      <circle cx="17.5" cy="7" r="2.2" />
+      <circle cx="12" cy="17" r="2.2" />
+      <path d="M8.4 8.4 10.4 15.2M15.6 8.4 13.6 15.2" />
     </svg>
   );
 }

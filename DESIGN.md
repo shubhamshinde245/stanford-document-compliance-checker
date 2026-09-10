@@ -3,6 +3,11 @@
 How the Stanford Document Compliance Checker is put together, why each load-bearing
 choice was made, and what I would build next.
 
+For the click-by-click flow, cosine matching math, on-disk embedding layout, and a
+worked example with both a stakeholder and an engineer reading, see
+[HOW_IT_WORKS.md](HOW_IT_WORKS.md). The same explainer lives in the app under
+**How it works**.
+
 The app answers two questions about an uploaded operating procedure:
 
 1. **Which security standard does this document belong to?** (`POST /api/check`)
