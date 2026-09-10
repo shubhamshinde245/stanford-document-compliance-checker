@@ -32,7 +32,7 @@ export function EvaluationDashboard({ report }: { report: EvaluateResponse }) {
     <div className="grid gap-4">
       <section className={CARD}>
         <p className="mb-1 text-[0.72rem] font-bold uppercase tracking-[0.16em] text-cardinal">
-          Evaluation
+          Evaluation report
         </p>
         <div className="flex flex-wrap items-start justify-between gap-3">
           <div>

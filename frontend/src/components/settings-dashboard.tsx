@@ -50,6 +50,8 @@ export function SettingsDashboard() {
     "text-embedding-ada-002",
   );
   const [effort, setEffort] = useState<LLMEffort>("medium");
+  const [minConfidence, setMinConfidence] = useState("50");
+  const [minGap, setMinGap] = useState("2.5");
   const [columns, setColumns] = useState<OutputColumn[]>([]);
   const [locked, setLocked] = useState<string[]>([]);
   const [schema, setSchema] = useState<OutputSchemaPreview | null>(null);
@@ -112,6 +114,8 @@ export function SettingsDashboard() {
     setChatModel(next.chat_model);
     setEmbeddingModel(next.embedding_model);
     setEffort(next.reasoning_effort);
+    setMinConfidence(String(next.match_min_confidence));
+    setMinGap(String(next.match_min_gap));
     setColumns(next.output_columns.map((column) => ({ ...column })));
     setLocked(next.locked_columns);
     fetchOutputSchema().then(setSchema).catch(() => setSchema(null));
@@ -137,7 +141,15 @@ export function SettingsDashboard() {
       chatModel !== settings.chat_model ||
       embeddingModel !== settings.embedding_model ||
       effort !== settings.reasoning_effort ||
+      minConfidence !== String(settings.match_min_confidence) ||
+      minGap !== String(settings.match_min_gap) ||
       columnsDirty);
+
+  const matchFault = useMemo(
+    () => validateBound(minConfidence, "Minimum confidence")
+      ?? validateBound(minGap, "Minimum lead"),
+    [minConfidence, minGap],
+  );
 
   const columnFault = useMemo(() => validateColumns(columns), [columns]);
 
@@ -167,6 +179,8 @@ export function SettingsDashboard() {
         chat_model: chatModel,
         embedding_model: embeddingModel,
         reasoning_effort: effort,
+        match_min_confidence: Number(minConfidence),
+        match_min_gap: Number(minGap),
         output_columns: columns,
       });
       applySettings(next);
@@ -423,6 +437,62 @@ export function SettingsDashboard() {
           })}
         </div>
 
+        <fieldset className="grid gap-3 border-0 p-0">
+          <legend className="mb-1 text-sm font-semibold">Match rule</legend>
+          <p className="max-w-2xl text-sm leading-relaxed text-muted">
+            A document counts as matching a standard only if the top policy
+            clears both tests. Cosine scores from{" "}
+            <code className="rounded bg-cardinal/10 px-1 py-0.5 text-[0.85em]">
+              text-embedding-ada-002
+            </code>{" "}
+            sit in a narrow band, so the lead over the runner-up separates a real
+            match far better than the raw score does.
+          </p>
+          <div className="grid gap-3 sm:grid-cols-2">
+            <label className="grid gap-1.5 text-sm">
+              <span className="font-semibold">Minimum confidence</span>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                step={0.5}
+                inputMode="decimal"
+                value={minConfidence}
+                onChange={(event) => setMinConfidence(event.target.value)}
+                className={CONTROL}
+              />
+              <span className="text-muted">
+                Floor on the top score. A weak field fails outright.
+              </span>
+            </label>
+            <label className="grid gap-1.5 text-sm">
+              <span className="font-semibold">Minimum lead over runner-up</span>
+              <input
+                type="number"
+                min={0}
+                max={100}
+                step={0.1}
+                inputMode="decimal"
+                value={minGap}
+                onChange={(event) => setMinGap(event.target.value)}
+                className={CONTROL}
+              />
+              <span className="text-muted">
+                How far clear the best policy must be. An unrelated document
+                scores about the same against everything, so its lead is near
+                zero.
+              </span>
+            </label>
+          </div>
+          <p className="rounded-control bg-cardinal/5 px-3.5 py-3 text-sm leading-relaxed text-muted">
+            Current rule: a match needs a top score of at least{" "}
+            <strong className="text-ink">{minConfidence || "—"}%</strong> and a
+            lead of at least{" "}
+            <strong className="text-ink">{minGap || "—"}</strong> points over the
+            second-placed policy.
+          </p>
+        </fieldset>
+
         <div className="flex flex-wrap items-center gap-3">
           <button
             type="button"
@@ -435,6 +505,12 @@ export function SettingsDashboard() {
             {columns.length} columns + sources
           </span>
         </div>
+
+        {matchFault ? (
+          <p className="rounded-control bg-fail/10 px-3.5 py-3 text-sm leading-relaxed text-fail">
+            {matchFault}
+          </p>
+        ) : null}
 
         {columnFault ? (
           <p className="rounded-control bg-fail/10 px-3.5 py-3 text-sm leading-relaxed text-fail">
@@ -453,7 +529,7 @@ export function SettingsDashboard() {
           <button
             type="submit"
             className={PRIMARY_BUTTON}
-            disabled={saving || !!columnFault}
+            disabled={saving || !!columnFault || !!matchFault}
           >
             {saving ? "Saving…" : "Save defaults"}
           </button>
@@ -508,6 +584,15 @@ function validateColumns(columns: OutputColumn[]): string | null {
   if (columns.length > 16) {
     return "Too many columns. The limit is 16 including the 4 required ones.";
   }
+  return null;
+}
+
+function validateBound(raw: string, label: string): string | null {
+  const value = raw.trim();
+  if (!value) return `${label} is required.`;
+  const number = Number(value);
+  if (!Number.isFinite(number)) return `${label} must be a number.`;
+  if (number < 0 || number > 100) return `${label} must be between 0 and 100.`;
   return null;
 }
 

@@ -58,13 +58,12 @@ Document 01 scoring 100% is by construction: it was written to state every one o
 sixteen requirements affirmatively and in quotable prose. It is a control, not evidence
 that a real-world procedure would score that highly.
 
-## Document 03 does not currently produce a no-match
+## Document 03 and the match rule
 
-This fixture was written to demonstrate the no-match path. **It demonstrates instead that
-the path does not fire.** A tree-care calendar with no security content scores 71.6%
-against Log Management Policy and is reported as `matched: true`, because
-`MATCH_THRESHOLD = 50.0` (`backend/retrieve/match.py`) sits far below anything
-`text-embedding-ada-002` actually produces.
+This fixture was written to demonstrate the no-match path. On first run it demonstrated
+the opposite: a tree-care calendar with no security content scored 71.6% and reported
+`matched: true`, because the rule was a bare `top >= 50.0` and nothing
+`text-embedding-ada-002` produces comes near 50.
 
 Measured spread across all 36 policies:
 
@@ -74,17 +73,19 @@ Measured spread across all 36 policies:
 | 02 non-compliant | 87.4% | 73.0% | 77.3% | 2.89 |
 | 03 unrelated | 71.6% | 65.9% | 68.9% | 1.00 |
 
-Nothing scores near 50%, so `matched` is true for every input and the "no standard in the
-library matches this document" branch in `evaluate.py` is unreachable in practice.
-
-The separation is real, it is just not in the absolute score. The **gap between the top
-match and the runner-up** divides the three cleanly:
+The bands overlap, so no absolute cutoff separates them — but the shape does. A real match
+stands clear of the field; noise does not:
 
 | Rule | 01 | 02 | 03 | Separates? |
 | --- | --- | --- | --- | --- |
-| `top >= 50.0` (current) | match | match | **match** | no |
-| `top - second >= 2.5` | match | match | **no match** | **yes** |
-| `z-score of top >= 2.5` | match | match | match (2.67) | no |
+| `top >= 50.0` (old) | match | match | **match** | no |
+| `top - second >= 2.5` (**shipped**) | match (5.7) | match (5.1) | **no match (0.8)** | **yes** |
+| z-score of top `>= 2.5` | match (3.63) | match (3.48) | match (2.67) | no |
 
-A relative rule is the fix, and this fixture is the regression test for it. Keep document
-03 as the negative case: it should start returning `matched: false` once the rule changes.
+Matching now requires **both** a floor on the top score and a lead over the runner-up.
+Fixture 03 returns `matched: false`. Both numbers are editable under **Settings → Match
+rule** and are returned on every `/api/check` response as `match_threshold`,
+`match_min_gap`, and the measured `match_gap`.
+
+Keep fixture 03 as the negative case. If a change makes it match again, the gate has
+regressed.

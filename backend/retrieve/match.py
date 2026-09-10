@@ -7,6 +7,7 @@ from typing import Any
 import numpy as np
 
 from backend.llm.router import llm
+from backend.llm.store import load_settings
 from backend.models import CheckResponse, PolicyMatch
 from backend.retrieve.chunk import chunk_pages
 from backend.retrieve.index import inspect_index, load_parked_index
@@ -17,7 +18,6 @@ from backend.retrieve.session import store_check
 
 SNIPPET_CHARS = 320
 SLUG_RE = re.compile(r"[^a-z0-9]+")
-MATCH_THRESHOLD = 50.0
 
 
 class IndexNotReady(RuntimeError):
@@ -87,7 +87,21 @@ def rank_policies(
     return sorted(best_by_slug.values(), key=lambda item: item.score, reverse=True)
 
 
-def _catalog_by_slug() -> dict[str, dict[str, Any]]:
+def top_and_gap(matches: list[PolicyMatch]) -> tuple[float, float]:
+    """Best confidence, and how far clear of the runner-up it is.
+
+    With a single candidate there is nothing to be confused with, so the whole
+    score counts as separation.
+    """
+    if not matches:
+        return 0.0, 0.0
+    top = matches[0].confidence
+    if len(matches) == 1:
+        return top, top
+    return top, round(top - matches[1].confidence, 4)
+
+
+def catalog_by_slug() -> dict[str, dict[str, Any]]:
     lookup: dict[str, dict[str, Any]] = {}
     for item in load_catalog().get("policies", []):
         if not isinstance(item, dict) or not item.get("slug"):
@@ -143,10 +157,16 @@ async def check_upload(filename: str, data: bytes) -> CheckResponse:
         query,
         parked,
         summary_rows,
-        _catalog_by_slug(),
+        catalog_by_slug(),
     )
-    top = matches[0].confidence if matches else 0.0
-    matched = bool(matches) and top >= MATCH_THRESHOLD
+    settings = load_settings()
+    min_confidence = float(settings["match_min_confidence"])
+    min_gap = float(settings["match_min_gap"])
+    top, gap = top_and_gap(matches)
+    # Two independent tests. The floor rejects a uniformly weak field; the gap
+    # rejects a field where everything scores alike, which is what an unrelated
+    # document looks like under a compressed embedding model.
+    matched = bool(matches) and top >= min_confidence and gap >= min_gap
     cached = store_check(
         filename=filename,
         chunks=chunks,
@@ -159,6 +179,8 @@ async def check_upload(filename: str, data: bytes) -> CheckResponse:
         model=str(result.get("model") or status.settings_model),
         check_id=cached.check_id,
         matched=matched,
-        match_threshold=MATCH_THRESHOLD,
+        match_threshold=min_confidence,
+        match_min_gap=min_gap,
+        match_gap=gap,
         matches=matches,
     )

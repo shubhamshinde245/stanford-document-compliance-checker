@@ -17,8 +17,9 @@ from backend.models import (
     EvaluateSource,
 )
 from backend.retrieve.chunk import Chunk
-from backend.retrieve.match import IndexNotReady, _catalog_by_slug, l2_normalize
+from backend.retrieve.match import IndexNotReady, catalog_by_slug, l2_normalize
 from backend.retrieve.safeguards import load_safeguards
+from backend.retrieve.reports import save_report
 from backend.retrieve.session import RankedCheck, get_check
 
 EVAL_MODEL = "gpt-5.6-sol"
@@ -63,7 +64,7 @@ async def evaluate_upload(
             status_code=409,
         )
 
-    live = _catalog_by_slug().get(slug) or {}
+    live = catalog_by_slug().get(slug) or {}
     match = next((item for item in session.matches if item.slug == slug), None)
     if match is None and not live:
         raise EvaluateError("Policy not found in the library.", status_code=404)
@@ -88,7 +89,7 @@ async def evaluate_upload(
     counts = _counts(findings)
     total = len(findings) or 1
     title = (match.title if match else "") or str(live.get("title") or slug)
-    return EvaluateResponse(
+    response = EvaluateResponse(
         slug=slug,
         title=title,
         category=(match.category if match else "") or str(live.get("category") or ""),
@@ -101,6 +102,13 @@ async def evaluate_upload(
         counts=counts,
         rows=findings,
     )
+    saved = save_report(
+        filename=session.filename or filename,
+        check_id=session.check_id,
+        matches=session.matches,
+        evaluation=response,
+    )
+    return saved.evaluation
 
 
 async def _session_for(

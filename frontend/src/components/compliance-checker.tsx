@@ -26,8 +26,8 @@ export function ComplianceChecker() {
     evaluating,
     setReport,
     setEvaluating,
-    registerEvaluate,
   } = useCheckSession();
+  const reportRef = useRef<HTMLDivElement>(null);
   const [file, setFile] = useState<File | null>(null);
   const [dragOver, setDragOver] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -87,10 +87,13 @@ export function ComplianceChecker() {
       );
       setEvaluation(response);
       toast.update(EVAL_TOAST_ID, {
-        render: `Evaluated ${response.rows.length} requirements against ${response.title}. Alignment ${response.score.toFixed(1)}%.`,
+        render: savedToast(response),
         type: "success",
         isLoading: false,
         autoClose: 6000,
+      });
+      window.requestAnimationFrame(() => {
+        reportRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
       });
     } catch (caught) {
       const message =
@@ -215,7 +218,7 @@ export function ComplianceChecker() {
                 Findings
               </h2>
             </div>
-            <ConfidenceHint />
+            <ConfidenceHint report={report} />
           </div>
 
           {error ? (
@@ -226,9 +229,10 @@ export function ComplianceChecker() {
 
           {!report && !error ? (
             <p className="leading-relaxed text-muted">
-              Upload a procedure, then run a check. The backend ranks it against
-              Purpose and Scope summaries. If a standard matches, evaluate its
-              extracted requirements from this report.
+              Upload a procedure, then run a check. Ranking finds the closest
+              Purpose and Scope neighbors. A match — and a score — appears only
+              when one policy is clearly ahead of the others. Then you can
+              evaluate its requirements.
             </p>
           ) : null}
 
@@ -238,18 +242,24 @@ export function ComplianceChecker() {
 
       {report ? (
         <RankedPolicies
+          collapsed={Boolean(evaluation) || evaluating}
           evaluating={evaluating || isChecking}
           onEvaluate={() => void runEvaluate()}
         />
       ) : null}
 
-      {evaluation ? <EvaluationDashboard report={evaluation} /> : null}
+      {evaluation ? (
+        <div ref={reportRef} id="evaluation-report" className="scroll-mt-4">
+          <EvaluationDashboard report={evaluation} />
+        </div>
+      ) : null}
     </div>
   );
 }
 
 function ScoreWell({ report }: { report: CheckResponse }) {
   if (!report.matched) {
+    const nearest = report.matches[0];
     return (
       <div className="rounded-control bg-warn/10 px-4 py-4 text-warn">
         <p className="text-[0.72rem] font-bold uppercase tracking-[0.14em]">
@@ -258,9 +268,21 @@ function ScoreWell({ report }: { report: CheckResponse }) {
         <p className="mt-2 font-serif text-2xl leading-tight text-ink">
           No standard in the library matches this document.
         </p>
-        <p className="mt-2 text-sm text-muted">
-          Nearest policies are listed below for reference. They are not a match,
-          so evaluation is disabled.
+        <p className="mt-2 text-sm leading-relaxed text-muted">
+          A score is not a match. Similarity to a policy&apos;s Purpose and
+          Scope can look strong even when two standards are tied, or when the
+          document is unrelated. We only call it a match when one policy is
+          clearly ahead of the rest. Until then we do not show a percentage, so
+          a number cannot be mistaken for a chosen standard.
+        </p>
+        {nearest ? (
+          <p className="mt-2 text-sm leading-relaxed text-ink">
+            Nearest in the library: {nearest.title}
+            {nearest.category ? ` (${nearest.category})` : ""}.
+          </p>
+        ) : null}
+        <p className="mt-2 text-sm leading-relaxed text-muted">
+          {noMatchReason(report)}
         </p>
       </div>
     );
@@ -271,7 +293,7 @@ function ScoreWell({ report }: { report: CheckResponse }) {
   return (
     <div className={`rounded-control px-4 py-4 ${tone.well}`}>
       <p className="text-[0.72rem] font-bold uppercase tracking-[0.14em]">
-        Top match confidence
+        Match similarity
       </p>
       <p className="font-serif text-6xl leading-none text-ink">
         {top ? top.confidence.toFixed(1) : "—"}
@@ -285,18 +307,31 @@ function ScoreWell({ report }: { report: CheckResponse }) {
       ) : (
         <p className="mt-1 text-sm text-muted">No policy matches returned.</p>
       )}
+      <p className="mt-2 text-sm leading-relaxed text-muted">
+        This number is cosine similarity to Purpose and Scope, shown because
+        this policy is clearly ahead of the others. It is not a probability.
+        Evaluate uses this standard next.
+      </p>
     </div>
   );
 }
 
 function RankedPolicies({
+  collapsed,
   evaluating,
   onEvaluate,
 }: {
+  collapsed: boolean;
   evaluating: boolean;
   onEvaluate: () => void;
 }) {
   const { report, topMatches, selectedSlug, setSelectedSlug } = useCheckSession();
+  const [open, setOpen] = useState(!collapsed);
+
+  useEffect(() => {
+    setOpen(!collapsed);
+  }, [collapsed]);
+
   if (!report || topMatches.length === 0) return null;
 
   const matched = report.matched;
@@ -306,74 +341,121 @@ function RankedPolicies({
 
   return (
     <section className={CARD}>
-      <div className="mb-4 flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <p className="mb-1 text-[0.72rem] font-bold uppercase tracking-[0.16em] text-cardinal">
-            Ranked policies
-          </p>
-          <h2 className="font-serif text-[1.55rem] font-semibold tracking-tight">
-            Top 5 matches
-          </h2>
-          <p className="mt-1 max-w-2xl text-sm text-muted">
-            Confidence is cosine similarity to each policy&apos;s Purpose and
-            Scope summary. Select a row, then evaluate its extracted
-            requirements.
-          </p>
-        </div>
-        {matched ? (
+      <div className="flex flex-col gap-3 lg:flex-row lg:items-center lg:justify-between">
+        {open ? (
+          <div className="min-w-0 flex-1">
+            <p className="text-[0.72rem] font-bold uppercase tracking-[0.16em] text-cardinal">
+              {matched ? "Ranked policies" : "Nearest policies"}
+            </p>
+            <h2 className="font-serif text-[1.55rem] font-semibold tracking-tight">
+              {matched ? "Top 5 matches" : "Closest in the library"}
+            </h2>
+            <p className="mt-1 max-w-2xl text-sm text-muted">
+              {matched
+                ? "Each circle is similarity to that policy&apos;s Purpose and Scope. This list is a match because one policy is clearly ahead. Select a row, then evaluate its extracted requirements."
+                : "Names only — no scores. These are the closest Purpose and Scope neighbors, not chosen standards. Evaluation stays off so a tied or unrelated upload cannot be forced into a policy."}
+            </p>
+          </div>
+        ) : (
+          <div className="flex min-w-0 flex-1 items-center gap-4">
+            {matched && selected ? (
+              <ConfidenceCircle confidence={selected.confidence} />
+            ) : null}
+            <div className="min-w-0 flex-1">
+              <p className="text-[0.72rem] font-bold uppercase tracking-[0.16em] text-cardinal">
+                {matched ? "Ranked policies" : "Nearest policies"}
+              </p>
+              <h2 className="font-serif text-[1.35rem] font-semibold leading-tight tracking-tight">
+                {selected?.title ?? (matched ? "Top 5 matches" : "Closest in the library")}
+              </h2>
+              {selected?.category ? (
+                <p className="mt-0.5 text-sm text-muted">{selected.category}</p>
+              ) : null}
+            </div>
+          </div>
+        )}
+        <div className="flex w-full shrink-0 flex-col gap-2 sm:w-auto">
           <button
             type="button"
-            className={PRIMARY_BUTTON}
-            disabled={!canEvaluate}
-            onClick={onEvaluate}
+            className="w-full cursor-pointer rounded-control border border-line px-3 py-2 text-sm font-semibold hover:border-ink"
+            aria-expanded={open}
+            onClick={() => setOpen((current) => !current)}
           >
-            {evaluating ? "Evaluating…" : "Evaluate requirements"}
+            {open ? "Hide list" : "Show list"}
           </button>
-        ) : null}
+          {matched ? (
+            <button
+              type="button"
+              className={`${PRIMARY_BUTTON} w-full`}
+              disabled={!canEvaluate}
+              onClick={onEvaluate}
+            >
+              {evaluating ? "Evaluating…" : "Evaluate requirements"}
+            </button>
+          ) : null}
+        </div>
       </div>
 
-      <ol className="grid list-none gap-2 p-0">
-        {topMatches.map((item, index) => {
-          const active = item.slug === selected.slug;
-          return (
-            <li key={item.slug}>
-              <button
-                type="button"
-                onClick={() => setSelectedSlug(item.slug)}
-                className={`flex w-full cursor-pointer items-start gap-3 rounded-control border px-3.5 py-3 text-left ${
-                  active
-                    ? "border-cardinal bg-cardinal/10"
-                    : "border-line/80 bg-canvas/40 hover:border-cardinal/40"
-                }`}
-              >
-                <span className="mt-0.5 w-6 shrink-0 text-sm font-semibold text-muted">
-                  {index + 1}
+      {open ? (
+        <ol className="mt-4 grid list-none gap-2 p-0">
+          {topMatches.map((item) => {
+            const active = matched && item.slug === selected.slug;
+            const rowClass = `flex w-full items-center gap-4 rounded-control border px-4 py-3 text-left ${
+              active
+                ? "border-cardinal bg-cardinal/10"
+                : "border-line/80 bg-canvas/40"
+            }`;
+            const body = (
+              <>
+                {matched ? (
+                  <ConfidenceCircle confidence={item.confidence} />
+                ) : null}
+                <span className="min-w-0 flex-1 font-semibold leading-snug">
+                  {item.title}
                 </span>
-                <span
-                  className={`shrink-0 rounded-pill px-2.5 py-1 text-[0.72rem] font-extrabold tracking-[0.08em] ${confidencePill(
-                    item.confidence,
-                  )}`}
-                >
-                  {item.confidence.toFixed(1)}%
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block font-semibold">{item.title}</span>
-                  {item.category ? (
-                    <span className="mt-0.5 block text-sm text-muted">
-                      {item.category}
-                    </span>
-                  ) : null}
-                </span>
-              </button>
-            </li>
-          );
-        })}
-      </ol>
+                {item.category ? (
+                  <span className="hidden max-w-[40%] shrink-0 text-right text-sm text-muted sm:block">
+                    {item.category}
+                  </span>
+                ) : null}
+              </>
+            );
+            return (
+              <li key={item.slug}>
+                {matched ? (
+                  <button
+                    type="button"
+                    onClick={() => setSelectedSlug(item.slug)}
+                    className={`cursor-pointer hover:border-cardinal/40 ${rowClass}`}
+                  >
+                    {body}
+                  </button>
+                ) : (
+                  <div className={rowClass}>{body}</div>
+                )}
+              </li>
+            );
+          })}
+        </ol>
+      ) : null}
     </section>
   );
 }
 
-function ConfidenceHint() {
+function ConfidenceCircle({ confidence }: { confidence: number }) {
+  return (
+    <span
+      className={`grid h-14 w-14 shrink-0 place-items-center rounded-full font-serif text-[0.95rem] font-semibold leading-none ${confidencePill(
+        confidence,
+      )}`}
+      aria-label={`${confidence.toFixed(1)} percent confidence`}
+    >
+      {confidence.toFixed(1)}
+    </span>
+  );
+}
+
+function ConfidenceHint({ report }: { report: CheckResponse | null }) {
   return (
     <details className="relative shrink-0">
       <summary
@@ -399,10 +481,12 @@ function ConfidenceHint() {
         role="note"
         className="absolute right-0 z-10 mt-2 w-72 rounded-control border border-line bg-paper p-3.5 text-sm leading-relaxed text-muted shadow-card"
       >
-        Confidence is cosine similarity between the uploaded procedure and each
-        policy&apos;s Purpose and Scope summary, shown as a percentage. A match
-        requires at least 50%. Evaluation then judges each extracted safeguard
-        with gpt-5.6-sol at high effort.
+        Confidence is not a probability that the document belongs to a policy.
+        It is cosine similarity to Purpose and Scope, shown as a percentage.
+        Unrelated uploads can still look high, and two policies can sit almost
+        tied. A match requires the top policy to clear a floor and lead the
+        runner-up by enough to name one standard. Only then do we show the
+        number and allow Evaluate. Change the floor and the lead under Settings.
       </div>
     </details>
   );
@@ -428,10 +512,37 @@ function confidencePill(confidence: number) {
   return "bg-fail/15 text-fail";
 }
 
+function noMatchReason(report: CheckResponse): string {
+  const nearest = report.matches[0]?.title;
+  const second = report.matches[1]?.title;
+  const top = report.matches[0]?.confidence ?? 0;
+  const belowFloor = top < report.match_threshold;
+  const tooClose =
+    report.matches.length > 1 && report.match_gap < report.match_min_gap;
+
+  if (tooClose && nearest && second) {
+    return `${nearest} and ${second} are too close to call, so evaluation stays off.`;
+  }
+  if (belowFloor) {
+    return "Nothing is similar enough to treat as this document's standard. Evaluation stays off.";
+  }
+  if (nearest) {
+    return "Evaluation stays off. The names below are neighbors, not a match.";
+  }
+  return "The list below is for reference only.";
+}
+
 function checkCompleteMessage(report: CheckResponse): string {
   const top = report.matches[0];
   if (!report.matched || !top) {
     return `No standard in the library matches ${report.filename}.`;
   }
   return `Check complete for ${report.filename}. Top match ${top.title} at ${top.confidence.toFixed(1)}%.`;
+}
+
+function savedToast(response: EvaluateResponse): string {
+  const saved = response.report_id
+    ? " Saved under Reports."
+    : "";
+  return `Evaluated ${response.rows.length} requirements against ${response.title}. Alignment ${response.score.toFixed(1)}%.${saved}`;
 }
