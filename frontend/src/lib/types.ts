@@ -17,7 +17,51 @@ export type PolicyMatch = {
 export type CheckResponse = {
   filename: string;
   model: string;
+  check_id: string;
+  matched: boolean;
+  match_threshold: number;
   matches: PolicyMatch[];
+};
+
+export type EvaluateVerdict =
+  | "aligned"
+  | "contradicted"
+  | "missing"
+  | "flagged";
+
+export type EvaluateSource = {
+  chunk_id: string;
+  quote: string;
+};
+
+export type EvaluateFinding = {
+  requirement_id: string;
+  definition: string;
+  verdict: EvaluateVerdict;
+  requirement_quote: string;
+  evidence_quote: string;
+  rationale: string;
+  sources: EvaluateSource[];
+};
+
+export type EvaluateCounts = {
+  aligned: number;
+  contradicted: number;
+  missing: number;
+  flagged: number;
+};
+
+export type EvaluateResponse = {
+  slug: string;
+  title: string;
+  category: string;
+  source_url: string;
+  pdf_url: string;
+  model: string;
+  reasoning_effort: string;
+  score: number;
+  counts: EvaluateCounts;
+  rows: EvaluateFinding[];
 };
 
 export type PolicyRecord = {

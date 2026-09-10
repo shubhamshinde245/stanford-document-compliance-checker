@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from pathlib import Path
 import asyncio
 
-from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi import FastAPI, File, Form, HTTPException, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
@@ -11,6 +11,7 @@ from backend.llm.router import llm
 from backend.llm.store import LLMConfigError, save_settings
 from backend.models import (
     CheckResponse,
+    EvaluateResponse,
     HealthResponse,
     LLMChatRequest,
     LLMChatResponse,
@@ -28,6 +29,7 @@ from backend.models import (
     PolicyScheduleUpdate,
 )
 from backend.retrieve import IndexNotReady, check_upload, describe_index
+from backend.retrieve.evaluate import EvaluateError, evaluate_upload
 from backend.retrieve.safeguards import load_safeguards
 from backend.retrieve.text import ExtractError, SUPPORTED_SUFFIXES
 from backend.llm.schema import (
@@ -158,6 +160,38 @@ async def check_document(file: UploadFile = File(...)) -> CheckResponse:
         raise HTTPException(status_code=400, detail="Uploaded file is empty.")
     try:
         return await check_upload(filename, data)
+    except IndexNotReady as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
+    except ExtractError as exc:
+        raise HTTPException(status_code=400, detail=str(exc)) from exc
+    except LLMError as extra:
+        raise _llm_http_error(extra) from extra
+
+
+@app.post("/api/evaluate", response_model=EvaluateResponse)
+async def evaluate_document(
+    file: UploadFile = File(...),
+    slug: str = Form(...),
+    check_id: str | None = Form(None),
+) -> EvaluateResponse:
+    filename = Path(file.filename or "document").name
+    suffix = Path(filename).suffix.lower()
+    if suffix not in SUPPORTED_SUFFIXES:
+        raise HTTPException(
+            status_code=400,
+            detail="Unsupported file type. Upload a PDF, DOCX, HTML, Markdown, or text file.",
+        )
+    if "/" in slug or "\\" in slug or ".." in slug:
+        raise HTTPException(status_code=400, detail="Invalid policy slug.")
+    data = await file.read()
+    if len(data) > MAX_UPLOAD_BYTES:
+        raise HTTPException(status_code=413, detail="File is larger than 12 MB.")
+    if not data:
+        raise HTTPException(status_code=400, detail="Uploaded file is empty.")
+    try:
+        return await evaluate_upload(filename, data, slug, check_id)
+    except EvaluateError as exc:
+        raise HTTPException(status_code=exc.status_code, detail=str(exc)) from exc
     except IndexNotReady as exc:
         raise HTTPException(status_code=503, detail=str(exc)) from exc
     except ExtractError as exc:

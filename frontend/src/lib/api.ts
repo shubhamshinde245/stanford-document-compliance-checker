@@ -1,5 +1,6 @@
 import type {
   CheckResponse,
+  EvaluateResponse,
   LLMChatResponse,
   LLMEmbedResponse,
   LLMEffort,
@@ -14,8 +15,19 @@ import type {
 } from "./types";
 
 async function readDetail(response: Response, fallback: string): Promise<string> {
-  const error = await response.json().catch(() => null);
-  return error && typeof error.detail === "string" ? error.detail : fallback;
+  const raw = await response.text();
+  try {
+    const error = JSON.parse(raw) as { detail?: unknown };
+    if (typeof error.detail === "string" && error.detail.trim()) {
+      return error.detail;
+    }
+  } catch {
+    // Non-JSON proxy errors, including Next rewrite timeouts.
+  }
+  if (response.status >= 500) {
+    return fallback;
+  }
+  return raw.trim() || fallback;
 }
 
 export async function checkDocument(file: File): Promise<CheckResponse> {
@@ -30,6 +42,30 @@ export async function checkDocument(file: File): Promise<CheckResponse> {
     throw new Error(await readDetail(response, "Compliance check failed."));
   }
 
+  return response.json();
+}
+
+export async function evaluateDocument(
+  file: File,
+  slug: string,
+  checkId: string,
+): Promise<EvaluateResponse> {
+  const body = new FormData();
+  body.append("file", file);
+  body.append("slug", slug);
+  body.append("check_id", checkId);
+  const response = await fetch("/api/evaluate", {
+    method: "POST",
+    body,
+  });
+  if (!response.ok) {
+    throw new Error(
+      await readDetail(
+        response,
+        "Requirement evaluation failed. Large policies can take several minutes; retry if the proxy timed out.",
+      ),
+    );
+  }
   return response.json();
 }
 

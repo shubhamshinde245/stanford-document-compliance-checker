@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 
 import { AppSidebar } from "@/components/app-sidebar";
+import { CheckSessionProvider } from "@/components/check-session";
 import { ToastProvider } from "@/components/toast-provider";
 
 const STORAGE_KEY = "sidebar-collapsed";
@@ -26,6 +27,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   }
 
   return (
+    <CheckSessionProvider>
     <div className="flex h-full gap-3 overflow-hidden p-3">
       <AppSidebar collapsed={collapsed} onToggle={onToggle} />
       <div className="min-h-0 min-w-0 flex-1 overflow-y-auto rounded-shell bg-paper/55">
@@ -33,5 +35,6 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       </div>
       <ToastProvider />
     </div>
+    </CheckSessionProvider>
   );
 }
