@@ -455,7 +455,7 @@ function ConfidenceCircle({ confidence }: { confidence: number }) {
   );
 }
 
-function ConfidenceHint({ report }: { report: CheckResponse | null }) {
+function ConfidenceHint() {
   return (
     <details className="relative shrink-0">
       <summary
