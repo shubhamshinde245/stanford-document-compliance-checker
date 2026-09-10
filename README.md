@@ -58,6 +58,7 @@ Change that time, or trigger a check immediately, from **Policies** in the sideb
 - **Frontend:** Next.js 16 (App Router), React 19, Tailwind CSS 4
 - **LLM:** routed through a provider switchboard — Stanford Gateway (default), OpenAI, or Anthropic, selectable at **Settings** without a restart. Embeddings default to `text-embedding-ada-002`; since Anthropic has no embeddings API, embedding calls automatically fall back to Stanford Gateway or OpenAI.
 - **Standards library:** official [SANS / CRF security policy templates](https://www.sans.org/information-security-policy)
+- **How matching works:** [HOW_IT_WORKS.md](HOW_IT_WORKS.md) — end-to-end flow, cosine ranking, where embeddings live, and a worked example. Also in the app under **How it works**.
 
 ## API
 
