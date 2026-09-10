@@ -16,7 +16,7 @@ from backend.settings import (
 
 ModelKind = Literal["chat", "embedding", "other"]
 
-TIMEOUT = httpx.Timeout(120.0, connect=10.0)
+TIMEOUT = httpx.Timeout(300.0, connect=10.0)
 ANTHROPIC_VERSION = "2023-06-01"
 
 

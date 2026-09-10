@@ -26,12 +26,11 @@ type AppSidebarProps = {
 
 export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
   const pathname = usePathname();
+  const widthClass = collapsed ? "w-16" : "w-60";
 
   return (
     <aside
-      className={`flex h-full shrink-0 flex-col overflow-hidden rounded-shell bg-[#8C1515] pb-6 text-white transition-[width] duration-200 ${
-        collapsed ? "w-16" : "w-60"
-      }`}
+      className={`flex h-full shrink-0 flex-col overflow-hidden rounded-shell bg-[#8C1515] pb-6 text-white transition-[width] duration-200 ${widthClass}`}
       style={{ backgroundColor: "#8C1515" }}
     >
       <div
@@ -64,7 +63,7 @@ export function AppSidebar({ collapsed, onToggle }: AppSidebarProps) {
         </button>
       </div>
 
-      <nav className="flex flex-1 flex-col gap-1 px-2" aria-label="Primary">
+      <nav className="flex shrink-0 flex-col gap-1 px-2" aria-label="Primary">
         {NAV.map((item) => (
           <NavLink
             key={item.href}

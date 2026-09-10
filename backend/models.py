@@ -22,7 +22,45 @@ class PolicyMatch(BaseModel):
 class CheckResponse(BaseModel):
     filename: str
     model: str
+    check_id: str
+    matched: bool
+    match_threshold: float
     matches: list[PolicyMatch]
+
+
+class EvaluateSource(BaseModel):
+    chunk_id: str
+    quote: str = ""
+
+
+class EvaluateFinding(BaseModel):
+    requirement_id: str
+    definition: str = ""
+    verdict: Literal["aligned", "contradicted", "missing", "flagged"]
+    requirement_quote: str = ""
+    evidence_quote: str = ""
+    rationale: str = ""
+    sources: list[EvaluateSource] = Field(default_factory=list)
+
+
+class EvaluateCounts(BaseModel):
+    aligned: int = 0
+    contradicted: int = 0
+    missing: int = 0
+    flagged: int = 0
+
+
+class EvaluateResponse(BaseModel):
+    slug: str
+    title: str
+    category: str = ""
+    source_url: str = ""
+    pdf_url: str = ""
+    model: str
+    reasoning_effort: str
+    score: float
+    counts: EvaluateCounts
+    rows: list[EvaluateFinding] = Field(default_factory=list)
 
 
 class HealthResponse(BaseModel):

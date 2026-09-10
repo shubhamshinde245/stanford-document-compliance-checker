@@ -13,8 +13,11 @@ from backend.retrieve.index import inspect_index, load_parked_index
 from backend.retrieve.text import ExtractError, extract_document
 from backend.scraper.catalog import load_catalog
 
+from backend.retrieve.session import store_check
+
 SNIPPET_CHARS = 320
 SLUG_RE = re.compile(r"[^a-z0-9]+")
+MATCH_THRESHOLD = 50.0
 
 
 class IndexNotReady(RuntimeError):
@@ -142,8 +145,20 @@ async def check_upload(filename: str, data: bytes) -> CheckResponse:
         summary_rows,
         _catalog_by_slug(),
     )
+    top = matches[0].confidence if matches else 0.0
+    matched = bool(matches) and top >= MATCH_THRESHOLD
+    cached = store_check(
+        filename=filename,
+        chunks=chunks,
+        embeddings=query,
+        matches=matches,
+        matched=matched,
+    )
     return CheckResponse(
         filename=filename,
         model=str(result.get("model") or status.settings_model),
+        check_id=cached.check_id,
+        matched=matched,
+        match_threshold=MATCH_THRESHOLD,
         matches=matches,
     )

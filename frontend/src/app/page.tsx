@@ -12,9 +12,8 @@ export default function Home() {
         </h1>
         <p className="mt-4 max-w-xl text-[1.05rem] leading-relaxed text-muted">
           Upload a procedure and rank it against Purpose and Scope summaries
-          from the parked SANS policy library. The backend chunks the document,
-          embeds it, and returns every policy ordered by cosine confidence.
-          This pass does not issue aligned or contradicted verdicts.
+          from the parked SANS policy library. If a standard matches, evaluate
+          each extracted requirement. Verdicts use gpt-5.6-sol at high effort.
         </p>
       </header>
       <main>
