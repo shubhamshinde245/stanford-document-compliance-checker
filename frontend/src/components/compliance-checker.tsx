@@ -218,7 +218,7 @@ export function ComplianceChecker() {
                 Findings
               </h2>
             </div>
-            <ConfidenceHint report={report} />
+            <ConfidenceHint />
           </div>
 
           {error ? (
@@ -352,7 +352,7 @@ function RankedPolicies({
             </h2>
             <p className="mt-1 max-w-2xl text-sm text-muted">
               {matched
-                ? "Each circle is similarity to that policy&apos;s Purpose and Scope. This list is a match because one policy is clearly ahead. Select a row, then evaluate its extracted requirements."
+                ? "Each circle is similarity to that policy's Purpose and Scope. This list is a match because one policy is clearly ahead. Select a row, then evaluate its extracted requirements."
                 : "Names only — no scores. These are the closest Purpose and Scope neighbors, not chosen standards. Evaluation stays off so a tied or unrelated upload cannot be forced into a policy."}
             </p>
           </div>
@@ -455,7 +455,7 @@ function ConfidenceCircle({ confidence }: { confidence: number }) {
   );
 }
 
-function ConfidenceHint({ report }: { report: CheckResponse | null }) {
+function ConfidenceHint() {
   return (
     <details className="relative shrink-0">
       <summary

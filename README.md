@@ -45,6 +45,9 @@ required before your first upload, and `make scrape` is optional. Skipping
 | `make frontend` | Next.js only, on `localhost:3000` |
 | `make scrape` | Re-check sans.org and download PDFs whose published date changed. Add `--full` via `uv run python -m backend.scraper --full` to force every PDF |
 | `make index` | Embed Purpose/Scope summaries **and** extract safeguards for any policy whose PDF bytes or embedding model changed |
+| `make test` | Both test suites — 326 tests, no API key or network needed |
+| `make test-backend` | `pytest` only |
+| `make test-frontend` | `vitest` only |
 
 While the API is running, a daily job re-checks the library at **08:00 Pacific**.
 Change that time, or trigger a check immediately, from **Policies** in the sidebar.
@@ -79,6 +82,35 @@ Live OpenAPI docs at <http://127.0.0.1:8000/docs> once the backend is running.
 ```bash
 curl -s -X POST http://127.0.0.1:8000/api/check -F "file=@procedure.pdf"
 ```
+
+## Tests
+
+```bash
+make test          # 255 backend + 71 frontend, about 3 seconds
+make test-backend  # pytest only
+make test-frontend # vitest only
+```
+
+Both suites run **offline**: no API key, no network, and no built index. The LLM
+router is replaced by a deterministic fake, and settings, saved reports, and the
+parked index are redirected into a temp directory, so a run can never call a
+provider or touch your scraped `data/`. `make test` runs both even if the first
+fails, so one command shows every failure, and exits non-zero if either did.
+
+| Suite | Where | Covers |
+| --- | --- | --- |
+| Backend (`pytest`) | [`tests/backend/`](tests/backend/) | The match rule, settings validation, output-column normalization, verdict grounding, report persistence, chunking and extraction, and the HTTP surface |
+| Frontend (`vitest`) | `frontend/src/**/*.test.tsx` | The checker screen, the evaluation report, the saved-reports list, and the API client's error handling |
+
+The file worth reading first is
+[`tests/backend/test_match_gating.py`](tests/backend/test_match_gating.py). It
+encodes the [decision 15](DESIGN.md#15-matching-is-a-two-part-test-both-configurable)
+regression directly: the three committed fixtures' measured confidences, the
+assertion that the old `top >= 50.0` rule separated none of them, and the
+assertion that the shipped lead rule separates all three. The matching frontend
+tests assert that a no-match renders **no confidence circles at all** — a
+percentage beside a policy title reads as a chosen standard however the header
+is worded.
 
 ## Test documents
 

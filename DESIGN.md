@@ -13,7 +13,7 @@ a human reviewer can trace it back to a sentence in a real document. That rules 
 architecture where the model is trusted, and it rules out one where the answer changes
 between two runs on the same inputs.
 
-Each of the fifteen decisions below carries a **Tradeoff / Impact** table directly under its title.
+Each of the sixteen decisions below carries a **Tradeoff / Impact** table directly under its title.
 The impact column is not theoretical — the figures come from an end-to-end browser run
 against the live app, recorded in [Verified behavior](#verified-behavior).
 
@@ -390,6 +390,43 @@ A z-score of the top against the whole field was also tried and rejected: it sco
 UI shows; the load path silently falls back to the default, so a hand-edited settings file
 cannot brick startup. Same split as `normalize_columns()` in decision 9.
 
+### 16. Tests fake the provider rather than skipping without a key
+
+| Tradeoff | Impact on the system |
+| --- | --- |
+| The fake router is a second implementation of the provider contract, so it can drift from the real one and assert a shape production never returns. The suite proves the pipeline's logic, not that Stanford Gateway still answers. | 326 tests run in about three seconds with no key, no network, and no built index, so the suite is runnable on a machine that has never been configured — which is the only way it gets run before every commit rather than after a failure. The alternative, `skipif` on a missing key, produces a green run that tested nothing; the one thing worse than no tests is a suite that reports success while silently skipping. Contract drift is the accepted cost, and it is the argument for the live smoke test in [next steps](#what-i-would-do-next). |
+
+**Context.** Every interesting path in this codebase runs through an LLM call: ranking
+embeds the upload, evaluation embeds each requirement and then judges in batches. A test
+suite that needs a real key tests nothing on a fresh clone.
+
+**Decision.** `tests/backend/conftest.py` holds the two rules the whole suite obeys.
+Nothing touches the network — `llm` is replaced by a `FakeLLM` whose `embed_many` returns
+caller-supplied vectors, so a test dictates the exact similarity field it wants to assert
+on. Nothing touches real `data/` — settings, saved reports, and the parked index are
+redirected into `tmp_path` by autouse fixtures, so a run cannot clobber a scraped catalog.
+
+Controlling the similarity field precisely is what makes decision 15 testable at all: a
+unit vector `[s, sqrt(1 - s^2)]` scores exactly `s` against `[1, 0]`, so
+`tests/backend/test_match_gating.py` can replay the three fixtures' measured confidences
+(91.5/85.8, 88.1/83.0, 71.6/70.8) as inputs and assert the rule separates them.
+
+**Why this shape.** The suite is arranged around the two places this system can lie to a
+reviewer, because those are the failures that matter:
+
+- **Claiming a match that is not one.** `test_match_gating.py` asserts the shipped rule
+  rejects the unrelated fixture *and* still accepts the two real procedures, and pins the
+  old floor-only rule as a test that would have matched all three.
+- **Claiming a verdict the document does not support.** `test_evaluate.py` covers every
+  downgrade in `_normalize_finding()`: a quote absent from the retrieved chunks, an
+  invented chunk id, an empty evidence quote, a requirement the model skipped.
+
+**Tradeoff on the frontend.** The component tests render real components against a stubbed
+`fetch` rather than testing extracted helpers, because the assertion that matters is what
+reaches the screen — specifically that a no-match renders **no confidence circles at all**.
+That is asserted through the circles' `aria-label`, which makes the test double as an
+accessibility check.
+
 ---
 
 ## Verified behavior
@@ -456,26 +493,30 @@ on short documents, and it is the concrete argument for item 5 in the next steps
 
 Honest inventory of what is not done.
 
-- **No tests, no CI, no linter config.** The single biggest gap. There is no `tests/`, no
-  pytest dependency, and no `.github/`. The browser pass above was written for this
-  document, not committed as a suite.
+- **No CI, and the linter does not pass.** `make test` runs 255 backend and 71 frontend
+  tests offline ([decision 16](#16-tests-fake-the-provider-rather-than-skipping-without-a-key)),
+  but nothing runs them automatically — there is no `.github/`. `npx eslint src` also
+  reports five pre-existing `react-hooks/set-state-in-effect` errors in `app-shell`,
+  `compliance-checker`, `policies-dashboard`, `reports-dashboard`, and `safeguards-dialog`,
+  so lint is deliberately not part of `make test`; wiring it in means fixing those first.
+- **The suite never calls a real provider.** Every LLM call is faked, so a Stanford Gateway
+  contract change — a renamed field, a different embedding shape — would pass CI and fail
+  in the browser. A keyed smoke test is the missing half.
+- **Scraper and index builder are untested.** `backend/scraper/sans.py` (585 lines) and
+  `backend/retrieve/index.py` (553 lines) are the two largest modules and have no
+  coverage; both are Playwright- and filesystem-heavy, which is why they were left for a
+  fixtured pass rather than done badly now.
 - **Hardcoded models bypass Settings.** `EVAL_MODEL` / `EVAL_EFFORT`
   (`backend/retrieve/evaluate.py:23-24`) and `SAFEGUARD_MODEL`
   (`backend/retrieve/safeguards.py:16`) are pinned to `gpt-5.6-sol`, so the chat model the
   Settings UI exposes does not actually govern the two calls that matter most.
 - **Frontend types are hand-mirrored.** `frontend/src/lib/types.ts` duplicates the Pydantic
-  models in `backend/models.py` with no codegen, so they can drift silently.
+  models in `backend/models.py` with no codegen, so they can drift silently. The component
+  tests do not catch this — they build fixtures from those same types, so a wrong type
+  produces green tests against a shape the backend never sends. Only codegen closes it.
 - **All data fetching is client-side.** The three routes are server components that render
   a `"use client"` child which fetches in `useEffect` with `cache: "no-store"`. No
   server-side fetching, no caching strategy, no loading skeletons.
-- **Leftovers.** `data/sans-policies/index.npz.tmp.npz` is a fossil from an earlier
-  temp-file naming scheme. `frontend/public/` still holds the unused create-next-app SVGs.
-  `app/layout.tsx` still advertises the page as an accessibility checker — "Check HTML
-  documents against Stanford accessibility, identity, and structure rules" — which is
-  scaffold copy from a different app and is what search engines and link previews would
-  show.
-- **Small structural smells.** The path-traversal slug guard is duplicated inline in four
-  handlers, and `evaluate.py` imports the private `_catalog_by_slug` from `match.py`.
 
 ---
 
@@ -483,12 +524,12 @@ Honest inventory of what is not done.
 
 Ordered by what unblocks the most.
 
-1. **Tests first.** The highest-value targets are all pure functions needing no network:
-   golden-file tests for `sections.py` heading extraction against the 36 real PDFs,
-   `chunk_pages()` boundary behavior, and a `_normalize_finding()` suite covering every
-   downgrade path. Then a fake provider for the router so the pipeline can be tested
-   offline, and the Playwright pass above committed as a smoke test. This comes first
-   because every item below changes logic that currently has no safety net.
+1. **CI, and the two gaps the suite leaves.** The offline suite exists; running it
+   automatically does not. A GitHub Actions workflow on `make test` is an afternoon. Then
+   the two things it deliberately does not cover: one keyed smoke test against the live
+   gateway, so a provider contract change fails a build rather than a demo, and golden-file
+   tests for `sections.py` heading extraction against all 36 real PDFs. Fixing the five
+   `set-state-in-effect` errors would let lint join the same gate.
 2. **Real provider failover.** A health check plus try-the-next-configured-provider in
    `LLMRouter`, and wire `OllamaProvider` against Ollama's `/api/chat` and
    `/api/embeddings` so the app runs fully offline. This is what decision 2 was built for
