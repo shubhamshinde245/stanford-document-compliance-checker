@@ -23,6 +23,9 @@ async function readDetail(response: Response, fallback: string): Promise<string>
     if (typeof error.detail === "string" && error.detail.trim()) {
       return error.detail;
     }
+    // Valid JSON with no usable detail. Returning `raw` here would put the
+    // serialized envelope in a toast, so use the caller's wording instead.
+    return fallback;
   } catch {
     // Non-JSON proxy errors, including Next rewrite timeouts.
   }

@@ -14,6 +14,9 @@ straight at the API.
 All three target the same standard so results are comparable:
 `privileged-account-management-policy` (16 requirements).
 
+Screenshots from a live Checker run are in [`screenshots/`](screenshots/) and
+embedded in the root [README](../../README.md).
+
 ## Running them
 
 ```bash

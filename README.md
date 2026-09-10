@@ -45,6 +45,9 @@ required before your first upload, and `make scrape` is optional. Skipping
 | `make frontend` | Next.js only, on `localhost:3000` |
 | `make scrape` | Re-check sans.org and download PDFs whose published date changed. Add `--full` via `uv run python -m backend.scraper --full` to force every PDF |
 | `make index` | Embed Purpose/Scope summaries **and** extract safeguards for any policy whose PDF bytes or embedding model changed |
+| `make test` | Both test suites — 326 tests, no API key or network needed |
+| `make test-backend` | `pytest` only |
+| `make test-frontend` | `vitest` only |
 
 While the API is running, a daily job re-checks the library at **08:00 Pacific**.
 Change that time, or trigger a check immediately, from **Policies** in the sidebar.
@@ -80,11 +83,71 @@ Live OpenAPI docs at <http://127.0.0.1:8000/docs> once the backend is running.
 curl -s -X POST http://127.0.0.1:8000/api/check -F "file=@procedure.pdf"
 ```
 
+## Tests
+
+```bash
+make test          # 255 backend + 71 frontend, about 3 seconds
+make test-backend  # pytest only
+make test-frontend # vitest only
+```
+
+Both suites run **offline**: no API key, no network, and no built index. The LLM
+router is replaced by a deterministic fake, and settings, saved reports, and the
+parked index are redirected into a temp directory, so a run can never call a
+provider or touch your scraped `data/`. `make test` runs both even if the first
+fails, so one command shows every failure, and exits non-zero if either did.
+
+| Suite | Where | Covers |
+| --- | --- | --- |
+| Backend (`pytest`) | [`tests/backend/`](tests/backend/) | The match rule, settings validation, output-column normalization, verdict grounding, report persistence, chunking and extraction, and the HTTP surface |
+| Frontend (`vitest`) | `frontend/src/**/*.test.tsx` | The checker screen, the evaluation report, the saved-reports list, and the API client's error handling |
+
+The file worth reading first is
+[`tests/backend/test_match_gating.py`](tests/backend/test_match_gating.py). It
+encodes the [decision 15](DESIGN.md#15-matching-is-a-two-part-test-both-configurable)
+regression directly: the three committed fixtures' measured confidences, the
+assertion that the old `top >= 50.0` rule separated none of them, and the
+assertion that the shipped lead rule separates all three. The matching frontend
+tests assert that a no-match renders **no confidence circles at all** — a
+percentage beside a policy title reads as a chosen standard however the header
+is worded.
+
 ## Test documents
 
-Three hand-authored fixtures live in `tests/documents/` — a compliant procedure, one with
-ten deliberate violations plus an answer key, and an unrelated document. Drop them into
-the uploader, or:
+Hand-authored fixtures in [`tests/documents/`](tests/documents/) cover the three
+outcomes the checker has to get right. Drop them on <http://localhost:3000>.
+
+| File | Purpose |
+| --- | --- |
+| [`01-compliant-privileged-account-procedure.md`](tests/documents/01-compliant-privileged-account-procedure.md) | A procedure written to the Privileged Account Management Policy |
+| [`02-noncompliant-privileged-account-procedure.md`](tests/documents/02-noncompliant-privileged-account-procedure.md) | The same subject with ten planted violations |
+| [`02-noncompliant-ANSWER-KEY.md`](tests/documents/02-noncompliant-ANSWER-KEY.md) | Each planted quote and the verdict it should get |
+| [`03-unrelated-document.md`](tests/documents/03-unrelated-document.md) | A campus tree-care calendar — no security content, so no match |
+
+### 1. A procedure that complies
+
+Routes to **Privileged Account Management Policy** at 91.5, clearly ahead of the
+runner-up. Evaluation: **100.0%** aligned (16 of 16).
+
+![Compliant procedure ranked against the library](tests/documents/screenshots/01-compliant-match.png)
+
+![Compliant procedure evaluated at 100 percent alignment](tests/documents/screenshots/01-compliant-evaluate.png)
+
+### 2. Deliberate violations
+
+Ten planted conflicts, listed in the [answer key](tests/documents/02-noncompliant-ANSWER-KEY.md).
+Evaluation: **12.5%** aligned — PAM-01 and PAM-02 only — and 14 contradicted. The
+PAM-03 evidence quote is the planted sentence *Network devices are excluded from
+the privileged account inventory.*
+
+![Noncompliant procedure with planted contradictions](tests/documents/screenshots/02-noncompliant-evaluate.png)
+
+### 3. Unrelated document
+
+No match. Neighbors are named only — no scores, Evaluate stays off — because Log
+Management Policy and Software Management Policy are too close to call.
+
+![Unrelated tree-care calendar with no match](tests/documents/screenshots/03-unrelated-no-match.png)
 
 ```bash
 curl -s -X POST http://127.0.0.1:8000/api/evaluate \
@@ -92,7 +155,8 @@ curl -s -X POST http://127.0.0.1:8000/api/evaluate \
   -F "slug=privileged-account-management-policy"
 ```
 
-See [tests/documents/README.md](tests/documents/README.md) for expected results.
+Expected routing, scores, and the match-gap rule that keeps fixture 03 unmatched
+are in [tests/documents/README.md](tests/documents/README.md).
 
 ## Design
 
